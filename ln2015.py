@@ -124,7 +124,7 @@ class LN2015:
         # # Scene 7: waves calm to a steady roll
         # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
         #     pass
-        # # Scene 8:   beueuys clank, flashing green and red, as they rock.
+        # # Scene 8:   bouys clank, flashing green and red, as they rock.
         # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
         #     pass
         # # Scene 9  birds come into shot, and takes off, flying inland to the forest,

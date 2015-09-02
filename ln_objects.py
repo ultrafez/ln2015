@@ -33,7 +33,7 @@ class Ceiling:
     mask = None
 
     def __init__(self, x, y):
-        tree = ET.parse('/home/ajtag/workspace/ln2015/LS-TRIN-0023 East Mall.svg')
+        tree = ET.parse('Resources/LS-TRIN-0023 East Mall.svg')
 
         root = tree.getroot()
 
@@ -128,7 +128,11 @@ class StarrySky(pygame.sprite.Group):
         if r < 15:
             print('add star')
             l = randint(0, len(self.ceiling.lamps)+1)
-            self.add(Star(self.ceiling.lamps[l]))
+            try:
+                self.add(Star(self.ceiling.lamps[l]))
+            except:
+                print(l, len(self.ceiling.lamps))
+
         elif r == 99:
             print('add Shooting Star')
         pygame.sprite.Group.update(self)
@@ -190,7 +194,7 @@ class RisingSun(pygame.sprite.Sprite):
 
     def draw(self, surface):
 
-        self.image.fill(black)
+        self.image.fill(white)
         #print(self.chordlengths)
         for n, d in enumerate(self.chordlengths):
             c = height_color(self.height)
