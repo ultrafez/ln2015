@@ -3,17 +3,20 @@ from ln_objects import *
 from random import randint
 import math
 import numpy as np
+
+import logging
+logging.basicConfig()
+
 __author__ = 'ajtag'
 
 black = 0, 0, 0
 white = 255, 255, 255
 
-
 FPS = 30
 
 STARS_START = 0
 SUNRISE_START = FPS * 30
-STARS_FADE = FPS * 30
+STARS_FADE = FPS * 35
 STARS_END = FPS * 40
 CLOUDS_START = FPS * 70
 SUNRISE_END = FPS * 90
@@ -49,6 +52,9 @@ CONSTALATION_END = FPS * 600
 
 
 class LN2015:
+    log = logging.getLogger()
+    log.setLevel(logging.DEBUG)
+
     def __init__(self, width, height, fps, mask=True):
         self.width = width
         self.height = height
@@ -60,6 +66,8 @@ class LN2015:
         self.fps = fps
         self.objects = {}
         self.ticks = 0
+        self.background = black
+        self.log.info('done init')
 
     def run(self):
         for event in pygame.event.get():
@@ -74,14 +82,15 @@ class LN2015:
 
         #background
         if self.ticks < self.fps * 100:
-            background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
+            self.background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
 
-        self.screen.fill( background )
+        self.screen.fill( self.background )
 
         #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
         if self.ticks < STARS_END:
             if self.ticks == STARS_START:
                 self.objects['starrynight'] = StarrySky((self.width, self.height), self.ceiling)
+                self.ticks = SUNRISE_START - 1
 
             self.objects['starrynight'].update()
             self.objects['starrynight'].draw(self.screen)
@@ -93,28 +102,33 @@ class LN2015:
         #Scene 2  sunrise millis: 20000 -> 70000  Sunrise from south to full basking sun from in the center
         if (SUNRISE_START) <= self.ticks < (SUNRISE_END):
             if self.ticks == SUNRISE_START:
-                radius = 100
-                self.objects['sun'] = RisingSun((self.width/2) - radius, self.height, radius)
+                radius = 200
 
-            self.objects['sun'].set_height((  ((self.ticks - SUNRISE_START)/(SUNRISE_END - SUNRISE_START))  * 4 / 6 *pi ) % (4 / 6 *pi))
+                south = self.ceiling.get_named_position('SOUTH')
+                east = self.ceiling.get_named_position('EAST')
+                self.objects['sun'] = RisingSun(south[0]-130, south[1], pygame.Rect(south[0]-10, south[1]*9/12,10, east[1]+radius), radius)
+
+            # sunrise from 6AM to 12noon -> 0 to pi/2
+
+            self.objects['sun'].set_height(((self.ticks - SUNRISE_START)/(SUNRISE_END - SUNRISE_START)))
             self.objects['sun'].draw(self.screen)
 
         elif self.ticks == SUNRISE_END:
             del(self.objects['sun'])
 
-
-
-
-
         # Scene 3: clouds  millis: 55 -> 100 white clouds come in from arms and pass, then getting denser, finally covering the sun and going grey.
         if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-            pass
-
+            if (self.ticks == CLOUDS_START):
+                self.objects['clouds'] = Clouds()
+                self.log.info('======= CLOUDS =======')
 
 
         # Scene 4: lightning sheet and fork lightning happen
-        # if (LIGHTNING_START) < self.ticks < (LIGHTNING_END):
-        #     pass
+        if (LIGHTNING_START) < self.ticks < (LIGHTNING_END):
+            if (self.ticks == LIGHTNING_START):
+                self.objects['ligtning'] = Lightning()
+                self.log.info('======= LIGHTNING =======')
+
         # # Scene 5: rain  rain starts falling with blue splashes, to a torrent, flooding the ceiling
         # if (RAIN_START) < self.ticks < (RAIN_END):
         #     pass
