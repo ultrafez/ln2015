@@ -18,9 +18,9 @@ FPS = 30
 
 STARS_START = 0
 SUNRISE_START = FPS * 30
-STARS_FADE = FPS * 35
+STARS_FADE = FPS * 30
 STARS_END = FPS * 40
-CLOUDS_START = FPS * 70
+CLOUDS_START = FPS * 0
 SUNRISE_END = FPS * 90
 LIGHTNING_START = FPS * 100
 RAIN_START = FPS * 110
@@ -91,8 +91,9 @@ class LN2015:
         #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
         if self.ticks < STARS_END:
             if self.ticks == STARS_START:
+                self.log.info('======= STARS START =======')
                 self.objects['starrynight'] = StarrySky((self.width, self.height), self.ceiling)
-                self.ticks = SUNRISE_START - 1
+
 
             self.objects['starrynight'].update()
             self.objects['starrynight'].draw(self.screen)
@@ -104,6 +105,7 @@ class LN2015:
         #Scene 2  sunrise millis: 20000 -> 70000  Sunrise from south to full basking sun from in the center
         if (SUNRISE_START) <= self.ticks < (SUNRISE_END):
             if self.ticks == SUNRISE_START:
+                self.log.info('======= SUNRISE START =======')
                 radius = 200
 
                 south = self.ceiling.get_named_position('SOUTH')
@@ -119,17 +121,20 @@ class LN2015:
             del(self.objects['sun'])
 
         # Scene 3: clouds  millis: 55 -> 100 white clouds come in from arms and pass, then getting denser, finally covering the sun and going grey.
-        if (CLOUDS_START) < self.ticks < (CLOUDS_END):
+        if (CLOUDS_START) <= self.ticks < (CLOUDS_END):
             if (self.ticks == CLOUDS_START):
-                self.objects['clouds'] = Clouds()
-                self.log.info('======= CLOUDS =======')
+                self.objects['clouds'] = Clouds(self.size)
+                self.log.info('======= CLOUDS START =======')
+
+            self.objects['clouds'].update()
+            self.objects['clouds'].draw(self.screen)
 
 
         # Scene 4: lightning sheet and fork lightning happen
         if (LIGHTNING_START) < self.ticks < (LIGHTNING_END):
             if (self.ticks == LIGHTNING_START):
                 self.objects['ligtning'] = Lightning()
-                self.log.info('======= LIGHTNING =======')
+                self.log.info('======= LIGHTNING START =======')
 
         # # Scene 5: rain  rain starts falling with blue splashes, to a torrent, flooding the ceiling
         # if (RAIN_START) < self.ticks < (RAIN_END):

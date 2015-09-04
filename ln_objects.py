@@ -23,6 +23,7 @@ class Sprite(pygame.sprite.Sprite):
         self.image.set_colorkey(white)
         self.image.fill(white)
         self.log = logging.getLogger(self.__class__.__name__)
+        self.log.info('##init##')
 
 
 class Lamp:
@@ -93,7 +94,7 @@ class Ceiling:
             self.lamps.append(
                 Lamp((lamp[0] - mnlx)/(mxlx - mnlx) * x,(lamp[1] - mnly)/(mxly - mnly) * y))
             pos = pygame.Rect(
-                (lamp[0] - mnlx)/(mxlx - mnlx) * x,(lamp[1] - mnly)/(mxly - mnly) * y, 5, 5)
+                (lamp[0] - mnlx)/(mxlx - mnlx) * x,(lamp[1] - mnly)/(mxly - mnly) * y, 3, 3)
             pygame.draw.rect(self.mask, white, pos, 0)
 
 
@@ -240,7 +241,6 @@ class RisingSun(Sprite):
     #    self.rect = (self.x, self.y, self.radius*2, self.radius*2)
 
     def draw(self, surface):
-
         self.image.fill(white)
         for n, d in enumerate(self.chordlengths):
             c = height_color(self.height)
@@ -248,8 +248,7 @@ class RisingSun(Sprite):
             c = height_color(self.height)
             pygame.draw.aaline(self.image, c, (self.radius - d/2, (self.radius - n)), (((2*self.radius) - (self.radius-d/2)), (self.radius - n)), True)
 
-        surface.blit(self.image, (self.rect.topleft[0]
-                                  , self.rect.topleft[1]))
+        surface.blit(self.image, (self.rect.topleft[0], self.rect.topleft[1]))
 
 def height_color(height):
         # height = 0:pi * 4/6
@@ -262,20 +261,89 @@ def height_color(height):
         return hls_to_rgb(height_hue, height_lum, randint(90, 100))
 
 class Clouds(pygame.sprite.Group):
-    def __init__(self, size, ceiling):
+    def __init__(self, size):
         self.log = logging.getLogger(self.__class__.__name__)
         pygame.sprite.Group.__init__(self)
         self.s = pygame.Surface(size)
         self.s.set_colorkey(white)
 
+        self.angryness = 0
+        self.starteast = 0
+        self.gowest = 2
+
+        self.wait = 0
+
+    def update(self):
+        if self.wait == 0:
+            self.log.info('adding new cloud {}, {}, angry:{}'.format(self.starteast, self.gowest, self.angryness))
+            self.angryness += 0.05
+
+            if self.angryness >= 1:
+                self.angryness = 0
+
+            self.starteast = abs(self.starteast - 800)
+            self.gowest = -self.gowest
+
+
+            self.add(Cloud(pygame.Rect(self.starteast, 250, self.gowest, 0), angryness=self.angryness, radius=randint(1,5)*40))
+
+        if self.wait == 100:
+            self.wait = 0
+        else:
+            self.wait +=1
+
+        pygame.sprite.Group.update(self)
+
+    def draw(self, surface):
+        self.s.fill(white)
+        pygame.sprite.Group.draw(self, self.s)
+        surface.blit(self.s, (0, 0))
+
+    def end(self):
+        self.log.info('Fade clouds Out')
 
 class Cloud(pygame.sprite.Sprite):
-    def __init__(self, angryness, radius):
+    def __init__(self, location, angryness=0.5, radius=50):
+        """
+
+        :param location: pygame.Rect
+        :param angryness: float
+        :param radius: int
+        :return:
+        """
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        self.set_angryness(angryness)
+        self.radius = radius
+        self.rect = location
+        Sprite.__init__(self, self.radius * 2, self.radius * 2)
+
+    def update(self):
+        self.draw()
+        self.rect.move_ip((self.rect.width, self.rect.height))
+
+    def draw(self):
+        print('draw')
+        self.image.fill(white)
+        pygame.draw.circle(self.image, self.colour, (self.radius,self.radius), self.radius)
+        #surface.blit(self.image, (0, 0))  # motion vector not passed as rect as may be -ve area
+
+    def set_angryness(self, angryness):
+        """
+        value between 0 and 1
+        :param angryness:float
+        :return:
+        """
+        if angryness < 0 or angryness > 1:
+            raise ValueError
 
         self.angryness = angryness
-        self.radius = radius
+
+        h = 194
+        s = randint(10, 20)
+        l = 90 -(angryness * 80)
+
+        self.colour = hls_to_rgb(h,l,s)
+
 
 
 class Thunderstorm(pygame.sprite.Group):
