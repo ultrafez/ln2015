@@ -9,7 +9,6 @@ logging.basicConfig()
 
 __author__ = 'ajtag'
 
-'dropbox test'
 
 
 black = 0, 0, 0
