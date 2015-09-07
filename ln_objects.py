@@ -1,5 +1,3 @@
-from seaborn.palettes import hls_palette
-
 __author__ = 'ajtag'
 import pygame
 from random import randint, choice
