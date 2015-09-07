@@ -1,3 +1,5 @@
+from seaborn.palettes import hls_palette
+
 __author__ = 'ajtag'
 import pygame
 from random import randint, choice
@@ -9,6 +11,7 @@ from numpy import pi, sin, cos
 import logging
 
 white = 255, 255, 255
+transparent = 255,255,255,0
 black = 0, 0, 0
 
 
@@ -18,12 +21,18 @@ def hls_to_rgb(hue, lightness, saturation):
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, x, y):
+        self.log = logging.getLogger(self.__class__.__name__)
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((x, y))
         self.image.set_colorkey(white)
         self.image.fill(white)
-        self.log = logging.getLogger(self.__class__.__name__)
         self.log.info('##init##')
+
+
+class Group(pygame.sprite.Group):
+    def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
+        pygame.sprite.Group.__init__(self)
 
 
 class Lamp:
@@ -135,10 +144,10 @@ class Star(Sprite):
         pygame.draw.circle(self.image, self.color, (self.starsize, self.starsize), self.starsize)
 
 
-class StarrySky(pygame.sprite.Group):
+class StarrySky(Group):
     def __init__(self, size, ceiling):
         self.log = logging.getLogger(self.__class__.__name__)
-        pygame.sprite.Group.__init__(self)
+        Group.__init__(self)
         self.ceiling = ceiling
         self.alpha = 0
         self.dalpha = 2
@@ -162,11 +171,11 @@ class StarrySky(pygame.sprite.Group):
 
         elif r == 99:
             self.log.info('add Shooting Star')
-        pygame.sprite.Group.update(self)
+        Group.update(self)
 
     def draw(self, surface):
         self.s.fill(white)
-        pygame.sprite.Group.draw(self, self.s)
+        Group.draw(self, self.s)
         surface.blit(self.s, (0, 0))
 
     def end(self):
@@ -260,10 +269,10 @@ def height_color(height):
 
         return hls_to_rgb(height_hue, height_lum, randint(90, 100))
 
-class Clouds(pygame.sprite.Group):
+class Clouds(Group):
     def __init__(self, size):
         self.log = logging.getLogger(self.__class__.__name__)
-        pygame.sprite.Group.__init__(self)
+        Group.__init__(self)
         self.s = pygame.Surface(size)
         self.s.set_colorkey(white)
 
@@ -284,7 +293,6 @@ class Clouds(pygame.sprite.Group):
             self.starteast = abs(self.starteast - 800)
             self.gowest = -self.gowest
 
-
             self.add(Cloud(pygame.Rect(self.starteast, 250, self.gowest, 0), angryness=self.angryness, radius=randint(1,5)*40))
 
         if self.wait == 100:
@@ -292,17 +300,17 @@ class Clouds(pygame.sprite.Group):
         else:
             self.wait +=1
 
-        pygame.sprite.Group.update(self)
+        Group.update(self)
 
     def draw(self, surface):
         self.s.fill(white)
-        pygame.sprite.Group.draw(self, self.s)
+        Group.draw(self, self.s)
         surface.blit(self.s, (0, 0))
 
     def end(self):
         self.log.info('Fade clouds Out')
 
-class Cloud(pygame.sprite.Sprite):
+class Cloud(Sprite):
     def __init__(self, location, angryness=0.5, radius=50):
         """
 
@@ -318,14 +326,9 @@ class Cloud(pygame.sprite.Sprite):
         Sprite.__init__(self, self.radius * 2, self.radius * 2)
 
     def update(self):
-        self.draw()
         self.rect.move_ip((self.rect.width, self.rect.height))
-
-    def draw(self):
-        print('draw')
         self.image.fill(white)
         pygame.draw.circle(self.image, self.colour, (self.radius,self.radius), self.radius)
-        #surface.blit(self.image, (0, 0))  # motion vector not passed as rect as may be -ve area
 
     def set_angryness(self, angryness):
         """
@@ -345,19 +348,74 @@ class Cloud(pygame.sprite.Sprite):
         self.colour = hls_to_rgb(h,l,s)
 
 
+class Raindrops(Group):
+    def __init__(self, size):
+        Group.__init__(self)
+        self.s = pygame.Surface(size, pygame.SRCALPHA)
+        self.s.set_colorkey(white)
+        self.drop_frequency = 10
+        self.count = 0
+        self.s.set_alpha(100)
+        self.alpha = 100
 
-class Thunderstorm(pygame.sprite.Group):
+    def update(self):
+        if len(self) < 5 and self.count % self.drop_frequency == 0:
+            self.add(RainSplash(self.s.get_rect()))
+        self.count = self.count + 1
+        Group.update(self)
+
+    def draw(self, surface):
+        self.s.fill(transparent)
+        Group.draw(self, self.s)
+        surface.blit(self.s, (0, 0))
+
+
+class RainSplash(Sprite):
+    def __init__(self, area):
+        self.max_radius = 200
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.area = area
+        Sprite.__init__(self, area.width, area.height)
+        self.rect = self.image.get_rect()
+
+        self.radius = 0
+        self.splash()
+
+    def update(self):
+        self.radius = (self.radius + 3)
+        if self.radius >= self.max_radius:
+            self.splash()
+
+        self.image.fill(white)
+        c = hls_to_rgb(210,  (1+sin(self.radius/20))*49, 55)
+        for i in range(self.radius):
+            c = hls_to_rgb(210,  (1+sin(i/20))*49, 55)
+            pygame.draw.circle(self.image, c, (self.position[0], self.position[1]), self.radius-i)
+
+        self.image.set_alpha(255-(255*self.radius / self.max_radius))
+
+        #pygame.draw.circle(self.image, c, (200,200), self.radius)
+
+    def splash(self):
+        self.radius = 0
+        self.position = (randint(0, self.area.width), randint(0, self.area.height))
+
+
+        # draw expanding blue/white circle with alpha
+        #self.height = 1/self.radius
+
+
+class Thunderstorm(Group):
     def __init__(self, size, ceiling):
         self.log = logging.getLogger(self.__class__.__name__)
-        pygame.sprite.Group.__init__(self)
+        Group.__init__(self)
         self.s = pygame.Surface(size)
         self.s.set_colorkey(white)
 
-class Lightning(pygame.sprite.Sprite):
+class Lightning(Sprite):
     def __init__(self, ):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
-
+        Sprite.__init__(self)
 
 class SheetLighting(Lightning):
     color = (255, 36, 251)
@@ -365,55 +423,67 @@ class SheetLighting(Lightning):
 class ForkLighting(Lightning):
     color = (246, 255, 71)
 
-class Splash(pygame.sprite.Sprite):
+class Splash(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
-class Wave(pygame.sprite.Sprite):
+class Wave(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
-class Bouy(pygame.sprite.Sprite):
+class Bouy(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
         self.colour = choice('red', 'green')
 
 
-class Bird(pygame.sprite.Sprite):
+class Bird(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
-class ForestCanopey(pygame.sprite.Sprite):
+class ForestCanopey(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
-class Aurora(pygame.sprite.Sprite):
+class Aurora(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
-class Constallation(pygame.sprite.Sprite):
+class Constallation(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
 
 class HSMoon(Sprite):
     #uri = 'Resources/hackspace_logo_large.svg'
-    polyH = 'd="m 239.49266,250.00824 -50.5176,-50.51229 -17.0112,15 -7.9137,-7.05176 43.3907,-43.39074 7.0518,7.86654 -15.2381,16.35968 51.4099,51.54116 76.3241,-76.32409 -51.4562,-51.4562 -9.0798,8.91118 -60.4157,-60.41567 8.9112,-9.07983 L 163.49186,0 87.08205,76.40981 l 51.65436,51.29688 16.32015,-15.21074 9.891,9.03928 -43.41564,43.41569 -9.03928,-9.93821 15,-16.98438 L 76.99521,87.49595 0,163.49846 l 51.45291,51.4529 9.07983,-8.91118 60.41567,60.41567 -8.90631,9.07487 51.43836,50.96523 z"'
+
+    """
+    164.201, 327.203
+    215.657, 275.746
 
 
+
+
+    """
     def __init__(self, x = 300, y=300, r=150):
-        Sprite.__init__()
+        Sprite.__init__(self, x,y)
         # Call the parent class (Sprite) constructor
         self.x, self.y, self.radius = x,y,r
-        self.logo = pygame.image.load(self.uri)
+        self.hlogo = pygame.image.load('Resources/hackspace_logo_large.png')
 
-    def draw(self):
+        self.hlogo = pygame.transform.scale(self.hlogo, (300, 300))
+        self.image.blit(self.hlogo, (0,0))
+        #self.logo = pygame.image.load(self.uri)
+
+    def draw(self, screen):
+        screen.blit(self.image, (187,310))
+
         pass
 
 

@@ -20,10 +20,10 @@ STARS_START = 0
 SUNRISE_START = FPS * 30
 STARS_FADE = FPS * 30
 STARS_END = FPS * 40
-CLOUDS_START = FPS * 0
+CLOUDS_START = FPS * 0 #
 SUNRISE_END = FPS * 90
 LIGHTNING_START = FPS * 100
-RAIN_START = FPS * 110
+RAIN_START = FPS * 0 # 110
 LIGHTNING_END = FPS * 120
 WAVES_START = FPS * 125
 CLOUDS_END = FPS * 130
@@ -48,7 +48,7 @@ SUNSET_END = FPS * 510
 NORTHERNLIGHTS_START = FPS * 520
 NORTHERNLIGHTS_END = FPS * 570
 
-MOONRISE_START = FPS * 550
+MOONRISE_START = FPS * 0#550
 MOONRISE_END = FPS * 600
 CONSTALATION_END = FPS * 600
 
@@ -137,8 +137,14 @@ class LN2015:
                 self.log.info('======= LIGHTNING START =======')
 
         # # Scene 5: rain  rain starts falling with blue splashes, to a torrent, flooding the ceiling
-        # if (RAIN_START) < self.ticks < (RAIN_END):
-        #     pass
+        if (RAIN_START) <= self.ticks < (RAIN_END):
+            if RAIN_START == self.ticks:
+                self.objects['raindrops'] = Raindrops(self.size)
+            self.objects['raindrops'].update()
+            self.objects['raindrops'].draw(self.screen)
+
+
+
         # Scene 6: wash     cresting waves crash over the ceiling
         # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
         #     pass
@@ -164,8 +170,13 @@ class LN2015:
         # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
         #     pass
         # # Scene 14 moon rise with hackspace logo.
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
+        if (MOONRISE_START) <= self.ticks < (MOONRISE_END):
+            if self.ticks == MOONRISE_START:
+                self.objects['moon'] = HSMoon()
+
+            self.objects['moon'].update()
+            self.objects['moon'].draw(self.screen)
+            pass
 
 
         self.ticks += 1
