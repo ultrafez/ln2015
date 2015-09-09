@@ -58,7 +58,29 @@ class Ceiling:
         return self.positions[name]
 
     def parse_imagemask(self):
+        tmplamps = []
+        mnlx, mxlx, mnly, mxly = 10, 10, 10, 10
 
+        img = pygame.image.load('Resources/Madrix.png')
+        x,y = img.get_rect().size
+        for i in range(x):
+            for j in range(y):
+                if img.get_at((i,j))[0] == 255:
+                    print(i,j)
+                    mnlx = min(mnlx, i)
+                    mxlx = max(mxlx, i)
+                    mnly = min(mnly, j)
+                    mxly = max(mxly, j)
+
+                    tmplamps.append((i,j))
+
+
+
+        self.update_lamps(tmplamps, mnlx, mxlx, mnly, mxly)
+
+
+
+    def parse_imagemask_svg(self):
         tree = ET.parse('Resources/LS-TRIN-0023 East Mall.svg')
         root = tree.getroot()
         groups = root.findall('{http://www.w3.org/2000/svg}g')
@@ -89,6 +111,9 @@ class Ceiling:
                 mxly = max(mxly, lampy)
 
                 tmplamps.append((lampx, lampy))
+            self.update_lamps(tmplamps, mnlx, mxlx, mnly, mxly)
+
+    def update_lamps(self, tmplamps, mnlx, mxlx, mnly, mxly):
 
 
         mnlx -= 5
@@ -475,15 +500,22 @@ class HSMoon(Sprite):
         self.x, self.y, self.radius = x,y,r
         self.hlogo = pygame.image.load('Resources/hackspace_logo_large.png')
 
-        self.hlogo = pygame.transform.scale(self.hlogo, (300, 300))
+        self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
         self.image.blit(self.hlogo, (0,0))
         #self.logo = pygame.image.load(self.uri)
 
     def draw(self, screen):
-        screen.blit(self.image, (187,310))
+        screen.blit(self.image, (315,180))
 
         pass
 
+
+
+## todo
+#test pattern
+#single pixel
+#50:50
+#
 
 
 

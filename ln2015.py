@@ -4,6 +4,8 @@ from random import randint
 import math
 import numpy as np
 
+import subprocess as sp
+
 import logging
 logging.basicConfig()
 
@@ -14,20 +16,20 @@ __author__ = 'ajtag'
 black = 0, 0, 0
 white = 255, 255, 255
 
-FPS = 30
+FPS = 24
 
 STARS_START = 0
-SUNRISE_START = FPS * 30
+SUNRISE_START = FPS * 0
 STARS_FADE = FPS * 30
 STARS_END = FPS * 40
-CLOUDS_START = FPS * 0 #
-SUNRISE_END = FPS * 90
+CLOUDS_START = FPS * 999 #
+SUNRISE_END = FPS * 30
 LIGHTNING_START = FPS * 100
-RAIN_START = FPS * 0 # 110
+RAIN_START = FPS * 20 # 110
 LIGHTNING_END = FPS * 120
 WAVES_START = FPS * 125
 CLOUDS_END = FPS * 130
-RAIN_END = FPS * 140
+RAIN_END = FPS * 40
 
 BOUYS_START = FPS * 180
 BIRDS_START = FPS * 220
@@ -48,8 +50,8 @@ SUNSET_END = FPS * 510
 NORTHERNLIGHTS_START = FPS * 520
 NORTHERNLIGHTS_END = FPS * 570
 
-MOONRISE_START = FPS * 0#550
-MOONRISE_END = FPS * 600
+MOONRISE_START = FPS * 30#550
+MOONRISE_END = FPS * 60
 CONSTALATION_END = FPS * 600
 
 
@@ -57,7 +59,8 @@ class LN2015:
     log = logging.getLogger()
     log.setLevel(logging.DEBUG)
 
-    def __init__(self, width, height, fps, mask=True):
+    def __init__(self, title, width, height, fps, mask=True):
+        self.title = title
         self.width = width
         self.height = height
         self.size = width, height
@@ -71,6 +74,27 @@ class LN2015:
         self.background = black
         self.log.info('done init')
 
+
+    def save(self):
+        print('exporting ...')
+        command = [ 'ffmpeg',
+        '-y', # (optional) overwrite output file if it exists
+        '-s', '800x425', # size of one frame
+        '-r', '24', # frames per second
+        '-i', 'images/{}_%d.png'.format(self.title), # The input comes from a pipe
+        '-an', # Tells FFMPEG not to expect any audio
+        '-c:v', 'libx264',
+        '{}.mp4'.format(self.title) ]
+
+        pipe = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
+
+        try:
+            while True:
+                print(pipe.communicate('\n'))
+        except:
+            pass
+
+
     def run(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -78,14 +102,14 @@ class LN2015:
                     return False
                 elif event.key == pygame.K_m:
                     self.lightmask = not self.lightmask
-
             if event.type == pygame.QUIT:
                 return False
 
-        #background
-        if self.ticks < self.fps * 100:
-            self.background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
 
+        #background
+        #if self.ticks < self.fps * 100:
+            #self.background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
+        self.background = white
         self.screen.fill( self.background )
 
         #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
@@ -106,11 +130,11 @@ class LN2015:
         if (SUNRISE_START) <= self.ticks < (SUNRISE_END):
             if self.ticks == SUNRISE_START:
                 self.log.info('======= SUNRISE START =======')
-                radius = 200
+                radius = 80
 
                 south = self.ceiling.get_named_position('SOUTH')
                 east = self.ceiling.get_named_position('EAST')
-                self.objects['sun'] = RisingSun(south[0]-130, south[1], pygame.Rect(south[0]-10, south[1]*9/12,10, east[1]+radius), radius)
+                self.objects['sun'] = RisingSun(400, 100, pygame.Rect(400, 330, 20, 150), radius, 40)
 
             # sunrise from 6AM to 12noon -> 0 to pi/2
 
@@ -184,14 +208,19 @@ class LN2015:
         if self.lightmask:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.display.flip()
+
+        pygame.image.save(self.screen, 'images/{}_{}.png'.format(self.title, self.ticks))
+
         self.clock.tick(self.fps)
         return True
 
 
 if __name__ == "__main__":
     pygame.init()
-
-    scene = LN2015(800, 600, FPS, mask=True)
+    pygame.display.set_mode((800,425), pygame.NOFRAME | pygame.DOUBLEBUF, 16)
+    print(pygame.display.Info())
+    scene = LN2015('objects', 800, 425, FPS, mask=True)
+    scene.save()
 
     alive = True
     while alive:
