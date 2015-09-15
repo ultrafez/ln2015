@@ -109,7 +109,7 @@ class LN2015:
         #background
         #if self.ticks < self.fps * 100:
             #self.background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
-        self.background = white
+        self.background = black
         self.screen.fill( self.background )
 
         #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
@@ -205,7 +205,7 @@ class LN2015:
 
         self.ticks += 1
 
-        if self.lightmask:
+        if not self.lightmask:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.display.flip()
 
