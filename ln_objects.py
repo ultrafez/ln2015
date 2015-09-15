@@ -2,9 +2,10 @@ __author__ = 'ajtag'
 import pygame
 from random import randint, choice
 import colorsys
-import numpy as np
 import xml.etree.ElementTree as ET
-from numpy import pi, sin, cos
+from math import pi, sin, cos
+import math
+import os.path
 
 import logging
 
@@ -14,7 +15,7 @@ black = 0, 0, 0
 
 
 def hls_to_rgb(hue, lightness, saturation):
-    return np.array(colorsys.hls_to_rgb(hue/360, lightness/100, saturation/100)) * 255
+    return [i *255 for i in colorsys.hls_to_rgb(hue/360, lightness/100, saturation/100)]
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -61,7 +62,7 @@ class Ceiling:
         tmplamps = []
         mnlx, mxlx, mnly, mxly = 10, 10, 10, 10
 
-        img = pygame.image.load('Resources/Madrix.png')
+        img = pygame.image.load(os.path.join('Resources', 'Madrix.png'))
         x,y = img.get_rect().size
         for i in range(x):
             for j in range(y):
@@ -81,7 +82,7 @@ class Ceiling:
 
 
     def parse_imagemask_svg(self):
-        tree = ET.parse('Resources/LS-TRIN-0023 East Mall.svg')
+        tree = ET.parse(os.path.join('Resources','LS-TRIN-0023 East Mall.svg'))
         root = tree.getroot()
         groups = root.findall('{http://www.w3.org/2000/svg}g')
 
@@ -258,7 +259,7 @@ class RisingSun(Sprite):
 
     def update_chords(self):
         #chordlengths
-        self.chordlengths = [2 * np.power(((self.radius * self.radius) - (d * d)), 0.5) for d in range(0, int(self.radius))]
+        self.chordlengths = [2 * math.pow(((self.radius * self.radius) - (d * d)), 0.5) for d in range(0, int(self.radius))]
 
     def set_radius(self, r):
         self.radius = r
@@ -284,8 +285,8 @@ class RisingSun(Sprite):
 
 def height_color(height):
         # height = 0:pi * 4/6
-        height_hue = int(np.sin(height) * 40 * 6 / 4/ pi)
-        height_lum = int(np.sin(height) * 6/4/pi*50)
+        height_hue = int(sin(height) * 40 * 6 / 4/ pi)
+        height_lum = int(sin(height) * 6/4/pi*50)
 
         height_hue = (350 + randint(height_hue, (height_hue+20))) % 360
         height_lum = 40 + randint(height_lum, height_lum+10)
@@ -498,7 +499,7 @@ class HSMoon(Sprite):
         Sprite.__init__(self, x,y)
         # Call the parent class (Sprite) constructor
         self.x, self.y, self.radius = x,y,r
-        self.hlogo = pygame.image.load('Resources/hackspace_logo_large.png')
+        self.hlogo = pygame.image.load(os.path.join('Resources','hackspace_logo_large.png'))
 
         self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
         self.image.blit(self.hlogo, (0,0))

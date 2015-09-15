@@ -2,7 +2,6 @@ import pygame
 from ln_objects import *
 from random import randint
 import math
-import numpy as np
 
 import subprocess as sp
 
@@ -10,8 +9,6 @@ import logging
 logging.basicConfig()
 
 __author__ = 'ajtag'
-
-
 
 black = 0, 0, 0
 white = 255, 255, 255
@@ -81,7 +78,7 @@ class LN2015:
         '-y', # (optional) overwrite output file if it exists
         '-s', '800x425', # size of one frame
         '-r', '24', # frames per second
-        '-i', 'images/{}_%d.png'.format(self.title), # The input comes from a pipe
+        '-i', os.path.join('images','{}_%d.png'.format(self.title)), # The input comes from a pipe
         '-an', # Tells FFMPEG not to expect any audio
         '-c:v', 'libx264',
         '{}.mp4'.format(self.title) ]
@@ -209,7 +206,7 @@ class LN2015:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.display.flip()
 
-        pygame.image.save(self.screen, 'images/{}_{}.png'.format(self.title, self.ticks))
+        pygame.image.save(self.screen, os.path.join('images', '{}_{}.png'.format(self.title, self.ticks)))
 
         self.clock.tick(self.fps)
         return True
@@ -217,10 +214,10 @@ class LN2015:
 
 if __name__ == "__main__":
     pygame.init()
-    pygame.display.set_mode((800,425), pygame.NOFRAME | pygame.DOUBLEBUF, 16)
+    pygame.display.set_mode((800,425), pygame.NOFRAME | pygame.DOUBLEBUF, 32)
     print(pygame.display.Info())
     scene = LN2015('objects', 800, 425, FPS, mask=True)
-    scene.save()
+    #scene.save()
 
     alive = True
     while alive:
