@@ -1,7 +1,4 @@
-import pygame
 from ln_objects import *
-from random import randint
-import math
 
 import subprocess as sp
 
@@ -56,7 +53,8 @@ class LN2015:
     log = logging.getLogger()
     log.setLevel(logging.DEBUG)
 
-    def __init__(self, title, width, height, fps, mask=True):
+
+    def __init__(self, title, width, height, fps, mask=True, save=False):
         self.title = title
         self.width = width
         self.height = height
@@ -70,6 +68,7 @@ class LN2015:
         self.ticks = 0
         self.background = black
         self.log.info('done init')
+        self.save = save
 
 
     def save(self):
@@ -150,7 +149,6 @@ class LN2015:
             self.objects['clouds'].update()
             self.objects['clouds'].draw(self.screen)
 
-
         # Scene 4: lightning sheet and fork lightning happen
         if (LIGHTNING_START) < self.ticks < (LIGHTNING_END):
             if (self.ticks == LIGHTNING_START):
@@ -163,8 +161,6 @@ class LN2015:
                 self.objects['raindrops'] = Raindrops(self.size)
             self.objects['raindrops'].update()
             self.objects['raindrops'].draw(self.screen)
-
-
 
         # Scene 6: wash     cresting waves crash over the ceiling
         # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
@@ -206,20 +202,26 @@ class LN2015:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.display.flip()
 
-        pygame.image.save(self.screen, os.path.join('images', '{}_{}.png'.format(self.title, self.ticks)))
+        if self.save:
+            savepath = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
+            pygame.image.save(self.screen, savepath)
 
         self.clock.tick(self.fps)
         return True
 
 
 if __name__ == "__main__":
+    save = False
     pygame.init()
     pygame.display.set_mode((800,425), pygame.NOFRAME | pygame.DOUBLEBUF, 32)
     print(pygame.display.Info())
-    scene = LN2015('objects', 800, 425, FPS, mask=True)
-    #scene.save()
+
+    scene = LN2015('objects', 800, 425, FPS, mask=True, save=save)
+    if save:
+        scene.save()
 
     alive = True
     while alive:
         alive = scene.run()
+    pygame.quit()
 
