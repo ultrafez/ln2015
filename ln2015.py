@@ -58,7 +58,7 @@ CONSTALATION_END = FPS * 600
 
 class LN2015:
     log = logging.getLogger()
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
 
     def __init__(self, title, width, height, fps, mask=True, save=False):
         self.title = title
