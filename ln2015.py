@@ -66,7 +66,7 @@ class LN2015:
         self.height = height
         self.size = width, height
         self.lightmask = mask
-        self.ceiling = Ceiling(self.width, self.height)
+        self.ceiling = Ceiling('Resources/pixels.csv')
         self.screen = pygame.Surface(self.size)
         self.display = pygame.display.set_mode((SCALE*MADRIX_X, SCALE*MADRIX_Y))
         self.clock = pygame.time.Clock()
@@ -208,8 +208,6 @@ class LN2015:
 
         self.ticks += 1
 
-        if not self.lightmask:
-            self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
         pygame.display.flip()
 

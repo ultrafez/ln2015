@@ -1,11 +1,14 @@
 __author__ = 'ajtag'
 import pygame
-from random import randint, choice
+import random 
+from random import randint
 import colorsys
 import xml.etree.ElementTree as ET
 from math import pi, sin, cos
 import math
 import os.path
+import csv
+import collections
 
 import logging
 
@@ -40,111 +43,20 @@ class Group(pygame.sprite.Group):
         pygame.sprite.Group.__init__(self)
 
 
-class Lamp:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+Lamp = collections.namedtuple("Lamp", ["x", "y"])
 
 class Ceiling:
-    lamps = []
-    mask = None
+    def __init__(self, filename):
+        self.lamps = []
+        self.readlamps(filename)
 
-    width = 0
-    height = 0
-    positions = {'NORTH':(0,0), 'SOUTH':(0,0), 'WEST':(0,0), 'EAST':(0,0), 'TAIL':(0,0)}
-
-
-
-    def __init__(self, x, y):
-        self.mask = pygame.Surface((x, y))
-        self.mask.set_colorkey(white)
-        self.parse_imagemask()
-
-
-    def get_named_position(self, name):
-        return self.positions[name]
-
-    def parse_imagemask(self):
-        tmplamps = []
-        mnlx, mxlx, mnly, mxly = 10, 10, 10, 10
-
-        img = pygame.image.load(os.path.join('Resources', 'Madrix.png'))
-        x,y = img.get_rect().size
-        for i in range(x):
-            for j in range(y):
-                if img.get_at((i,j))[0] == 255:
-                    mnlx = min(mnlx, i)
-                    mxlx = max(mxlx, i)
-                    mnly = min(mnly, j)
-                    mxly = max(mxly, j)
-
-                    tmplamps.append((i,j))
-
-
-
-        self.update_lamps(tmplamps, mnlx, mxlx, mnly, mxly)
-
-
-
-    def parse_imagemask_svg(self):
-        tree = ET.parse(os.path.join('Resources','LS-TRIN-0023 East Mall.svg'))
-        root = tree.getroot()
-        groups = root.findall('{http://www.w3.org/2000/svg}g')
-
-        self.width = float(root.attrib['width']) * 1.2
-        self.height = float(root.attrib['height']) * 1.2
-
-        mnlx, mxlx, mnly, mxly = None, None, None, None
-
-        tmplamps = []
-
-        for g in groups:
-            paths = g.findall('{http://www.w3.org/2000/svg}path')
-
-            if mnlx is None:
-                mnlx = float(paths[0].attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cx'])
-                mxlx = float(paths[0].attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cx'])
-                mnly = float(paths[0].attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cy'])
-                mxly = float(paths[0].attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cy'])
-
-            for p in paths:
-                lampx = float(p.attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cx'])
-                lampy = float(p.attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}cy'])
-
-                mnlx = min(mnlx, lampx)
-                mxlx = max(mxlx, lampx)
-                mnly = min(mnly, lampy)
-                mxly = max(mxly, lampy)
-
-                tmplamps.append((lampx, lampy))
-            self.update_lamps(tmplamps, mnlx, mxlx, mnly, mxly)
-
-    def update_lamps(self, tmplamps, mnlx, mxlx, mnly, mxly):
-
-
-        mnlx -= 5
-        mxlx += 5
-        mnly -= 5
-        mxly += 5
-
-        _,_,x,y = list(self.mask.get_rect())
-        for lamp in tmplamps:
-            self.lamps.append(
-                Lamp((lamp[0] - mnlx)/(mxlx - mnlx) * x,(lamp[1] - mnly)/(mxly - mnly) * y))
-            pos = pygame.Rect(
-                (lamp[0] - mnlx)/(mxlx - mnlx) * x,(lamp[1] - mnly)/(mxly - mnly) * y, 3, 3)
-            pygame.draw.rect(self.mask, white, pos, 0)
-
-
-
-        self.positions['NORTH'] = ((self.width/2 - mnlx)/(mxlx - mnlx) * x, 0)
-        self.positions['SOUTH'] = ((self.width/2 - mnlx)/(mxlx - mnlx) * x, (self.height - mnly)/(mxly - mnly) * y)
-        self.positions['WEST'] = (0, (self.height/2 - mnly)/(mxly - mnly) * y)
-        self.positions['EAST'] = ((self.width - mnlx)/(mxlx - mnlx) * x, (self.height/2 - mnly)/(mxly - mnly) * y)
-
-
-
-
+    def readlamps(self, filename):
+        #Generate array of lights fixture locations
+        f = open(filename)
+        csv_f = csv.reader(f)
+        for row in csv_f:
+            #Adjusted XY coords -1 as Madrix counts from 1
+            self.lamps.append(Lamp(int(row[0]) - 1 ,int(row[1]) - 1))
 
 
 class Star(Sprite):
@@ -176,7 +88,7 @@ class StarrySky(Group):
     def __init__(self, size, ceiling):
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
-        self.ceiling = ceiling
+        self.lamps = ceiling.lamps
         self.alpha = 0
         self.dalpha = 2
 
@@ -187,14 +99,11 @@ class StarrySky(Group):
         self.alpha = min(255, max(0, self.alpha + self.dalpha))
         self.s.set_alpha(self.alpha)
 
-        r = randint(0, 100)
+        r = random.randrange(0, 100)
         if r < 15:
             self.log.debug('add star')
-            l = randint(0, len(self.ceiling.lamps)-1)
-            try:
-                self.add(Star(self.ceiling.lamps[l]))
-            except:
-                self.log.debug(l, len(self.ceiling.lamps))
+            lamp = random.choice(self.lamps)
+            self.add(Star(lamp))
 
         elif r == 99:
             self.log.warn('add Shooting Star')
@@ -425,7 +334,7 @@ class RainSplash(Sprite):
 
     def splash(self):
         self.radius = 0
-        self.position = (randint(0, self.area.width), randint(0, self.area.height))
+        self.position = (random.randrange(self.area.width), random.randrange(self.area.height))
 
 
         # draw expanding blue/white circle with alpha
