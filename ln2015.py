@@ -1,9 +1,14 @@
+import logging
+logging.basicConfig()
+
 from ln_objects import *
 
 import subprocess as sp
 
-import logging
-logging.basicConfig()
+import platform
+import glob
+import sys
+
 
 __author__ = 'ajtag'
 
@@ -29,8 +34,6 @@ BOUYS_START = FPS * 180
 BIRDS_START = FPS * 220
 BOUYS_END = FPS * 260
 
-## todo fill this space
-
 WAVES_END = FPS * 370
 FOREST_START = FPS * 380
 BIRDS_END = FPS * 410
@@ -51,7 +54,7 @@ CONSTALATION_END = FPS * 600
 
 class LN2015:
     log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
 
 
     def __init__(self, title, width, height, fps, mask=True, save=False):
@@ -68,27 +71,31 @@ class LN2015:
         self.ticks = 0
         self.background = black
         self.log.info('done init')
-        self.save = save
+        self.save_images = True
+        self.save_video = save
 
+    def save(self, x, y, ffmpegexe = None):
+        if not self.save_video:
+            return
 
-    def save(self):
-        print('exporting ...')
-        command = [ 'ffmpeg',
+        if ffmpegexe is None:
+            if 'windows' in platform.platform().lower():
+                ffmpegexe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
+            else:
+                ffmpegexe = 'ffmpeg'
+
+        command = [ ffmpegexe,
         '-y', # (optional) overwrite output file if it exists
-        '-s', '800x425', # size of one frame
-        '-r', '24', # frames per second
-        '-i', os.path.join('images','{}_%d.png'.format(self.title)), # The input comes from a pipe
+        '-r', '{}'.format(self.fps), # frames per second
+        '-i', os.path.join('images','{}_%d.png'.format(self.title)),
         '-an', # Tells FFMPEG not to expect any audio
         '-c:v', 'libx264',
+        '-s',  '{}x{}'.format(x, y), # size of one frame
+
         '{}.mp4'.format(self.title) ]
 
-        pipe = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
+        pipe = sp.call(command)
 
-        try:
-            while True:
-                print(pipe.communicate('\n'))
-        except:
-            pass
 
 
     def run(self):
@@ -98,6 +105,11 @@ class LN2015:
                     return False
                 elif event.key == pygame.K_m:
                     self.lightmask = not self.lightmask
+
+                elif event.key == pygame.K_s:
+                    self.save_video = not(self.save_video)
+                    self.log.warning('save video: {}'.format(self.save_video))
+
             if event.type == pygame.QUIT:
                 return False
 
@@ -202,7 +214,7 @@ class LN2015:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
         pygame.display.flip()
 
-        if self.save:
+        if self.save_images:
             savepath = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
             pygame.image.save(self.screen, savepath)
 
@@ -211,17 +223,21 @@ class LN2015:
 
 
 if __name__ == "__main__":
-    save = False
     pygame.init()
-    pygame.display.set_mode((800,425), pygame.NOFRAME | pygame.DOUBLEBUF, 32)
-    print(pygame.display.Info())
+    pygame.display.set_mode((1056, 560), pygame.NOFRAME | pygame.DOUBLEBUF, 32)
 
-    scene = LN2015('objects', 800, 425, FPS, mask=True, save=save)
-    if save:
-        scene.save()
+    ## delete any files saved from previous runs
+    [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
+
+    scene = LN2015('objects', 1056, 560, FPS, mask=True)
 
     alive = True
     while alive:
         alive = scene.run()
+    scene.save(1056, 560)
     pygame.quit()
+
+
+
+sys.exit()
 

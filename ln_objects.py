@@ -15,6 +15,12 @@ black = 0, 0, 0
 
 
 def hls_to_rgb(hue, lightness, saturation):
+    '''
+    :param hue: 0-360
+    :param lightness:  0-100
+    :param saturation:  0-100
+    :return: list
+    '''
     return [i *255 for i in colorsys.hls_to_rgb(hue/360, lightness/100, saturation/100)]
 
 
@@ -25,7 +31,7 @@ class Sprite(pygame.sprite.Sprite):
         self.image = pygame.Surface((x, y))
         self.image.set_colorkey(white)
         self.image.fill(white)
-        self.log.info('##init##')
+        self.log.debug('##init##')
 
 
 class Group(pygame.sprite.Group):
@@ -67,7 +73,6 @@ class Ceiling:
         for i in range(x):
             for j in range(y):
                 if img.get_at((i,j))[0] == 255:
-                    print(i,j)
                     mnlx = min(mnlx, i)
                     mxlx = max(mxlx, i)
                     mnly = min(mnly, j)
@@ -159,7 +164,7 @@ class Star(Sprite):
 
         self.lamp = lamp
 
-        self.log.info('created star at {},{}'.format(self.lamp.x-starsize/2, lamp.y-starsize/2))
+        self.log.debug('created star at {},{}'.format(self.lamp.x-starsize/2, lamp.y-starsize/2))
 
     def rand_color(self):
         self.color = hls_to_rgb(randint(40, 60), randint(20, 100), randint(80, 100))
@@ -186,15 +191,15 @@ class StarrySky(Group):
 
         r = randint(0, 100)
         if r < 15:
-            self.log.info('add star')
+            self.log.debug('add star')
             l = randint(0, len(self.ceiling.lamps)-1)
             try:
                 self.add(Star(self.ceiling.lamps[l]))
             except:
-                self.log.info(l, len(self.ceiling.lamps))
+                self.log.debug(l, len(self.ceiling.lamps))
 
         elif r == 99:
-            self.log.info('add Shooting Star')
+            self.log.debug('add Shooting Star')
         Group.update(self)
 
     def draw(self, surface):
@@ -203,7 +208,7 @@ class StarrySky(Group):
         surface.blit(self.s, (0, 0))
 
     def end(self):
-        self.log.info('Fade Stars Out')
+        self.log.debug('Fade Stars Out')
         self.dalpha = -5
         pass
 
@@ -234,7 +239,7 @@ class RisingSun(Sprite):
         self.min_radius = min_radius
         self.radius = self.max_radius
 
-        self.log.info('initing sun')
+        self.log.debug('initing sun')
 
         #self.update_rect()
         self.height = 0
@@ -308,7 +313,7 @@ class Clouds(Group):
 
     def update(self):
         if self.wait == 0:
-            self.log.info('adding new cloud {}, {}, angry:{}'.format(self.starteast, self.gowest, self.angryness))
+            self.log.debug('adding new cloud {}, {}, angry:{}'.format(self.starteast, self.gowest, self.angryness))
             self.angryness += 0.05
 
             if self.angryness >= 1:
@@ -332,7 +337,7 @@ class Clouds(Group):
         surface.blit(self.s, (0, 0))
 
     def end(self):
-        self.log.info('Fade clouds Out')
+        self.log.debug('Fade clouds Out')
 
 class Cloud(Sprite):
     def __init__(self, location, angryness=0.5, radius=50):
@@ -462,6 +467,10 @@ class Bouy(Sprite):
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self)
         self.colour = choice('red', 'green')
+        def update(self):
+            self.image
+
+
 
 
 class Bird(Sprite):
