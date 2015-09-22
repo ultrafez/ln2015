@@ -289,15 +289,21 @@ class Raindrops(Group):
         Group.__init__(self)
         self.s = pygame.Surface(size, pygame.SRCALPHA)
         self.s.set_colorkey(white)
-        self.drop_frequency = 10
+        self.drop_frequency = 23
         self.count = 0
         self.s.set_alpha(100)
         self.alpha = 100
+        self.active_drops = 0
 
     def update(self):
-        if len(self) < 5 and self.count % self.drop_frequency == 0:
-            self.add(RainSplash(self.s.get_rect()))
-        self.count = self.count + 1
+        if self.count == 0:
+            self.count = self.drop_frequency
+            if self.active_drops < 5:
+                self.active_drops += 1
+        self.count -= 1
+        if len(self) < self.active_drops:
+            (w, h) = self.s.get_size()
+            self.add(RainSplash(random.randrange(w), random.randrange(h), 60))
         Group.update(self)
 
     def draw(self, surface):
@@ -307,35 +313,28 @@ class Raindrops(Group):
 
 
 class RainSplash(Sprite):
-    def __init__(self, area):
-        self.max_radius = 200
+    def __init__(self, x, y, size):
+        self.max_radius = size // 2
         self.log = logging.getLogger(self.__class__.__name__)
-        self.area = area
-        Sprite.__init__(self, area.width, area.height)
-        self.rect = self.image.get_rect()
-
+        Sprite.__init__(self, size, size)
+        self.rect = pygame.Rect(x - size // 2, y - size // 2, size, size)
         self.radius = 0
-        self.splash()
 
     def update(self):
-        self.radius = (self.radius + 3)
+        self.radius = (self.radius + 2)
         if self.radius >= self.max_radius:
-            self.splash()
+            self.kill()
+            return
 
         self.image.fill(white)
         c = hls_to_rgb(210,  (1+sin(self.radius/20))*49, 55)
         for i in range(self.radius):
             c = hls_to_rgb(210,  (1+sin(i/20))*49, 55)
-            pygame.draw.circle(self.image, c, (self.position[0], self.position[1]), self.radius-i)
+            pygame.draw.circle(self.image, c, (self.max_radius, self.max_radius), self.radius-i)
 
         self.image.set_alpha(255-(255*self.radius / self.max_radius))
 
         #pygame.draw.circle(self.image, c, (200,200), self.radius)
-
-    def splash(self):
-        self.radius = 0
-        self.position = (random.randrange(self.area.width), random.randrange(self.area.height))
-
 
         # draw expanding blue/white circle with alpha
         #self.height = 1/self.radius
