@@ -157,7 +157,7 @@ class Star(Sprite):
 
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        self.rect = (lamp.x-starsize/2, lamp.y-starsize/2, 2*starsize, 2*starsize)
+        self.rect = (lamp.x-starsize, lamp.y-starsize, 2*starsize, 2*starsize)
 
         self.color = white
         self.rand_color()
@@ -183,7 +183,6 @@ class StarrySky(Group):
 
         self.s = pygame.Surface(size)
         self.s.set_colorkey(white)
-        #self.s.
 
     def update(self):
         self.alpha = min(255, max(0, self.alpha + self.dalpha))
@@ -199,7 +198,7 @@ class StarrySky(Group):
                 self.log.debug(l, len(self.ceiling.lamps))
 
         elif r == 99:
-            self.log.debug('add Shooting Star')
+            self.log.warn('add Shooting Star')
         Group.update(self)
 
     def draw(self, surface):
