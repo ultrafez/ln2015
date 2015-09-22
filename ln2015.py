@@ -16,6 +16,9 @@ black = 0, 0, 0
 white = 255, 255, 255
 
 FPS = 24
+MADRIX_X = 132
+MADRIX_Y = 70
+SCALE = 8
 
 STARS_START = 0
 SUNRISE_START = FPS * 0
@@ -63,7 +66,8 @@ class LN2015:
         self.size = width, height
         self.lightmask = mask
         self.ceiling = Ceiling(self.width, self.height)
-        self.screen = pygame.display.set_mode(self.size)
+        self.screen = pygame.Surface(self.size)
+        self.display = pygame.display.set_mode((SCALE*MADRIX_X, SCALE*MADRIX_Y))
         self.clock = pygame.time.Clock()
         self.fps = fps
         self.objects = {}
@@ -211,6 +215,7 @@ class LN2015:
 
         if not self.lightmask:
             self.screen.blit(source=self.ceiling.mask, dest=(0, 0))
+        pygame.transform.scale(self.screen, self.display.get_size(), self.display)
         pygame.display.flip()
 
         if self.save_images:
@@ -229,17 +234,16 @@ class LN2015:
 
 if __name__ == "__main__":
     pygame.init()
-    pygame.display.set_mode((1056, 560), pygame.NOFRAME | pygame.DOUBLEBUF, 32)
 
     ## delete any files saved from previous runs
     [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
 
-    scene = LN2015('objects', 1056, 560, FPS, mask=True)
+    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, mask=True)
 
     alive = True
     while alive:
         alive = scene.run()
-    scene.save(1056, 560)
+    scene.save(MADRIX_X, MADRIX_Y)
     pygame.quit()
 
 
