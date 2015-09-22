@@ -139,8 +139,6 @@ class LN2015:
                 self.log.info('======= SUNRISE START =======')
                 radius = 80
 
-                south = self.ceiling.get_named_position('SOUTH')
-                east = self.ceiling.get_named_position('EAST')
                 self.objects['sun'] = RisingSun(400, 100, pygame.Rect(400, 330, 20, 150), radius, 40)
 
             # sunrise from 6AM to 12noon -> 0 to pi/2
