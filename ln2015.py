@@ -116,11 +116,7 @@ class LN2015:
             if event.type == pygame.QUIT:
                 return False
 
-
-        #background
-        #if self.ticks < self.fps * 100:
-            #self.background = hls_to_rgb(221, 77, min(self.ticks / 500 * 60, 60))
-        #self.background = black
+        self.background = black
         self.screen.fill( self.background )
 
         #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
