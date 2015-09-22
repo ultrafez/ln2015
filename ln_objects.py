@@ -53,10 +53,10 @@ class Ceiling:
     def readlamps(self, filename):
         #Generate array of lights fixture locations
         f = open(filename)
-        csv_f = csv.reader(f)
+        csv_f = csv.DictReader(f )
         for row in csv_f:
             #Adjusted XY coords -1 as Madrix counts from 1
-            self.lamps.append(Lamp(int(row[0]) - 1 ,int(row[1]) - 1))
+            self.lamps.append(Lamp(int(row['X']) - 1 ,int(row['Y']) - 1))
 
 
 class Star(Sprite):
