@@ -215,8 +215,14 @@ class LN2015:
         pygame.display.flip()
 
         if self.save_images:
-            savepath = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
-            pygame.image.save(self.screen, savepath)
+            savepath = os.path.join('images')
+
+            if not(os.path.isdir(savepath)):
+                os.mkdir(savepath)
+
+
+            savefile =   os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
+            pygame.image.save(self.screen, savefile)
 
         self.clock.tick(self.fps)
         return True
