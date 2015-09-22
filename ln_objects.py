@@ -150,27 +150,26 @@ class Ceiling:
 class Star(Sprite):
     #TODO: shooting star
 
-    def __init__(self, lamp, starsize=5):
+    def __init__(self, lamp):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, 2*starsize, 2*starsize)
-        self.starsize = starsize
+        Sprite.__init__(self, 1, 1)
 
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        self.rect = (lamp.x-starsize, lamp.y-starsize, 2*starsize, 2*starsize)
+        self.rect = (lamp.x, lamp.y, 1, 1)
 
         self.color = white
         self.rand_color()
 
         self.lamp = lamp
 
-        self.log.debug('created star at {},{}'.format(self.lamp.x-starsize/2, lamp.y-starsize/2))
+        self.log.debug('created star at {},{}'.format(lamp.x, lamp.y))
 
     def rand_color(self):
         self.color = hls_to_rgb(randint(40, 60), randint(20, 100), randint(80, 100))
 
     def update(self):
-        pygame.draw.circle(self.image, self.color, (self.starsize, self.starsize), self.starsize)
+        self.image.set_at((0,0),self.color)
 
 
 class StarrySky(Group):
