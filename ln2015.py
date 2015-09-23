@@ -3,9 +3,10 @@ import logging
 logging.basicConfig()
 
 from ln_objects import *
+import pygame
+from pygame.event import Event
 
 import subprocess as sp
-
 import platform
 import glob
 import sys
@@ -21,11 +22,16 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
-STARS_START = 0
+STARS_START_EVENT = Event(pygame.USEREVENT + 1,  {'objects': 'starrysky', 'method': 'start'})
+STARS_FADE_EVENT = Event(pygame.USEREVENT + 2, {'objects': 'starrysky', 'method': 'fade'})
+STARS_END_EVENT = Event(pygame.USEREVENT + 3, {'objects': 'starrysky', 'method': 'end'})
+
+
+STARS_START = FPS * 10
 SUNRISE_START = FPS * 0
 STARS_FADE = FPS * 30
 STARS_END = FPS * 40
-CLOUDS_START = FPS * 999 #
+CLOUDS_START = FPS * 40  #
 SUNRISE_END = FPS * 30
 LIGHTNING_START = FPS * 100
 RAIN_START = FPS * 20 # 110
@@ -95,44 +101,85 @@ class LN2015:
         '-an', # Tells FFMPEG not to expect any audio
         '-c:v', 'libx264',
         '-s',  '{}x{}'.format(x, y), # size of one frame
-
-        '{}.mp4'.format(self.title) ]
+        '{}.mp4'.format(self.title)
+        ]
 
         pipe = sp.call(command)
 
-
-
     def run(self):
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    return False
-                elif event.key == pygame.K_m:
-                    self.lightmask = not self.lightmask
 
-                elif event.key == pygame.K_s:
+            # Check for quit
+            if event.type == pygame.QUIT:
+                return False
+            #  Check Keys
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return False
+
+                elif event.key == pygame.K_QUESTION:
+                    self.log.info('''
+F1 - save video on exit
+F2 - view mask
+esc - quit
+''')
+
+                elif event.key == pygame.K_F1:
                     self.save_video = not(self.save_video)
                     self.log.warning('save video: {}'.format(self.save_video))
 
-            if event.type == pygame.QUIT:
-                return False
+                elif event.key == pygame.K_F2:
+                    self.lightmask = not self.lightmask
+
+                elif event.key == pygame.K_s:
+                    pygame.event.post(STARS_START_EVENT)
+
+                elif event.key == pygame.K_a:
+                    pygame.event.post(STARS_FADE_EVENT)
+
+                elif event.key == pygame.K_d:
+                    pygame.event.post(STARS_END_EVENT)
+
+
+            #  Check for animation events
+            if event == STARS_START_EVENT:
+                self.objects['starrynight'] = StarrySky((self.width, self.height), self.ceiling)
+                self.log.info('======= STARS START =======')
+
+            if event == STARS_FADE_EVENT:
+                try:
+                    self.objects['starrynight'].end()
+                    self.log.info('======= STARS FADE =======')
+                except KeyError:
+                    self.log.warning('stars isnt running')
+
+            if event == STARS_END_EVENT:
+                try:
+                    del(self.objects['starrynight'])
+                    self.log.info('======= STARS END =======')
+                except KeyError:
+                    self.log.warning('stars isnt running')
+
 
         self.background = black
         self.screen.fill( self.background )
 
-        #Scene 1  millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
-        if self.ticks < STARS_END:
-            if self.ticks == STARS_START:
-                self.log.info('======= STARS START =======')
-                self.objects['starrynight'] = StarrySky((self.width, self.height), self.ceiling)
 
 
-            self.objects['starrynight'].update()
-            self.objects['starrynight'].draw(self.screen)
-            if self.ticks == STARS_FADE:
-                self.objects['starrynight'].end()
-        elif self.ticks == STARS_END:
-            del(self.objects['starrynight'])
+
+
+        #Scene 1 millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
+
+        if self.ticks == STARS_START:
+            pygame.event.post(STARS_START_EVENT)
+
+        if self.ticks == STARS_END:
+            pygame.event.post(STARS_END_EVENT)
+
+        if self.ticks == STARS_FADE:
+            pygame.event.post(STARS_FADE_EVENT)
+       # elif self.ticks == STARS_END:
+       #     del(self.objects['starrynight'])
 
         #Scene 2  sunrise millis: 20000 -> 70000  Sunrise from south to full basking sun from in the center
         if (SUNRISE_START) <= self.ticks < (SUNRISE_END):
@@ -206,9 +253,17 @@ class LN2015:
             pass
 
 
+
+        if 'starrynight' in self.objects:
+            self.objects['starrynight'].update()
+            self.objects['starrynight'].draw(self.screen)
+
         self.ticks += 1
 
+
+
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
+
         pygame.display.flip()
 
         if self.save_images:
@@ -217,8 +272,7 @@ class LN2015:
             if not(os.path.isdir(savepath)):
                 os.mkdir(savepath)
 
-
-            savefile =   os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
+            savefile = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
             pygame.image.save(self.screen, savefile)
 
         self.clock.tick(self.fps)
