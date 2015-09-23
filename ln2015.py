@@ -26,41 +26,33 @@ STARS_START_EVENT = Event(pygame.USEREVENT + 1,  {'objects': 'starrysky', 'metho
 STARS_FADE_EVENT = Event(pygame.USEREVENT + 2, {'objects': 'starrysky', 'method': 'fade'})
 STARS_END_EVENT = Event(pygame.USEREVENT + 3, {'objects': 'starrysky', 'method': 'end'})
 
-
-STARS_START = FPS * 10
-SUNRISE_START = FPS * 0
-STARS_FADE = FPS * 30
-STARS_END = FPS * 40
-CLOUDS_START = FPS * 40  #
-SUNRISE_END = FPS * 30
-LIGHTNING_START = FPS * 100
-RAIN_START = FPS * 20 # 110
-LIGHTNING_END = FPS * 120
-WAVES_START = FPS * 125
-CLOUDS_END = FPS * 130
-RAIN_END = FPS * 40
-
-BOUYS_START = FPS * 180
-BIRDS_START = FPS * 220
-BOUYS_END = FPS * 260
-
-WAVES_END = FPS * 370
-FOREST_START = FPS * 380
-BIRDS_END = FPS * 410
-
-FOREST_END = FPS * 440
-SUNSET_START = FPS * 440
-
-CONSTALATION_START = FPS * 490
-SUNSET_END = FPS * 510
-
-NORTHERNLIGHTS_START = FPS * 520
-NORTHERNLIGHTS_END = FPS * 570
-
-MOONRISE_START = FPS * 30#550
-MOONRISE_END = FPS * 60
-CONSTALATION_END = FPS * 600
-
+STARS_START = FPS * 0 #Star Sounds and Crickets Start
+SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
+STARS_FADE = FPS * 30 #Stars and Crickets Fade End
+STARS_END = FPS * 40 #Star Sounds and Crickets End
+SUNRISE_END = FPS * 50 #Sun is Risen
+CLOUDS_START = FPS * 60 #Clouds and Wind Sounds Start
+LIGHTNING_START = FPS * 100 #Fork and Sheet Lightning Sounds Start
+RAIN_START = FPS * 110 #Rain Sounds Start
+LIGHTNING_END = FPS * 140 #Lightning Sounds End
+WAVES_START = FPS * 150 #Wave and Ambient Sounds Start
+CLOUDS_END = FPS * 180 #Clouds Fade End
+RAIN_END = FPS * 180 #Rain Sounds End
+BOUYS_START = FPS * 200 #Waves Ring Bouys to Make Sounds
+BIRDS_START = FPS * 220 #Sea Birds Sounds Start
+BOUYS_END = FPS * 240 #Buoys Sounds Stop
+WAVES_END = FPS * 260 #Waves Sounds End
+FOREST_START = FPS * 250 #Forest Sounds Starts
+BIRDS_END = FPS * 260 #Sea Birds Sounds End
+FOREST_END = FPS * 270 #Forest Sounds End
+SUNSET_START = FPS * 260 #
+CONSTALATION_START = FPS * 270 #Night Crickets and Star Sounds Start
+SUNSET_END = FPS * 280 #
+NORTHERNLIGHTS_START = FPS * 290 #Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
+NORTHERNLIGHTS_END = FPS * 310 #Northern Lights Sounds End
+MOONRISE_START = FPS * 300 #
+MOONRISE_END = FPS * 320 #
+CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
 
 class LN2015:
     log = logging.getLogger()
@@ -103,8 +95,9 @@ class LN2015:
         '-s',  '{}x{}'.format(x, y), # size of one frame
         '{}.mp4'.format(self.title)
         ]
-
         pipe = sp.call(command)
+
+
 
     def run(self):
         for event in pygame.event.get():
