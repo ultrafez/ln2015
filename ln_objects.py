@@ -3,7 +3,6 @@ import pygame
 import random 
 from random import randint
 import colorsys
-import xml.etree.ElementTree as ET
 from math import pi, sin, cos
 import math
 import os.path
@@ -372,7 +371,7 @@ class Bouy(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self)
-        self.colour = choice('red', 'green')
+        self.colour = random.choice('red', 'green')
         def update(self):
             self.image
 
@@ -424,15 +423,6 @@ class HSMoon(Sprite):
         screen.blit(self.image, (315,180))
 
         pass
-
-
-
-## todo
-#test pattern
-#single pixel
-#50:50
-#
-
 
 
 
