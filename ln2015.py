@@ -88,7 +88,7 @@ EVENT_TIMING = {
     50 * FPS: [SUNRISE_END_EVENT],  #Sun isRisen
     60 * FPS: [CLOUDS_START_EVENT],  #Clouds and Wind SoundsStart
     100 * FPS: [LIGHTNING_START_EVENT],  #Fork and Sheet Lightning SoundsStart
-    111 * FPS: [RAIN_START_EVENT],  #Rain SoundsStart
+    110 * FPS: [RAIN_START_EVENT],  #Rain SoundsStart
     140 * FPS: [LIGHTNING_END_EVENT],  #Lightning SoundsEnd
     150 * FPS: [WAVES_START_EVENT],  #Wave and Ambient SoundsStart
     180 * FPS: [CLOUDS_END_EVENT, RAIN_END_EVENT],  #Clouds FadeEnd #Rain SoundsEnd
@@ -106,10 +106,10 @@ EVENT_TIMING = {
 }
 
 # STARS_START = FPS * 0 #Star Sounds and Crickets Start
-SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
+#SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
 # STARS_FADE = FPS * 30 #Stars and Crickets Fade End
 # STARS_END = FPS * 40 #Star Sounds and Crickets End
-SUNRISE_END = FPS * 50 #Sun is Risen
+#SUNRISE_END = FPS * 50 #Sun is Risen
 # CLOUDS_START = FPS * 60 #Clouds and Wind Sounds Start
 # LIGHTNING_START = FPS * 100 #Fork and Sheet Lightning Sounds Start
 # RAIN_START = FPS * 110 #Rain Sounds Start
@@ -234,12 +234,22 @@ esc - quit
                     self.log.info('======= CLOUDS START =======')
 
                 if event == LIGHTNING_START_EVENT:
-                    self.objects[event.objects] = Lightning()
+                    position = pygame.Rect(0,0,30,30)
+                    position.center  = (0, 40)
+                    self.objects[event.objects] = SheetLighting(position)
                     self.log.info('======= LIGHTNING START =======')
 
                 if event == RAIN_START_EVENT:
                     self.objects[event.objects] = Raindrops(self.size)
                     self.log.info('======= RAIN START =======')
+
+
+
+        # # Scene 14 moon rise with hackspace logo.
+        # if (MOONRISE_START) <= self.ticks < (MOONRISE_END):
+        #     if self.ticks == MOONRISE_START:
+        #         self.objects['moon'] = HSMoon()
+
 
 
                 if event.method == 'END':
@@ -253,16 +263,8 @@ esc - quit
         self.screen.fill( self.background )
 
 
-
         for e in EVENT_TIMING.get(self.ticks, []):
             pygame.event.post(e)
-
-        # # Scene 14 moon rise with hackspace logo.
-        # if (MOONRISE_START) <= self.ticks < (MOONRISE_END):
-        #     if self.ticks == MOONRISE_START:
-        #         self.objects['moon'] = HSMoon()
-
-
 
         for object in self.objects.values():
             object.update()
