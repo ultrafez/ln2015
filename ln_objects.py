@@ -351,17 +351,42 @@ class Thunderstorm(Group):
         self.s.set_colorkey(white)
 
 class Lightning(Sprite):
-    def __init__(self):
+    def __init__(self, rect):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, 100, 100)
-
+        self.rect = rect
+        Sprite.__init__(self, rect.width, rect.height)
+        self.potential = 800
+        self.breakdown_potential = 800
+        self.image.set_colorkey(white)
 
     def update(self):
-        pass
+        self.image.fill(white)
 
+        self.potential += random.randint(0, 30)
+        if self.potential > self.breakdown_potential:
+            chance = random.randrange(100)
+            power = random.randint(self.potential, 3 * self.potential)
+
+            if chance < 80:
+                self.flash( power/ (3 * self.potential) )
+            self.potential = max(0, self.potential - power)
+
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect.topleft)
+
+    def flash(self, power):
+        """
+            draw a flash to the surface
+        """
+        pass
 
 class SheetLighting(Lightning):
     color = (255, 36, 251)
+    def flash(self, power):
+        self.log.info('flash power {}'.format(power*255))
+        self.image.set_alpha(power*255)
+        pygame.draw.circle(self.image, self.color, (int(self.rect.width/2), int(self.rect.height/2)), int(self.rect.height/2))
 
 
 class ForkLighting(Lightning):
