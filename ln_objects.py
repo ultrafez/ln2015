@@ -122,7 +122,7 @@ class StarrySky(Group):
 class RisingSun(Sprite):
     chordlengths = []
 
-    def __init__(self,x,y, path,  max_radius=200, min_radius=50, risetime = 500):
+    def __init__(self,x,y, path,  max_radius=200, min_radius=50, speed = 4):
         """
         path should be a pygame.Rect, sun will arc from bottom left to top right
         :param path: pygame.Rect
@@ -144,7 +144,7 @@ class RisingSun(Sprite):
         self.max_radius = max_radius
         self.min_radius = min_radius
         self.radius = self.max_radius
-        self.risetime = risetime
+        self.rate = speed
         self.time = 0
         self.log.debug('initing sun')
 
@@ -170,8 +170,7 @@ class RisingSun(Sprite):
 
     def update(self):
         self.time += 1
-        self.set_height(self.time / self.risetime)
-
+        self.set_height(min(1, 1000.0 / self.time*self.rate))
 
     def update_chords(self):
         #chordlengths
@@ -352,12 +351,18 @@ class Thunderstorm(Group):
         self.s.set_colorkey(white)
 
 class Lightning(Sprite):
-    def __init__(self, ):
+    def __init__(self):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, 100, 100)
+
+
+    def update(self):
+        pass
+
 
 class SheetLighting(Lightning):
     color = (255, 36, 251)
+
 
 class ForkLighting(Lightning):
     color = (246, 255, 71)
