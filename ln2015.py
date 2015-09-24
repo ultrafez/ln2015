@@ -22,41 +22,120 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
-STARS_START_EVENT = Event(pygame.USEREVENT + 1,  {'objects': 'starrysky', 'method': 'start'})
-STARS_FADE_EVENT = Event(pygame.USEREVENT + 2, {'objects': 'starrysky', 'method': 'fade'})
-STARS_END_EVENT = Event(pygame.USEREVENT + 3, {'objects': 'starrysky', 'method': 'end'})
+STARS_START_EVENT = Event(pygame.USEREVENT + 1, {'objects':'STARS', 'method':'STARS'}) #    Star Sounds and Crickets Start
+SUNRISE_START_EVENT = Event(pygame.USEREVENT + 2, {'objects':'SUNRISE', 'method':'START'}) #  Bird Song Dawn Chorus Start
+STARS_FADE_EVENT = Event(pygame.USEREVENT + 3, {'objects':'STARS', 'method':'FADE'}) #  Stars and Crickets Fade End
+STARS_END_EVENT = Event(pygame.USEREVENT + 4, {'objects':'STARS', 'method':'END'}) #  Star Sounds and Crickets End
+SUNRISE_END_EVENT = Event(pygame.USEREVENT + 5, {'objects':'SUNRISE', 'method':'END'}) #  Sun is Risen
+CLOUDS_START_EVENT = Event(pygame.USEREVENT + 6, {'objects':'CLOUDS', 'method':'START'}) #  Clouds and Wind Sounds Start
+LIGHTNING_START_EVENT = Event(pygame.USEREVENT + 7, {'objects':'LIGHTNING', 'method':'START'}) #  Fork and Sheet Lightning Sounds Start
+RAIN_START_EVENT = Event(pygame.USEREVENT + 8, {'objects':'RAIN', 'method':'START'}) #  Rain Sounds Start
+LIGHTNING_END_EVENT = Event(pygame.USEREVENT + 9, {'objects':'LIGHTNING', 'method':'END'}) #  Lightning Sounds End
+WAVES_START_EVENT = Event(pygame.USEREVENT + 10, {'objects':'WAVES', 'method':'START'}) #  Wave and Ambient Sounds Start
+CLOUDS_END_EVENT = Event(pygame.USEREVENT + 11, {'objects':'CLOUDS', 'method':'END'}) #  Clouds Fade End
+RAIN_END_EVENT = Event(pygame.USEREVENT + 12, {'objects':'RAIN', 'method':'END'}) #  Rain Sounds End
+BOUYS_START_EVENT = Event(pygame.USEREVENT + 13, {'objects':'BOUYS', 'method':'START'}) #  Waves Ring Bouys to Make Sounds
+BIRDS_START_EVENT = Event(pygame.USEREVENT + 14, {'objects':'BIRDS', 'method':'START'}) #  Sea Birds Sounds Start
+BOUYS_END_EVENT = Event(pygame.USEREVENT + 15, {'objects':'BOUYS', 'method':'END'}) #  Buoys Sounds Stop
+WAVES_END_EVENT = Event(pygame.USEREVENT + 16, {'objects':'WAVES', 'method':'END'}) #  Waves Sounds End
+FOREST_START_EVENT = Event(pygame.USEREVENT + 17, {'objects':'FOREST', 'method':'START'}) #  Forest Sounds Starts
+BIRDS_END_EVENT = Event(pygame.USEREVENT + 18, {'objects':'BIRDS', 'method':'END'}) #  Sea Birds Sounds End
+FOREST_END_EVENT = Event(pygame.USEREVENT + 19, {'objects':'FOREST', 'method':'END'}) #  Forest Sounds End
+SUNSET_START_EVENT = Event(pygame.USEREVENT + 20, {'objects':'SUNSET', 'method':'START'}) #
+CONSTALATION_START_EVENT = Event(pygame.USEREVENT + 21, {'objects':'CONSTALATION', 'method':'START'}) #  Night Crickets and Star Sounds Start
+SUNSET_END_EVENT = Event(pygame.USEREVENT + 22, {'objects':'SUNSET', 'method':'END'}) #
+NORTHERNLIGHTS_START_EVENT = Event(pygame.USEREVENT + 23, {'objects':'NORTHERNLIGHTS', 'method':'START'}) #  Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
+NORTHERNLIGHTS_END_EVENT = Event(pygame.USEREVENT + 24, {'objects':'NORTHERNLIGHTS', 'method':'END'}) #  Northern Lights Sounds End
+MOONRISE_START_EVENT = Event(pygame.USEREVENT + 25, {'objects':'MOONRISE', 'method':'START'}) #
+MOONRISE_END_EVENT = Event(pygame.USEREVENT + 26, {'objects':'MOONRISE', 'method':'END'}) #
+CONSTALATION_END_EVENT = Event(pygame.USEREVENT + 27, {'objects':'CONSTALATION', 'method':'END'}) #  Night Crickets and Star Sounds End
 
-STARS_START = FPS * 0 #Star Sounds and Crickets Start
-SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
-STARS_FADE = FPS * 30 #Stars and Crickets Fade End
-STARS_END = FPS * 40 #Star Sounds and Crickets End
-SUNRISE_END = FPS * 50 #Sun is Risen
-CLOUDS_START = FPS * 60 #Clouds and Wind Sounds Start
-LIGHTNING_START = FPS * 100 #Fork and Sheet Lightning Sounds Start
-RAIN_START = FPS * 110 #Rain Sounds Start
-LIGHTNING_END = FPS * 140 #Lightning Sounds End
-WAVES_START = FPS * 150 #Wave and Ambient Sounds Start
-CLOUDS_END = FPS * 180 #Clouds Fade End
-RAIN_END = FPS * 180 #Rain Sounds End
-BOUYS_START = FPS * 200 #Waves Ring Bouys to Make Sounds
-BIRDS_START = FPS * 220 #Sea Birds Sounds Start
-BOUYS_END = FPS * 240 #Buoys Sounds Stop
-WAVES_END = FPS * 260 #Waves Sounds End
-FOREST_START = FPS * 250 #Forest Sounds Starts
-BIRDS_END = FPS * 260 #Sea Birds Sounds End
-FOREST_END = FPS * 270 #Forest Sounds End
-SUNSET_START = FPS * 260 #
-CONSTALATION_START = FPS * 270 #Night Crickets and Star Sounds Start
-SUNSET_END = FPS * 280 #
-NORTHERNLIGHTS_START = FPS * 290 #Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
-NORTHERNLIGHTS_END = FPS * 310 #Northern Lights Sounds End
-MOONRISE_START = FPS * 300 #
-MOONRISE_END = FPS * 320 #
-CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
+key_triggers = {
+    pygame.K_q: STARS_START_EVENT,
+    pygame.K_a: SUNRISE_START_EVENT,
+    pygame.K_w: STARS_FADE_EVENT,
+    pygame.K_e: STARS_END_EVENT,
+    pygame.K_s: SUNRISE_END_EVENT,
+    pygame.K_z: CLOUDS_START_EVENT,
+    pygame.K_d: LIGHTNING_START_EVENT,
+    pygame.K_c: RAIN_START_EVENT,
+    pygame.K_f: LIGHTNING_END_EVENT,
+    pygame.K_g: WAVES_START_EVENT,
+    pygame.K_x: CLOUDS_END_EVENT,
+    pygame.K_v: RAIN_END_EVENT,
+    pygame.K_r: BOUYS_START_EVENT,
+    pygame.K_y: BIRDS_START_EVENT,
+    pygame.K_t: BOUYS_END_EVENT,
+    pygame.K_h: WAVES_END_EVENT,
+    pygame.K_b: FOREST_START_EVENT,
+    pygame.K_u: BIRDS_END_EVENT,
+    pygame.K_n: FOREST_END_EVENT,
+    pygame.K_j: SUNSET_START_EVENT,
+    pygame.K_i: CONSTALATION_START_EVENT,
+    pygame.K_k: SUNSET_END_EVENT,
+    pygame.K_p: NORTHERNLIGHTS_START_EVENT,
+    pygame.K_LEFTBRACKET: NORTHERNLIGHTS_END_EVENT,
+    pygame.K_m: MOONRISE_START_EVENT,
+    pygame.K_COMMA: MOONRISE_END_EVENT,
+    pygame.K_o: CONSTALATION_END_EVENT
+}
+
+
+EVENT_TIMING = {
+    0 * FPS: [STARS_START_EVENT],  #Star Sounds and CricketsStart
+    30 * FPS: [SUNRISE_START_EVENT, STARS_FADE_EVENT],  #Bird Song Dawn ChorusStart #Stars and Crickets FadeEnd
+    40 * FPS: [STARS_END_EVENT],  #Star Sounds and CricketsEnd
+    50 * FPS: [SUNRISE_END_EVENT],  #Sun isRisen
+    60 * FPS: [CLOUDS_START_EVENT],  #Clouds and Wind SoundsStart
+    100 * FPS: [LIGHTNING_START_EVENT],  #Fork and Sheet Lightning SoundsStart
+    110 * FPS: [RAIN_START_EVENT],  #Rain SoundsStart
+    140 * FPS: [LIGHTNING_END_EVENT],  #Lightning SoundsEnd
+    150 * FPS: [WAVES_START_EVENT],  #Wave and Ambient SoundsStart
+    180 * FPS: [CLOUDS_END_EVENT, RAIN_END_EVENT],  #Clouds FadeEnd #Rain SoundsEnd
+    200 * FPS: [BOUYS_START_EVENT],  #Waves Ring Bouys to MakeSounds
+    220 * FPS: [BIRDS_START_EVENT],  #Sea Birds SoundsStart
+    240 * FPS: [BOUYS_END_EVENT],  #Buoys SoundsStop
+    250 * FPS: [FOREST_START_EVENT],  #Forest SoundsStarts
+    260 * FPS: [WAVES_END_EVENT, SUNSET_START_EVENT, BIRDS_END_EVENT],  #Sea Birds SoundsEnd #Waves SoundsEnd
+    270 * FPS: [CONSTALATION_START_EVENT, FOREST_END_EVENT],  #Night Crickets and Star SoundsStart #Forest SoundsEnd
+    280 * FPS: [SUNSET_END_EVENT], #
+    290 * FPS: [NORTHERNLIGHTS_START_EVENT],  #Northern Lights Sounds Start (Ambient Sine Bass Notes?)
+    310 * FPS: [NORTHERNLIGHTS_END_EVENT],  #Northern Lights SoundsEnd
+    300 * FPS: [MOONRISE_START_EVENT], #
+    320 * FPS: [MOONRISE_END_EVENT, CONSTALATION_END_EVENT], #
+}
+
+# STARS_START = FPS * 0 #Star Sounds and Crickets Start
+# SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
+# STARS_FADE = FPS * 30 #Stars and Crickets Fade End
+# STARS_END = FPS * 40 #Star Sounds and Crickets End
+# SUNRISE_END = FPS * 50 #Sun is Risen
+# CLOUDS_START = FPS * 60 #Clouds and Wind Sounds Start
+# LIGHTNING_START = FPS * 100 #Fork and Sheet Lightning Sounds Start
+# RAIN_START = FPS * 110 #Rain Sounds Start
+# LIGHTNING_END = FPS * 140 #Lightning Sounds End
+# WAVES_START = FPS * 150 #Wave and Ambient Sounds Start
+# CLOUDS_END = FPS * 180 #Clouds Fade End
+# RAIN_END = FPS * 180 #Rain Sounds End
+# BOUYS_START = FPS * 200 #Waves Ring Bouys to Make Sounds
+# BIRDS_START = FPS * 220 #Sea Birds Sounds Start
+# BOUYS_END = FPS * 240 #Buoys Sounds Stop
+# WAVES_END = FPS * 260 #Waves Sounds End
+# FOREST_START = FPS * 250 #Forest Sounds Starts
+# BIRDS_END = FPS * 260 #Sea Birds Sounds End
+# FOREST_END = FPS * 270 #Forest Sounds End
+# SUNSET_START = FPS * 260 #
+# CONSTALATION_START = FPS * 270 #Night Crickets and Star Sounds Start
+# SUNSET_END = FPS * 280 #
+# NORTHERNLIGHTS_START = FPS * 290 #Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
+# NORTHERNLIGHTS_END = FPS * 310 #Northern Lights Sounds End
+# MOONRISE_START = FPS * 300 #
+# MOONRISE_END = FPS * 320 #
+# CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
 
 class LN2015:
     log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
 
     def __init__(self, title, width, height, fps, mask=True, save=False):
         self.title = title
@@ -124,136 +203,66 @@ esc - quit
                 elif event.key == pygame.K_F2:
                     self.lightmask = not self.lightmask
 
-                elif event.key == pygame.K_s:
-                    pygame.event.post(STARS_START_EVENT)
+                if event.key in key_triggers:
+                    pygame.event.post(key_triggers[event.key])
 
-                elif event.key == pygame.K_a:
-                    pygame.event.post(STARS_FADE_EVENT)
-
-                elif event.key == pygame.K_d:
-                    pygame.event.post(STARS_END_EVENT)
 
 
             #  Check for animation events
             if event == STARS_START_EVENT:
-                self.objects['starrynight'] = StarrySky((self.width, self.height), self.ceiling)
+                self.objects[event.objects] = StarrySky((self.width, self.height), self.ceiling)
                 self.log.info('======= STARS START =======')
 
             if event == STARS_FADE_EVENT:
                 try:
-                    self.objects['starrynight'].end()
+                    self.objects[event.objects].end()
                     self.log.info('======= STARS FADE =======')
                 except KeyError:
                     self.log.warning('stars isnt running')
 
-            if event == STARS_END_EVENT:
-                try:
-                    del(self.objects['starrynight'])
-                    self.log.info('======= STARS END =======')
-                except KeyError:
-                    self.log.warning('stars isnt running')
+            if event == SUNRISE_START_EVENT:
+                self.objects[event.objects] = RisingSun(400, 100, pygame.Rect(400, 330, 20, 150), 80, 40, risetime= SUNRISE_END - SUNRISE_START)
+                self.log.info('======= SUNRISE START =======')
 
+            if event == CLOUDS_START_EVENT:
+                self.objects[event.objects] = Clouds(self.size)
+                self.log.info('======= CLOUDS START =======')
+
+            if event == LIGHTNING_START_EVENT:
+                self.objects[event.objects] = Lightning()
+                self.log.info('======= LIGHTNING START =======')
+
+            if event == RAIN_START_EVENT:
+                self.objects[event.objects] = Raindrops(self.size)
+                self.log.info('======= RAIN START =======')
+
+
+            if event.type > pygame.USEREVENT and event.method == 'END':
+                try:
+                    del(self.objects[event.objects])
+                    self.log.info('======= {} END ======='.format(event.objects))
+                except KeyError:
+                    self.log.warning('{} isnt running'.format(event.objects))
 
         self.background = black
         self.screen.fill( self.background )
 
 
+        for e in EVENT_TIMING.get(self.ticks, []):
+            pygame.event.post(e)
 
-
-
-        #Scene 1 millis: 0 -> 40000  stars fading in and out, shooting stars in whites and yellows
-
-        if self.ticks == STARS_START:
-            pygame.event.post(STARS_START_EVENT)
-
-        if self.ticks == STARS_END:
-            pygame.event.post(STARS_END_EVENT)
-
-        if self.ticks == STARS_FADE:
-            pygame.event.post(STARS_FADE_EVENT)
-       # elif self.ticks == STARS_END:
-       #     del(self.objects['starrynight'])
-
-        #Scene 2  sunrise millis: 20000 -> 70000  Sunrise from south to full basking sun from in the center
-        if (SUNRISE_START) <= self.ticks < (SUNRISE_END):
-            if self.ticks == SUNRISE_START:
-                self.log.info('======= SUNRISE START =======')
-                radius = 80
-
-                self.objects['sun'] = RisingSun(400, 100, pygame.Rect(400, 330, 20, 150), radius, 40)
-
-            # sunrise from 6AM to 12noon -> 0 to pi/2
-
-            self.objects['sun'].set_height(((self.ticks - SUNRISE_START)/(SUNRISE_END - SUNRISE_START)))
-            self.objects['sun'].draw(self.screen)
-
-        elif self.ticks == SUNRISE_END:
-            del(self.objects['sun'])
-
-        # Scene 3: clouds  millis: 55 -> 100 white clouds come in from arms and pass, then getting denser, finally covering the sun and going grey.
-        if (CLOUDS_START) <= self.ticks < (CLOUDS_END):
-            if (self.ticks == CLOUDS_START):
-                self.objects['clouds'] = Clouds(self.size)
-                self.log.info('======= CLOUDS START =======')
-
-            self.objects['clouds'].update()
-            self.objects['clouds'].draw(self.screen)
-
-        # Scene 4: lightning sheet and fork lightning happen
-        if (LIGHTNING_START) < self.ticks < (LIGHTNING_END):
-            if (self.ticks == LIGHTNING_START):
-                self.objects['ligtning'] = Lightning()
-                self.log.info('======= LIGHTNING START =======')
-
-        # # Scene 5: rain  rain starts falling with blue splashes, to a torrent, flooding the ceiling
-        if (RAIN_START) <= self.ticks < (RAIN_END):
-            if RAIN_START == self.ticks:
-                self.objects['raindrops'] = Raindrops(self.size)
-            self.objects['raindrops'].update()
-            self.objects['raindrops'].draw(self.screen)
-
-        # Scene 6: wash     cresting waves crash over the ceiling
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 7: waves calm to a steady roll
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 8:   bouys clank, flashing green and red, as they rock.
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 9  birds come into shot, and takes off, flying inland to the forest,
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 10  forest fades into evening sunlight
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 11  sunset
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 12  northern lights
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
-        # # Scene 13  north star + night sky
-        # if (CLOUDS_START) < self.ticks < (CLOUDS_END):
-        #     pass
         # # Scene 14 moon rise with hackspace logo.
-        if (MOONRISE_START) <= self.ticks < (MOONRISE_END):
-            if self.ticks == MOONRISE_START:
-                self.objects['moon'] = HSMoon()
-
-            self.objects['moon'].update()
-            self.objects['moon'].draw(self.screen)
-            pass
+        # if (MOONRISE_START) <= self.ticks < (MOONRISE_END):
+        #     if self.ticks == MOONRISE_START:
+        #         self.objects['moon'] = HSMoon()
 
 
 
-        if 'starrynight' in self.objects:
-            self.objects['starrynight'].update()
-            self.objects['starrynight'].draw(self.screen)
+        for object in self.objects.values():
+            object.update()
+            object.draw(self.screen)
 
         self.ticks += 1
-
-
 
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
 

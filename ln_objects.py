@@ -122,7 +122,7 @@ class StarrySky(Group):
 class RisingSun(Sprite):
     chordlengths = []
 
-    def __init__(self,x,y, path,  max_radius=200, min_radius=50):
+    def __init__(self,x,y, path,  max_radius=200, min_radius=50, risetime = 500):
         """
         path should be a pygame.Rect, sun will arc from bottom left to top right
         :param path: pygame.Rect
@@ -144,7 +144,8 @@ class RisingSun(Sprite):
         self.max_radius = max_radius
         self.min_radius = min_radius
         self.radius = self.max_radius
-
+        self.risetime = risetime
+        self.time = 0
         self.log.debug('initing sun')
 
         #self.update_rect()
@@ -165,8 +166,12 @@ class RisingSun(Sprite):
             self.path.left + (self.height * self.path.width),
             (self.path.bottomleft[1]) - (self.height * self.path.height)
         )
-
         self.update_chords()
+
+    def update(self):
+        self.time += 1
+        self.set_height(self.time / self.risetime)
+
 
     def update_chords(self):
         #chordlengths
