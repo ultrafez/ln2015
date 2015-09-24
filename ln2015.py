@@ -22,7 +22,6 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
-
 STARS_START_EVENT = Event(pygame.USEREVENT, {'objects':'STARS', 'method':'START'}) #    Star Sounds and Crickets Start
 SUNRISE_START_EVENT = Event(pygame.USEREVENT, {'objects':'SUNRISE', 'method':'START'}) #  Bird Song Dawn Chorus Start
 STARS_FADE_EVENT = Event(pygame.USEREVENT, {'objects':'STARS', 'method':'FADE'}) #  Stars and Crickets Fade End
@@ -136,15 +135,20 @@ SUNRISE_END = FPS * 50 #Sun is Risen
 
 class LN2015:
     log = logging.getLogger()
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
 
-    def __init__(self, title, width, height, fps, mask=True, save=False):
+    def __init__(self, title, width, height, fps, maskonoff=True, save=False):
         self.title = title
         self.width = width
         self.height = height
         self.size = width, height
-        self.lightmask = mask
+        self.lightmask = maskonoff
         self.ceiling = Ceiling('Resources/pixels.csv')
+        self.mask = pygame.Surface(self.size)
+        self.mask.fill(black)
+        for x, y in self.ceiling.lamps:
+            self.mask.set_at((x,y),(255,255,255,0))
+        self.mask.set_colorkey((255,255,255))   
         self.screen = pygame.Surface(self.size)
         self.display = pygame.display.set_mode((SCALE*MADRIX_X, SCALE*MADRIX_Y))
         self.clock = pygame.time.Clock()
@@ -249,6 +253,7 @@ esc - quit
         self.screen.fill( self.background )
 
 
+
         for e in EVENT_TIMING.get(self.ticks, []):
             pygame.event.post(e)
 
@@ -264,7 +269,8 @@ esc - quit
             object.draw(self.screen)
 
         self.ticks += 1
-
+        if self.lightmask:
+            pygame.Surface.blit(self.screen, self.mask, (0,0))
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
 
         pygame.display.flip()
@@ -288,7 +294,7 @@ if __name__ == "__main__":
     ## delete any files saved from previous runs
     [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
 
-    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, mask=True)
+    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, maskonoff=True)
 
     alive = True
     while alive:
