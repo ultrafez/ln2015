@@ -121,86 +121,50 @@ class StarrySky(Group):
 
 
 class RisingSun(Sprite):
-    def __init__(self, path, max_radius=200, min_radius=50, speed=4):
-        """
-        path should be a pygame.Rect, sun will arc from bottom left to top right
-        :param path: pygame.Rect
-        :param max_radius:
-        :param min_radius:
-        :return:
-        """
+    def __init__(self, start, end, size, duration, fade):
+        super().__init__(size * 2, size * 2)
 
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, max_radius * 2, max_radius * 2)
-
-        self.chordlengths = []
-
-        # init rect
-
-        self.path = path
-        # self.x, self.y = x, y
+        self.start = start
+        self.move_x = end[0] - start[0]
+        self.move_y = end[1] - start[1]
+        self.size = size
         self.rect = self.image.get_rect()
-        # self.xy=pygame.Rect(x,y, )
+        self.duration = duration
+        self.fade = 1.0 / fade
 
-        self.max_radius = max_radius
-        self.min_radius = min_radius
-        self.radius = self.max_radius
-        self.rate = speed
-        self.time = 0
+        self.time = 0.0
+        self.alpha = 1.0
         self.log.debug('initing sun')
+        self.render()
 
-        # self.update_rect()
-        self.height = 0
-        self.update_chords()
-
-    def set_height(self, time):
-        """
-        float between 0 and 1
-        :param time:
-        :return:
-        """
-
-        self.height = sin(time * pi / 2)
-        self.set_radius(self.max_radius - (self.height * (self.max_radius - self.min_radius)))
-
-        self.rect.center = (
-            self.path.left + (self.height * self.path.width),
-            (self.path.bottomleft[1]) - (self.height * self.path.height)
-        )
-        self.update_chords()
+    def render(self):
+        p = pygame.PixelArray(self.image)
+        d2 = self.size * self.size
+        for x in range(p.shape[0]):
+            for y in range(p.shape[1]):
+                dx = self.size - x
+                dy = self.size - y
+                dist = dx * dx + dy * dy
+                if dist < d2:
+                    color = (255, 255 - int(255 * dist / d2), 0)
+                    print (color)
+                    p[x, y] = color
 
     def update(self):
-        self.time += 1
-        self.set_height(min(1, 1000.0 / self.time * self.rate))
-
-    def update_chords(self):
-        # chordlengths
-        self.chordlengths = [2 * math.pow(((self.radius * self.radius) - (d * d)), 0.5) for d in
-                             range(0, int(self.radius))]
-
-    def set_radius(self, r):
-        self.radius = r
-        self.update_chords()
-        self.rect.width = 2 * r
-        self.rect.height = 2 * r
-
-        self.image = pygame.Surface(self.rect.size)
-        self.image.set_colorkey(white)
-
-    # def update_rect(self):
-    #    self.rect = (self.x, self.y, self.radius*2, self.radius*2)
+        if self.time < 1.0:
+            self.time += 1.0 / self.duration
+            x = self.start[0] + self.time * self.move_x
+            y = self.start[1] + self.time * self.move_y
+            self.rect.center = (x, y)
+        else:
+            self.time = 1.0
+            self.alpha -= self.fade
+            if self.alpha < 0.0:
+                raise StopIteration
+            self.image.set_alpha(255 * self.alpha)
 
     def draw(self, surface):
-        self.image.fill(white)
-        for n, d in enumerate(self.chordlengths):
-            c = height_color(self.height)
-            pygame.draw.aaline(self.image, c, (self.radius - d / 2, (self.radius + n)),
-                               (((2 * self.radius) - (self.radius - d / 2)), (self.radius + n)), True)
-            c = height_color(self.height)
-            pygame.draw.aaline(self.image, c, (self.radius - d / 2, (self.radius - n)),
-                               (((2 * self.radius) - (self.radius - d / 2)), (self.radius - n)), True)
-
-        surface.blit(self.image, (self.rect.topleft[0], self.rect.topleft[1]))
+        surface.blit(self.image, self.rect)
 
 
 def height_color(height):

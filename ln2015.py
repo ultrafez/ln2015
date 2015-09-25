@@ -264,7 +264,7 @@ esc - quit
                     self.objects[event.objects] = HSMoon(1, 38, 4,-45, 0)
 
                 if event == SUNRISE_START_EVENT:
-                    self.objects[event.objects] = RisingSun(pygame.Rect(400, 330, 20, 150), 80, 40, speed=5)
+                    self.objects[event.objects] = RisingSun((66, 70), (66, 35), 10, FPS * 2, FPS)
                     self.log.info('======= SUNRISE START =======')
 
                 if event == CLOUDS_START_EVENT:
@@ -299,9 +299,15 @@ esc - quit
         for e in EVENT_TIMING.get(self.ticks, []):
             pygame.event.post(e)
 
-        for element in self.objects.values():
-            element.update()
-            element.draw(self.screen)
+        remove = []
+        for name, element in self.objects.items():
+            try:
+                element.update()
+                element.draw(self.screen)
+            except StopIteration:
+                remove.append(name)
+        for name in remove:
+            del self.objects[name]
 
         self.ticks += 1
         if self.lightmask:
