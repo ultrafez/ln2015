@@ -39,8 +39,9 @@ class Sprite(pygame.sprite.Sprite):
 class Group(pygame.sprite.Group):
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
-        pygame.sprite.Group.__init__(self)
-
+        super().__init__()
+    def end(self):
+        raise StopIteration
 
 Lamp = collections.namedtuple("Lamp", ["x", "y"])
 
@@ -85,7 +86,7 @@ class Star(Sprite):
 
 
 class StarrySky(Group):
-    def __init__(self, size, ceiling):
+    def __init__(self, size):
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
         self.lamps = ceiling.lamps
@@ -114,7 +115,7 @@ class StarrySky(Group):
         Group.draw(self, self.s)
         surface.blit(self.s, (0, 0))
 
-    def end(self):
+    def fade(self):
         self.log.debug('Fade Stars Out')
         self.dalpha = -5
         pass
@@ -453,3 +454,8 @@ class HSMoon(Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
+
+    def end(self):
+        raise StopIteration
+
+ceiling = Ceiling('Resources/pixels.csv')

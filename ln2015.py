@@ -23,121 +23,69 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
-HS_SPIN_START_EVENT = Event(pygame.USEREVENT, {'objects': 'HS', 'method': 'START'})  # start HS logo spinning in the egg
-STARS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'STARS', 'method': 'START'})  # Star Sounds and Crickets Start
-SUNRISE_START_EVENT = Event(pygame.USEREVENT, {'objects': 'SUNRISE', 'method': 'START'})  # Bird Song Dawn Chorus Start
-STARS_FADE_EVENT = Event(pygame.USEREVENT, {'objects': 'STARS', 'method': 'FADE'})  # Stars and Crickets Fade End
-STARS_END_EVENT = Event(pygame.USEREVENT, {'objects': 'STARS', 'method': 'END'})  # Star Sounds and Crickets End
-SUNRISE_END_EVENT = Event(pygame.USEREVENT, {'objects': 'SUNRISE', 'method': 'END'})  # Sun is Risen
-CLOUDS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'CLOUDS', 'method': 'START'})  # Clouds and Wind Sounds Start
-# Fork and Sheet Lightning Sounds Start
-LIGHTNING_START_EVENT = Event(pygame.USEREVENT, {'objects': 'LIGHTNING', 'method': 'START'})
-RAIN_START_EVENT = Event(pygame.USEREVENT, {'objects': 'RAIN', 'method': 'START'})  # Rain Sounds Start
-LIGHTNING_END_EVENT = Event(pygame.USEREVENT, {'objects': 'LIGHTNING', 'method': 'END'})  # Lightning Sounds End
-WAVES_START_EVENT = Event(pygame.USEREVENT, {'objects': 'WAVES', 'method': 'START'})  # Wave and Ambient Sounds Start
-CLOUDS_END_EVENT = Event(pygame.USEREVENT, {'objects': 'CLOUDS', 'method': 'END'})  # Clouds Fade End
-RAIN_END_EVENT = Event(pygame.USEREVENT, {'objects': 'RAIN', 'method': 'END'})  # Rain Sounds End
-BOUYS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'BOUYS', 'method': 'START'})  # Waves Ring Bouys to Make Sounds
-BIRDS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'BIRDS', 'method': 'START'})  # Sea Birds Sounds Start
-BOUYS_END_EVENT = Event(pygame.USEREVENT, {'objects': 'BOUYS', 'method': 'END'})  # Buoys Sounds Stop
-WAVES_END_EVENT = Event(pygame.USEREVENT, {'objects': 'WAVES', 'method': 'END'})  # Waves Sounds End
-FOREST_START_EVENT = Event(pygame.USEREVENT, {'objects': 'FOREST', 'method': 'START'})  # Forest Sounds Starts
-BIRDS_END_EVENT = Event(pygame.USEREVENT, {'objects': 'BIRDS', 'method': 'END'})  # Sea Birds Sounds End
-FOREST_END_EVENT = Event(pygame.USEREVENT, {'objects': 'FOREST', 'method': 'END'})  # Forest Sounds End
-SUNSET_START_EVENT = Event(pygame.USEREVENT, {'objects': 'SUNSET', 'method': 'START'})  #
-CONSTALATION_START_EVENT = Event(pygame.USEREVENT, {'objects': 'CONSTALATION', 'method': 'START'})
-# Night Crickets and Star Sounds Start
-SUNSET_END_EVENT = Event(pygame.USEREVENT, {'objects': 'SUNSET', 'method': 'END'})  #
-#  Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
-NORTHERNLIGHTS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'NORTHERNLIGHTS', 'method': 'START'})
-# Northern Lights Sounds End
-NORTHERNLIGHTS_END_EVENT = Event(pygame.USEREVENT, {'objects': 'NORTHERNLIGHTS', 'method': 'END'})
-MOONRISE_START_EVENT = Event(pygame.USEREVENT, {'objects': 'MOONRISE', 'method': 'START'})  #
-MOONRISE_END_EVENT = Event(pygame.USEREVENT, {'objects': 'MOONRISE', 'method': 'END'})  #
-CONSTALATION_END_EVENT = Event(pygame.USEREVENT,
-                               {'objects': 'CONSTALATION', 'method': 'END'})  # Night Crickets and Star Sounds End
+class Trigger(object):
+    """Create a new Group, or run a method on an existing group"""
+    def __init__(self, scene, method=None, args=()):
+        self.scene = scene
+        self.method = method
+        self.args = args
+    def __repr__(self):
+        return "Trigger(%s,%s,%s)" % (self.scene, self.method, self.args)
 
 key_triggers = {
-    pygame.K_q: STARS_START_EVENT,
-    pygame.K_a: SUNRISE_START_EVENT,
-    pygame.K_w: STARS_FADE_EVENT,
-    pygame.K_e: STARS_END_EVENT,
-    pygame.K_s: SUNRISE_END_EVENT,
-    pygame.K_z: CLOUDS_START_EVENT,
-    pygame.K_d: LIGHTNING_START_EVENT,
-    pygame.K_c: RAIN_START_EVENT,
-    pygame.K_f: LIGHTNING_END_EVENT,
-    pygame.K_g: WAVES_START_EVENT,
-    pygame.K_x: CLOUDS_END_EVENT,
-    pygame.K_v: RAIN_END_EVENT,
-    pygame.K_r: BOUYS_START_EVENT,
-    pygame.K_y: BIRDS_START_EVENT,
-    pygame.K_t: BOUYS_END_EVENT,
-    pygame.K_h: WAVES_END_EVENT,
-    pygame.K_b: FOREST_START_EVENT,
-    pygame.K_u: BIRDS_END_EVENT,
-    pygame.K_n: FOREST_END_EVENT,
-    pygame.K_j: SUNSET_START_EVENT,
-    pygame.K_i: CONSTALATION_START_EVENT,
-    pygame.K_k: SUNSET_END_EVENT,
-    pygame.K_p: NORTHERNLIGHTS_START_EVENT,
-    pygame.K_LEFTBRACKET: NORTHERNLIGHTS_END_EVENT,
-    pygame.K_m: MOONRISE_START_EVENT,
-    pygame.K_COMMA: MOONRISE_END_EVENT,
-    pygame.K_o: CONSTALATION_END_EVENT
+    pygame.K_q: Trigger("STARS"),
+    pygame.K_a: Trigger("SUNRISE"),
+    pygame.K_w: Trigger("STARS", "fade"),
+    pygame.K_e: Trigger("STARS", "end"),
+    pygame.K_z: Trigger("CLOUDS"),
+    pygame.K_d: Trigger("LIGHTNING"),
+    pygame.K_c: Trigger("RAIN"),
+    pygame.K_f: Trigger("LIGHTNING", "end"),
+    pygame.K_g: Trigger("WAVES"),
+    pygame.K_x: Trigger("CLOUDS", "end"),
+    pygame.K_v: Trigger("RAIN", "end"),
+    pygame.K_r: Trigger("BOUYS"),
+    pygame.K_y: Trigger("BIRDS"),
+    pygame.K_t: Trigger("BOUYS", "end"),
+    pygame.K_h: Trigger("WAVES", "end"),
+    pygame.K_b: Trigger("FOREST"),
+    pygame.K_u: Trigger("BIRDS", "end"),
+    pygame.K_n: Trigger("FOREST", "end"),
+    pygame.K_j: Trigger("SUNSET"),
+    pygame.K_i: Trigger("CONSTALATION"),
+    pygame.K_k: Trigger("SUNSET", "end"),
+    pygame.K_p: Trigger("NORTHERNLIGHTS"),
+    pygame.K_LEFTBRACKET: Trigger("NORTHERNLIGHTS", "end"),
+    pygame.K_m: Trigger("MOONRISE"),
+    pygame.K_COMMA: Trigger("MOONRISE", "end"),
+    pygame.K_o: Trigger("CONSTALATION", "end")
 }
 
 EVENT_TIMING = {
-    0 * FPS: [STARS_START_EVENT, HS_SPIN_START_EVENT],  # Star Sounds and CricketsStart
-    30 * FPS: [SUNRISE_START_EVENT, STARS_FADE_EVENT],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-    40 * FPS: [STARS_END_EVENT],  # Star Sounds and CricketsEnd
-    50 * FPS: [SUNRISE_END_EVENT],  # Sun isRisen
-    60 * FPS: [CLOUDS_START_EVENT],  # Clouds and Wind SoundsStart
-    100 * FPS: [LIGHTNING_START_EVENT],  # Fork and Sheet Lightning SoundsStart
-    110 * FPS: [RAIN_START_EVENT],  # Rain SoundsStart
-    140 * FPS: [LIGHTNING_END_EVENT],  # Lightning SoundsEnd
-    150 * FPS: [WAVES_START_EVENT],  # Wave and Ambient SoundsStart
-    180 * FPS: [CLOUDS_END_EVENT, RAIN_END_EVENT],  # Clouds FadeEnd #Rain SoundsEnd
-    200 * FPS: [BOUYS_START_EVENT],  # Waves Ring Bouys to MakeSounds
-    220 * FPS: [BIRDS_START_EVENT],  # Sea Birds SoundsStart
-    240 * FPS: [BOUYS_END_EVENT],  # Buoys SoundsStop
-    250 * FPS: [FOREST_START_EVENT],  # Forest SoundsStarts
-    260 * FPS: [WAVES_END_EVENT, SUNSET_START_EVENT, BIRDS_END_EVENT],  # Sea Birds SoundsEnd #Waves SoundsEnd
-    270 * FPS: [CONSTALATION_START_EVENT, FOREST_END_EVENT],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
-    280 * FPS: [SUNSET_END_EVENT],  #
-    290 * FPS: [NORTHERNLIGHTS_START_EVENT],  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
-    310 * FPS: [NORTHERNLIGHTS_END_EVENT],  # Northern Lights SoundsEnd
-    300 * FPS: [MOONRISE_START_EVENT],  #
-    320 * FPS: [MOONRISE_END_EVENT, CONSTALATION_END_EVENT],  #
-}
+    0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart
+    30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
+    40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
+    60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
+    100 * FPS: [Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
+        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),  
+        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(77, 38, 50, 15),))],
 
-# STARS_START = FPS * 0 #Star Sounds and Crickets Start
-# SUNRISE_START = FPS * 30 #Bird Song Dawn Chorus Start
-# STARS_FADE = FPS * 30 #Stars and Crickets Fade End
-# STARS_END = FPS * 40 #Star Sounds and Crickets End
-# SUNRISE_END = FPS * 50 #Sun is Risen
-# CLOUDS_START = FPS * 60 #Clouds and Wind Sounds Start
-# LIGHTNING_START = FPS * 100 #Fork and Sheet Lightning Sounds Start
-# RAIN_START = FPS * 110 #Rain Sounds Start
-# LIGHTNING_END = FPS * 140 #Lightning Sounds End
-# WAVES_START = FPS * 150 #Wave and Ambient Sounds Start
-# CLOUDS_END = FPS * 180 #Clouds Fade End
-# RAIN_END = FPS * 180 #Rain Sounds End
-# BOUYS_START = FPS * 200 #Waves Ring Bouys to Make Sounds
-# BIRDS_START = FPS * 220 #Sea Birds Sounds Start
-# BOUYS_END = FPS * 240 #Buoys Sounds Stop
-# WAVES_END = FPS * 260 #Waves Sounds End
-# FOREST_START = FPS * 250 #Forest Sounds Starts
-# BIRDS_END = FPS * 260 #Sea Birds Sounds End
-# FOREST_END = FPS * 270 #Forest Sounds End
-# SUNSET_START = FPS * 260 #
-# CONSTALATION_START = FPS * 270 #Night Crickets and Star Sounds Start
-# SUNSET_END = FPS * 280 #
-# NORTHERNLIGHTS_START = FPS * 290 #Northern Lights Sounds Start (Ambient Sine Bass Notes ?)
-# NORTHERNLIGHTS_END = FPS * 310 #Northern Lights Sounds End
-# MOONRISE_START = FPS * 300 #
-# MOONRISE_END = FPS * 320 #
-# CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
+    110 * FPS: [Trigger("RAIN")],  # Rain SoundsStart
+    140 * FPS: [Trigger("LIGHTNING", "end")],  # Lightning SoundsEnd
+    150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
+    180 * FPS: [Trigger("CLOUDS", "end"), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
+    200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
+    220 * FPS: [Trigger("BIRDS")],  # Sea Birds SoundsStart
+    240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
+    250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
+    260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
+    270 * FPS: [Trigger("CONSTALATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
+    280 * FPS: [Trigger("SUNSET", "end")],  #
+    290 * FPS: [Trigger("NORTHERNLIGHTS")],  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
+    310 * FPS: [Trigger("NORTHERNLIGHTS", "end")],  # Northern Lights SoundsEnd
+    300 * FPS: [Trigger("MOONRISE")],  #
+    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTALATION", "end")],  #
+}
 
 location_rect ={
     'bubbleroof': pygame.Rect((50, 34), (28, 33)),
@@ -154,6 +102,16 @@ location_rect ={
 }
 
 
+scene_data = {
+    "STARS":(StarrySky, ((MADRIX_X, MADRIX_Y),)),
+    "HS_SPIN":(HSMoon,(1, 38, 4,-45, 0)),
+    "SUNRISE":(RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
+    "CLOUDS":(Clouds, ((MADRIX_X, MADRIX_Y),)),
+    "LIGHTNING":(Thunderstorm, ()),
+    "RAIN":(Raindrops, ((MADRIX_X, MADRIX_Y),)),
+    "MOONRISE":(HSMoon, ()),
+}
+
 class LN2015:
     log = logging.getLogger('LN2015')
 
@@ -163,10 +121,9 @@ class LN2015:
         self.height = height
         self.size = (width, height)
         self.lightmask = maskonoff
-        self.ceiling = Ceiling('Resources/pixels.csv')
         self.mask = pygame.Surface(self.size)
         self.mask.fill((0x30, 0x30, 0x30, 0xff))
-        for x, y in self.ceiling.lamps:
+        for x, y in ceiling.lamps:
             self.mask.set_at((x, y), (255, 255, 255, 0))
         self.mask.set_colorkey((255, 255, 255))
         self.screen = pygame.Surface(self.size)
@@ -202,6 +159,32 @@ class LN2015:
                    '{}.mp4'.format(self.title)
                    ]
         sp.call(command)
+
+    def run_trigger(self, trigger):
+        if trigger.method is None:
+            try:
+                d = scene_data[trigger.scene]
+            except:
+                self.log.error("No such scene '%s'" % trigger.scene)
+                return
+            try:
+                self.objects[trigger.scene] = d[0](*d[1])
+            except:
+                self.log.error("Failed to create '%s' %s" % (trigger.scene, d))
+                raise
+        else:
+            try:
+                try:
+                    o = self.objects[trigger.scene]
+                except KeyError:
+                    self.log.error("Scene '%s' not running")
+                    return
+                getattr(o, trigger.method)(*trigger.args)
+            except StopIteration:
+                del self.objects[trigger.scene]
+            except:
+                self.log.error("%s" % (trigger))
+                raise
 
     def run(self):
         for event in pygame.event.get():
@@ -248,67 +231,15 @@ esc - quit
                     self.log.info('Mask: {}'.format(self.lightmask))
 
                 if event.key in key_triggers:
-                    pygame.event.post(key_triggers[event.key])
                     self.log.debug('pressed {}'.format(event.key))
+                    self.run_trigger(key_triggers[event.key])
 
-            # Check for animation events
-            if event.type == pygame.USEREVENT:
-                if event == STARS_START_EVENT:
-                    self.objects[event.objects] = StarrySky((self.width, self.height), self.ceiling)
-                    self.log.info('======= STARS START =======')
-
-                if event == STARS_FADE_EVENT:
-                    try:
-                        self.objects[event.objects].end()
-                        self.log.info('======= STARS FADE =======')
-                    except KeyError:
-                        self.log.warning('stars isnt running')
-
-                if event == HS_SPIN_START_EVENT:
-                    self.objects[event.objects] = HSMoon(1, 38, 4,-45, 0)
-
-                if event == SUNRISE_START_EVENT:
-                    self.objects[event.objects] = RisingSun((66, 70), (66, 35), 10, FPS * 2, FPS)
-                    self.log.info('======= SUNRISE START =======')
-
-                if event == CLOUDS_START_EVENT:
-                    self.objects[event.objects] = Clouds(self.size)
-                    self.log.info('======= CLOUDS START =======')
-
-                if event == LIGHTNING_START_EVENT:
-
-                    storm = Thunderstorm()
-                    position = pygame.Rect(0, 0, 30, 30)
-                    position.center = (33, 44)
-                    storm.add_sheet(position)
-
-                    position = pygame.Rect(77, 38, 50, 15)
-                    storm.add_sheet(position)
-                    self.objects[event.objects] = storm
-
-                    self.log.info('======= LIGHTNING START =======')
-
-                if event == RAIN_START_EVENT:
-                    self.objects[event.objects] = Raindrops(self.size)
-                    self.log.info('======= RAIN START =======')
-
-                if event == MOONRISE_START_EVENT:
-                    self.objects[event.objects] = HSMoon()
-
-                    self.log.info('======= MOONRISE START =======')
-
-                if event.method == 'END':
-                    try:
-                        del (self.objects[event.objects])
-                        self.log.info('======= {} END ======='.format(event.objects))
-                    except KeyError:
-                        self.log.warning('{} isnt running'.format(event.objects))
 
         self.background = black
         self.screen.fill(self.background)
 
         for e in EVENT_TIMING.get(self.ticks, []):
-            pygame.event.post(e)
+            self.run_trigger(e)
 
         remove = []
         for name, element in self.objects.items():
