@@ -317,11 +317,16 @@ class RainSplash(Sprite):
 
 
 class Thunderstorm(Group):
-    def __init__(self, size):
+    def __init__(self):
+
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
-        self.s = pygame.Surface(size)
-        self.s.set_colorkey(white)
+
+    def add_sheet(self, r):
+        self.add(SheetLighting(r))
+
+    def add_fork(self, r):
+        self.add(ForkLighting(r))
 
 
 class Lightning(Sprite):
@@ -361,8 +366,7 @@ class SheetLighting(Lightning):
     def flash(self, power):
         self.log.info('flash power {}'.format(power * 255))
         self.image.set_alpha(power * 255)
-        pygame.draw.circle(self.image, self.color, (int(self.rect.width / 2), int(self.rect.height / 2)),
-                           int(self.rect.height / 2))
+        self.image.fill(self.color)
 
 
 class ForkLighting(Lightning):

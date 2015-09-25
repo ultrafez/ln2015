@@ -15,6 +15,7 @@ import sys
 __author__ = 'ajtag'
 
 black = 0, 0, 0
+red = 255, 0, 0
 white = 255, 255, 255
 
 FPS = 24
@@ -139,14 +140,17 @@ EVENT_TIMING = {
 # CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
 
 location_rect ={
+    'bubbleroof': pygame.Rect((50, 34), (28, 33)),
+
     'island': pygame.Rect((0, 41), (12, 7)),
-    'left outer arm': pygame.Rect((16, 324), (18, 8)),
+    'left outer arm': pygame.Rect((16, 42), (18, 8)),
+    'left inner arm': pygame.Rect((33, 37), (16, 13)),
+
     'top outer arm': pygame.Rect((61, 1), (0, 18)),
     'top inner arm': pygame.Rect((60, 18), (9, 18)),
-    'left inner arm': pygame.Rect((33, 37), (16, 13)),
+
     'right inner arm': pygame.Rect((77, 40), (21, 12)),
     'right outer arm': pygame.Rect((97, 40), (28, 12)),
-    'bubbleroof': pygame.Rect((50, 34), (28, 33))
 }
 
 
@@ -272,9 +276,16 @@ esc - quit
                     self.log.info('======= CLOUDS START =======')
 
                 if event == LIGHTNING_START_EVENT:
+
+                    storm = Thunderstorm()
                     position = pygame.Rect(0, 0, 30, 30)
-                    position.center = (0, 40)
-                    self.objects[event.objects] = SheetLighting(position)
+                    position.center = (33, 44)
+                    storm.add_sheet(position)
+
+                    position = pygame.Rect(77, 38, 50, 15)
+                    storm.add_sheet(position)
+                    self.objects[event.objects] = storm
+
                     self.log.info('======= LIGHTNING START =======')
 
                 if event == RAIN_START_EVENT:
