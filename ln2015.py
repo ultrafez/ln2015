@@ -139,8 +139,7 @@ EVENT_TIMING = {
 
 
 class LN2015:
-    log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    log = logging.getLogger('LN2015')
 
     def __init__(self, title, width, height, fps, maskonoff=True, save=False):
         self.title = title
@@ -289,6 +288,8 @@ esc - quit
 
 
 if __name__ == "__main__":
+
+    logging.getLogger().setLevel(logging.INFO)
     pygame.init()
 
     # delete any files saved from previous runs
