@@ -137,6 +137,17 @@ EVENT_TIMING = {
 # MOONRISE_END = FPS * 320 #
 # CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
 
+location_rect ={
+    'island': pygame.Rect((0, 40), (19, 9)),
+    'left outer arm': pygame.Rect((16, 324), (18, 8)),
+    'top outer arm': pygame.Rect((61, 1), (0, 18)),
+    'top inner arm': pygame.Rect((60, 18), (9, 18)),
+    'left inner arm': pygame.Rect((33, 37), (16, 13)),
+    'right inner arm': pygame.Rect((77, 40), (21, 12)),
+    'right outer arm': pygame.Rect((97, 40), (28, 12)),
+    'bubbleroof': pygame.Rect((50, 37), (28, 34))
+}
+
 
 class LN2015:
     log = logging.getLogger('LN2015')
@@ -149,7 +160,7 @@ class LN2015:
         self.lightmask = maskonoff
         self.ceiling = Ceiling('Resources/pixels.csv')
         self.mask = pygame.Surface(self.size)
-        self.mask.fill(black)
+        self.mask.fill((0x30, 0x30, 0x30, 0xff))
         for x, y in self.ceiling.lamps:
             self.mask.set_at((x, y), (255, 255, 255, 0))
         self.mask.set_colorkey((255, 255, 255))
@@ -163,6 +174,8 @@ class LN2015:
         self.log.info('done init')
         self.save_images = True
         self.save_video = save
+        self.cursor_loc_start = None
+        self.cursor_loc_end = None
 
     def save(self, x, y, ffmpeg_exe=None):
         if not self.save_video:
@@ -191,6 +204,25 @@ class LN2015:
             # Check for quit
             if event.type == pygame.QUIT:
                 return False
+            # Mouse events
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # left start click
+                self.cursor_loc_start = event.pos
+
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left finish click
+                self.cursor_loc_end = event.pos
+                print(
+                    math.floor(self.cursor_loc_start[0]/SCALE),
+                    math.floor(self.cursor_loc_start[1]/SCALE),
+                    math.floor((event.pos[0] - self.cursor_loc_start[0])/SCALE),
+                    math.floor((event.pos[1] - self.cursor_loc_start[1])/SCALE)
+                )
+
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  # right click
+                self.cursor_loc_start = None
+                self.cursor_loc_end = None
+
+
+
             # Check Keys
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -209,6 +241,7 @@ esc - quit
 
                 elif event.key == pygame.K_F2:
                     self.lightmask = not self.lightmask
+                    self.log.info('Mask: {}'.format(self.lightmask))
 
                 if event.key in key_triggers:
                     pygame.event.post(key_triggers[event.key])
@@ -271,6 +304,17 @@ esc - quit
         if self.lightmask:
             pygame.Surface.blit(self.screen, self.mask, (0, 0))
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
+
+        if self.cursor_loc_start is not None:
+
+            i, j = self.cursor_loc_start
+            if self.cursor_loc_end is None:
+                x, y = pygame.mouse.get_pos()
+            else:
+                x, y = self.cursor_loc_end
+
+            r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
+            pygame.draw.rect(self.display, (255, 0, 0), r, 2)
 
         pygame.display.flip()
 
