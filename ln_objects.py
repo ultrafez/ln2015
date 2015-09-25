@@ -1,29 +1,29 @@
 __author__ = 'ajtag'
-import pygame
-import random 
+import random
 from random import randint
 import colorsys
-from math import pi, sin, cos
+from math import pi, sin
 import math
 import os.path
 import csv
 import collections
-
 import logging
 
+import pygame
+
 white = 255, 255, 255
-transparent = 255,255,255,0
+transparent = 255, 255, 255, 0
 black = 0, 0, 0
 
 
 def hls_to_rgb(hue, lightness, saturation):
-    '''
+    """
     :param hue: 0-360
     :param lightness:  0-100
     :param saturation:  0-100
     :return: list
-    '''
-    return [i *255 for i in colorsys.hls_to_rgb(hue/360, lightness/100, saturation/100)]
+    """
+    return [i * 255 for i in colorsys.hls_to_rgb(hue / 360, lightness / 100, saturation / 100)]
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -44,22 +44,23 @@ class Group(pygame.sprite.Group):
 
 Lamp = collections.namedtuple("Lamp", ["x", "y"])
 
+
 class Ceiling:
     def __init__(self, filename):
         self.lamps = []
         self.readlamps(filename)
 
     def readlamps(self, filename):
-        #Generate array of lights fixture locations
+        # Generate array of lights fixture locations
         f = open(filename)
-        csv_f = csv.DictReader(f )
+        csv_f = csv.DictReader(f)
         for row in csv_f:
-            #Adjusted XY coords -1 as Madrix counts from 1
-            self.lamps.append(Lamp(int(row['X']) - 1 ,int(row['Y']) - 1))
+            # Adjusted XY coordinates -1 as Madrix counts from 1
+            self.lamps.append(Lamp(int(row['X']) - 1, int(row['Y']) - 1))
 
 
 class Star(Sprite):
-    #TODO: shooting star
+    # TODO: shooting star
 
     def __init__(self, lamp):
         # Call the parent class (Sprite) constructor
@@ -80,7 +81,7 @@ class Star(Sprite):
         self.color = hls_to_rgb(randint(40, 60), randint(20, 100), randint(80, 100))
 
     def update(self):
-        self.image.set_at((0,0),self.color)
+        self.image.set_at((0, 0), self.color)
 
 
 class StarrySky(Group):
@@ -120,9 +121,7 @@ class StarrySky(Group):
 
 
 class RisingSun(Sprite):
-    chordlengths = []
-
-    def __init__(self,x,y, path,  max_radius=200, min_radius=50, speed = 4):
+    def __init__(self, path, max_radius=200, min_radius=50, speed=4):
         """
         path should be a pygame.Rect, sun will arc from bottom left to top right
         :param path: pygame.Rect
@@ -132,14 +131,16 @@ class RisingSun(Sprite):
         """
 
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, max_radius*2, max_radius*2)
+        Sprite.__init__(self, max_radius * 2, max_radius * 2)
 
-        ## init rect
+        self.chordlengths = []
+
+        # init rect
 
         self.path = path
-        #self.x, self.y = x, y
+        # self.x, self.y = x, y
         self.rect = self.image.get_rect()
-        #self.xy=pygame.Rect(x,y, )
+        # self.xy=pygame.Rect(x,y, )
 
         self.max_radius = max_radius
         self.min_radius = min_radius
@@ -148,7 +149,7 @@ class RisingSun(Sprite):
         self.time = 0
         self.log.debug('initing sun')
 
-        #self.update_rect()
+        # self.update_rect()
         self.height = 0
         self.update_chords()
 
@@ -159,7 +160,7 @@ class RisingSun(Sprite):
         :return:
         """
 
-        self.height = sin(time * pi/2)
+        self.height = sin(time * pi / 2)
         self.set_radius(self.max_radius - (self.height * (self.max_radius - self.min_radius)))
 
         self.rect.center = (
@@ -170,43 +171,48 @@ class RisingSun(Sprite):
 
     def update(self):
         self.time += 1
-        self.set_height(min(1, 1000.0 / self.time*self.rate))
+        self.set_height(min(1, 1000.0 / self.time * self.rate))
 
     def update_chords(self):
-        #chordlengths
-        self.chordlengths = [2 * math.pow(((self.radius * self.radius) - (d * d)), 0.5) for d in range(0, int(self.radius))]
+        # chordlengths
+        self.chordlengths = [2 * math.pow(((self.radius * self.radius) - (d * d)), 0.5) for d in
+                             range(0, int(self.radius))]
 
     def set_radius(self, r):
         self.radius = r
         self.update_chords()
-        self.rect.width = 2*r
-        self.rect.height = 2*r
+        self.rect.width = 2 * r
+        self.rect.height = 2 * r
 
         self.image = pygame.Surface(self.rect.size)
         self.image.set_colorkey(white)
 
-    #def update_rect(self):
+    # def update_rect(self):
     #    self.rect = (self.x, self.y, self.radius*2, self.radius*2)
 
     def draw(self, surface):
         self.image.fill(white)
         for n, d in enumerate(self.chordlengths):
             c = height_color(self.height)
-            pygame.draw.aaline(self.image, c, (self.radius - d/2, (self.radius + n)), (((2*self.radius) - (self.radius-d/2)), (self.radius + n)), True)
+            pygame.draw.aaline(self.image, c, (self.radius - d / 2, (self.radius + n)),
+                               (((2 * self.radius) - (self.radius - d / 2)), (self.radius + n)), True)
             c = height_color(self.height)
-            pygame.draw.aaline(self.image, c, (self.radius - d/2, (self.radius - n)), (((2*self.radius) - (self.radius-d/2)), (self.radius - n)), True)
+            pygame.draw.aaline(self.image, c, (self.radius - d / 2, (self.radius - n)),
+                               (((2 * self.radius) - (self.radius - d / 2)), (self.radius - n)), True)
 
         surface.blit(self.image, (self.rect.topleft[0], self.rect.topleft[1]))
 
+
 def height_color(height):
-        # height = 0:pi * 4/6
-        height_hue = int(sin(height) * 40 * 6 / 4/ pi)
-        height_lum = int(sin(height) * 6/4/pi*50)
+    # height = 0:pi * 4/6
+    height_hue = int(sin(height) * 40 * 6 / 4 / pi)
+    height_lum = int(sin(height) * 6 / 4 / pi * 50)
 
-        height_hue = (350 + randint(height_hue, (height_hue+20))) % 360
-        height_lum = 40 + randint(height_lum, height_lum+10)
+    height_hue = (350 + randint(height_hue, (height_hue + 20))) % 360
+    height_lum = 40 + randint(height_lum, height_lum + 10)
 
-        return hls_to_rgb(height_hue, height_lum, randint(90, 100))
+    return hls_to_rgb(height_hue, height_lum, randint(90, 100))
+
 
 class Clouds(Group):
     def __init__(self, size):
@@ -232,12 +238,13 @@ class Clouds(Group):
             self.starteast = abs(self.starteast - 800)
             self.gowest = -self.gowest
 
-            self.add(Cloud(pygame.Rect(self.starteast, 250, self.gowest, 0), angryness=self.angryness, radius=randint(1,5)*40))
+            self.add(Cloud(pygame.Rect(self.starteast, 250, self.gowest, 0), angryness=self.angryness,
+                           radius=randint(1, 5) * 40))
 
         if self.wait == 100:
             self.wait = 0
         else:
-            self.wait +=1
+            self.wait += 1
 
         Group.update(self)
 
@@ -249,6 +256,7 @@ class Clouds(Group):
     def end(self):
         self.log.debug('Fade clouds Out')
 
+
 class Cloud(Sprite):
     def __init__(self, location, angryness=0.5, radius=50):
         """
@@ -259,6 +267,8 @@ class Cloud(Sprite):
         :return:
         """
         # Call the parent class (Sprite) constructor
+        self.colour = None
+        self.angryness = None
         self.set_angryness(angryness)
         self.radius = radius
         self.rect = location
@@ -267,7 +277,7 @@ class Cloud(Sprite):
     def update(self):
         self.rect.move_ip((self.rect.width, self.rect.height))
         self.image.fill(white)
-        pygame.draw.circle(self.image, self.colour, (self.radius,self.radius), self.radius)
+        pygame.draw.circle(self.image, self.colour, (self.radius, self.radius), self.radius)
 
     def set_angryness(self, angryness):
         """
@@ -282,9 +292,9 @@ class Cloud(Sprite):
 
         h = 194
         s = randint(10, 20)
-        l = 90 -(angryness * 80)
+        l = 90 - (angryness * 80)
 
-        self.colour = hls_to_rgb(h,l,s)
+        self.colour = hls_to_rgb(h, l, s)
 
 
 class Raindrops(Group):
@@ -330,25 +340,25 @@ class RainSplash(Sprite):
             return
 
         self.image.fill(white)
-        c = hls_to_rgb(210,  (1+sin(self.radius/20))*49, 55)
+        # c = hls_to_rgb(210, (1 + sin(self.radius / 20)) * 49, 55)
         for i in range(self.radius):
-            c = hls_to_rgb(210,  (1+sin(i/20))*49, 55)
-            pygame.draw.circle(self.image, c, (self.max_radius, self.max_radius), self.radius-i)
+            c = hls_to_rgb(210, (1 + sin(i / 20)) * 49, 55)
+            pygame.draw.circle(self.image, c, (self.max_radius, self.max_radius), self.radius - i)
 
-        self.image.set_alpha(255-(255*self.radius / self.max_radius))
+        self.image.set_alpha(255 - (255 * self.radius / self.max_radius))
 
-        #pygame.draw.circle(self.image, c, (200,200), self.radius)
-
+        # pygame.draw.circle(self.image, c, (200,200), self.radius)
         # draw expanding blue/white circle with alpha
-        #self.height = 1/self.radius
+        # self.height = 1/self.radius
 
 
 class Thunderstorm(Group):
-    def __init__(self, size, ceiling):
+    def __init__(self, size):
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
         self.s = pygame.Surface(size)
         self.s.set_colorkey(white)
+
 
 class Lightning(Sprite):
     def __init__(self, rect):
@@ -368,9 +378,8 @@ class Lightning(Sprite):
             power = random.randint(self.potential, 3 * self.potential)
 
             if chance < 80:
-                self.flash( power/ (3 * self.potential) )
+                self.flash(power / (3 * self.potential))
             self.potential = max(0, self.potential - power)
-
 
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)
@@ -381,60 +390,70 @@ class Lightning(Sprite):
         """
         pass
 
+
 class SheetLighting(Lightning):
     color = (255, 36, 251)
+
     def flash(self, power):
-        self.log.info('flash power {}'.format(power*255))
-        self.image.set_alpha(power*255)
-        pygame.draw.circle(self.image, self.color, (int(self.rect.width/2), int(self.rect.height/2)), int(self.rect.height/2))
+        self.log.info('flash power {}'.format(power * 255))
+        self.image.set_alpha(power * 255)
+        pygame.draw.circle(self.image, self.color, (int(self.rect.width / 2), int(self.rect.height / 2)),
+                           int(self.rect.height / 2))
 
 
 class ForkLighting(Lightning):
     color = (246, 255, 71)
 
+
 class Splash(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class Wave(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class Bouy(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, 1, 1)
         self.colour = random.choice('red', 'green')
-        def update(self):
-            self.image
 
-
+    def update(self):
+        pass
+        # self.image
 
 
 class Bird(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class ForestCanopey(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class Aurora(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class Constallation(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self)
+        Sprite.__init__(self, x, y)
+
 
 class HSMoon(Sprite):
-    #uri = 'Resources/hackspace_logo_large.svg'
+    # uri = 'Resources/hackspace_logo_large.svg'
 
     """
     164.201, 327.203
@@ -444,20 +463,16 @@ class HSMoon(Sprite):
 
 
     """
-    def __init__(self, x = 300, y=300, r=150):
-        Sprite.__init__(self, x,y)
+
+    def __init__(self, x=300, y=300, r=150):
+        Sprite.__init__(self, x, y)
         # Call the parent class (Sprite) constructor
-        self.x, self.y, self.radius = x,y,r
-        self.hlogo = pygame.image.load(os.path.join('Resources','hackspace_logo_large.png'))
+        self.x, self.y, self.radius = x, y, r
+        self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
 
         self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
-        self.image.blit(self.hlogo, (0,0))
-        #self.logo = pygame.image.load(self.uri)
+        self.image.blit(self.hlogo, (0, 0))
+        # self.logo = pygame.image.load(self.uri)
 
     def draw(self, screen):
-        screen.blit(self.image, (315,180))
-
-        pass
-
-
-
+        screen.blit(self.image, (315, 180))

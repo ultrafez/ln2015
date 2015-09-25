@@ -146,7 +146,7 @@ class LN2015:
         self.title = title
         self.width = width
         self.height = height
-        self.size = width, height
+        self.size = (width, height)
         self.lightmask = maskonoff
         self.ceiling = Ceiling('Resources/pixels.csv')
         self.mask = pygame.Surface(self.size)
@@ -229,7 +229,7 @@ esc - quit
                         self.log.warning('stars isnt running')
 
                 if event == SUNRISE_START_EVENT:
-                    self.objects[event.objects] = RisingSun(400, 100, pygame.Rect(400, 330, 20, 150), 80, 40, speed=5)
+                    self.objects[event.objects] = RisingSun(pygame.Rect(400, 330, 20, 150), 80, 40, speed=5)
                     self.log.info('======= SUNRISE START =======')
 
                 if event == CLOUDS_START_EVENT:
