@@ -22,6 +22,7 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
+HS_SPIN_START_EVENT = Event(pygame.USEREVENT, {'objects': 'HS', 'method': 'START'})  # start HS logo spinning in the egg
 STARS_START_EVENT = Event(pygame.USEREVENT, {'objects': 'STARS', 'method': 'START'})  # Star Sounds and Crickets Start
 SUNRISE_START_EVENT = Event(pygame.USEREVENT, {'objects': 'SUNRISE', 'method': 'START'})  # Bird Song Dawn Chorus Start
 STARS_FADE_EVENT = Event(pygame.USEREVENT, {'objects': 'STARS', 'method': 'FADE'})  # Stars and Crickets Fade End
@@ -86,7 +87,7 @@ key_triggers = {
 }
 
 EVENT_TIMING = {
-    0 * FPS: [STARS_START_EVENT],  # Star Sounds and CricketsStart
+    0 * FPS: [STARS_START_EVENT, HS_SPIN_START_EVENT],  # Star Sounds and CricketsStart
     30 * FPS: [SUNRISE_START_EVENT, STARS_FADE_EVENT],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
     40 * FPS: [STARS_END_EVENT],  # Star Sounds and CricketsEnd
     50 * FPS: [SUNRISE_END_EVENT],  # Sun isRisen
@@ -138,14 +139,14 @@ EVENT_TIMING = {
 # CONSTALATION_END = FPS * 320 #Night Crickets and Star Sounds End
 
 location_rect ={
-    'island': pygame.Rect((0, 40), (19, 9)),
+    'island': pygame.Rect((0, 41), (12, 7)),
     'left outer arm': pygame.Rect((16, 324), (18, 8)),
     'top outer arm': pygame.Rect((61, 1), (0, 18)),
     'top inner arm': pygame.Rect((60, 18), (9, 18)),
     'left inner arm': pygame.Rect((33, 37), (16, 13)),
     'right inner arm': pygame.Rect((77, 40), (21, 12)),
     'right outer arm': pygame.Rect((97, 40), (28, 12)),
-    'bubbleroof': pygame.Rect((50, 37), (28, 34))
+    'bubbleroof': pygame.Rect((50, 34), (28, 33))
 }
 
 
@@ -207,6 +208,7 @@ class LN2015:
             # Mouse events
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # left start click
                 self.cursor_loc_start = event.pos
+                self.cursor_loc_end = None
 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left finish click
                 self.cursor_loc_end = event.pos
@@ -220,8 +222,6 @@ class LN2015:
             if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  # right click
                 self.cursor_loc_start = None
                 self.cursor_loc_end = None
-
-
 
             # Check Keys
             if event.type == pygame.KEYDOWN:
@@ -259,6 +259,9 @@ esc - quit
                         self.log.info('======= STARS FADE =======')
                     except KeyError:
                         self.log.warning('stars isnt running')
+
+                if event == HS_SPIN_START_EVENT:
+                    self.objects[event.objects] = HSMoon(1, 38, 4,-45, 0)
 
                 if event == SUNRISE_START_EVENT:
                     self.objects[event.objects] = RisingSun(pygame.Rect(400, 330, 20, 150), 80, 40, speed=5)
@@ -305,14 +308,13 @@ esc - quit
             pygame.Surface.blit(self.screen, self.mask, (0, 0))
         pygame.transform.scale(self.screen, self.display.get_size(), self.display)
 
+        #  draw a red rect overlay to the display surface by dragging the mouse
         if self.cursor_loc_start is not None:
-
             i, j = self.cursor_loc_start
             if self.cursor_loc_end is None:
                 x, y = pygame.mouse.get_pos()
             else:
                 x, y = self.cursor_loc_end
-
             r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
             pygame.draw.rect(self.display, (255, 0, 0), r, 2)
 

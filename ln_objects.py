@@ -464,15 +464,24 @@ class HSMoon(Sprite):
 
     """
 
-    def __init__(self, x=300, y=300, r=150):
-        Sprite.__init__(self, x, y)
+    def __init__(self, x=300, y=300, r=150, angle=0, angle_delta=-3):
+        Sprite.__init__(self, r*2, r*2)
+        self.rect = pygame.Rect(x, y, r*2, r*2)
+        self.angle = angle
+        self.dangle = angle_delta
         # Call the parent class (Sprite) constructor
         self.x, self.y, self.radius = x, y, r
         self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
+        self.scale_factor = r * 2 / self.hlogo.get_height()
 
-        self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
-        self.image.blit(self.hlogo, (0, 0))
+        #self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
+        #self.image.blit(self.hlogo, (0, 0))
         # self.logo = pygame.image.load(self.uri)
 
+    def update(self):
+        self.image.fill((255,0,0))
+        self.angle += self.dangle
+        self.image = pygame.transform.rotozoom(self.hlogo, self.angle, self.scale_factor)
+
     def draw(self, screen):
-        screen.blit(self.image, (315, 180))
+        screen.blit(self.image, self.rect.topleft)
