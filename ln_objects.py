@@ -10,6 +10,7 @@ import collections
 import logging
 
 import pygame
+import numpy as np
 
 white = 255, 255, 255
 transparent = 255, 255, 255, 0
@@ -179,87 +180,105 @@ def height_color(height):
     return hls_to_rgb(height_hue, height_lum, randint(90, 100))
 
 
-class Clouds(Group):
-    def __init__(self, size):
-        self.log = logging.getLogger(self.__class__.__name__)
-        Group.__init__(self)
-        self.s = pygame.Surface(size)
-        self.s.set_colorkey(white)
-
-        self.angryness = 0
-        self.starteast = 0
-        self.gowest = 2
-
-        self.wait = 0
+class Cloud(pygame.sprite.Sprite):
+    def __init__(self, max_x, y, size):
+        super().__init__()
+        self.x = float(-size)
+        self.y = y
+        self.size = size
+        self.bitmap = np.zeros((size + 1, size))
+        self.max_x = max_x
+        for x in range(size):
+            for y in range(size):
+                self.bitmap[x, y] = random.random()
 
     def update(self):
-        if self.wait == 0:
-            self.log.debug('adding new cloud {}, {}, angry:{}'.format(self.starteast, self.gowest, self.angryness))
-            self.angryness += 0.05
+        self.x += 0.2
+        if self.x > self.max_x:
+            self.kill()
 
-            if self.angryness >= 1:
-                self.angryness = 0
+    def draw(self, alpha):
+        """Anti-aliased x transparency mask"""
+        x_start = int(self.x)
+        if self.x < 0:
+            x_start -= 1
+        x_offset = self.x - x_start
+        for y in range(self.size):
+            py = y + self.y
+            if py < 0 or py >= alpha.shape[1]:
+                continue
+            for x in range(self.size + 1):
+                px = x_start + x
+                if px < 0 or px >= alpha.shape[0]:
+                    continue
+                a = self.bitmap[x - 1, y]
+                b = self.bitmap[x, y]
+                val = int(255 * (b + (a - b) * x_offset))
+                orig = alpha[px, py]
+                alpha[px, py] = min(orig + val, 255)
 
-            self.starteast = abs(self.starteast - 800)
-            self.gowest = -self.gowest
+class Clouds(Group):
+    def __init__(self, size, cloud_size, initial_prob, final_prob, ramp_duration):
+        super().__init__()
+        self.cloud_size = cloud_size
+        self.s = pygame.Surface(size, flags = pygame.SRCALPHA)
+        self.color = (255, 255, 255, 0)
+        self.max_x = size[0]
+        self.max_y = size[1] - cloud_size
+        self.time = 0
+        self.initial_prob = initial_prob
+        self.final_prob = final_prob
+        self.ramp_duration = ramp_duration
+        self.grey_time = None
+        self.black_time = None
 
-            self.add(Cloud(pygame.Rect(self.starteast, 250, self.gowest, 0), angryness=self.angryness,
-                           radius=randint(1, 5) * 40))
+    def grey(self, duration):
+        self.grey_time = duration
+        self.time = 0
 
-        if self.wait == 100:
-            self.wait = 0
-        else:
-            self.wait += 1
-
-        Group.update(self)
+    def update(self):
+        if self.grey is not None:
+            if self.time > self.ramp_duration:
+                p = self.final_prob
+            else:
+                a = self.initial_prob
+                b = self.final_prob
+                p = a + (b - a) * self.time / self.ramp_duration
+            while True:
+                p -= random.random()
+                if p < 0.0:
+                    break
+                self.add(Cloud(self.max_x, random.randrange(self.max_y), self.cloud_size))
+        self.time += 1
+        super().update()
 
     def draw(self, surface):
-        self.s.fill(white)
-        Group.draw(self, self.s)
+        skip = False
+        if self.black_time is not None:
+            if self.time > self.grey_time:
+                raise StopIteration
+            p = self.time / self.grey_time
+            shade = int(128 * (1.0 - p))
+            surface.fill((shade, shade, shade, 255))
+            return
+        if self.grey_time is not None:
+            if self.time >= self.grey_time:
+                surface.fill((128, 128, 128, 255))
+                return
+            p = self.time / self.grey_time
+            alpha = int(255 * p)
+            shade = 255 - alpha // 2
+            self.color = (shade, shade, shade, alpha)
+        self.s.fill(self.color)
+        a = pygame.surfarray.pixels_alpha(self.s)
+        for cloud in self:
+            cloud.draw(a)
+        del a
         surface.blit(self.s, (0, 0))
 
-    def end(self):
-        self.log.debug('Fade clouds Out')
-
-
-class Cloud(Sprite):
-    def __init__(self, location, angryness=0.5, radius=50):
-        """
-
-        :param location: pygame.Rect
-        :param angryness: float
-        :param radius: int
-        :return:
-        """
-        # Call the parent class (Sprite) constructor
-        self.colour = None
-        self.angryness = None
-        self.set_angryness(angryness)
-        self.radius = radius
-        self.rect = location
-        Sprite.__init__(self, self.radius * 2, self.radius * 2)
-
-    def update(self):
-        self.rect.move_ip((self.rect.width, self.rect.height))
-        self.image.fill(white)
-        pygame.draw.circle(self.image, self.colour, (self.radius, self.radius), self.radius)
-
-    def set_angryness(self, angryness):
-        """
-        value between 0 and 1
-        :param angryness:float
-        :return:
-        """
-        if angryness < 0 or angryness > 1:
-            raise ValueError
-
-        self.angryness = angryness
-
-        h = 194
-        s = randint(10, 20)
-        l = 90 - (angryness * 80)
-
-        self.colour = hls_to_rgb(h, l, s)
+    def end(self, duration):
+        self.black_time = duration
+        self.time = 0
 
 
 class Raindrops(Group):

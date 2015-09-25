@@ -66,6 +66,7 @@ EVENT_TIMING = {
     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
     40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
     60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
+    90 * FPS:[Trigger("CLOUDS", "grey", (FPS * 20,))],
     100 * FPS: [Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
         Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),  
         Trigger("LIGHTNING", "add_sheet", (pygame.Rect(77, 38, 50, 15),))],
@@ -73,7 +74,7 @@ EVENT_TIMING = {
     110 * FPS: [Trigger("RAIN")],  # Rain SoundsStart
     140 * FPS: [Trigger("LIGHTNING", "end")],  # Lightning SoundsEnd
     150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
-    180 * FPS: [Trigger("CLOUDS", "end"), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
+    180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
     200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
     220 * FPS: [Trigger("BIRDS")],  # Sea Birds SoundsStart
     240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
@@ -106,7 +107,7 @@ scene_data = {
     "STARS":(StarrySky, ((MADRIX_X, MADRIX_Y),)),
     "HS_SPIN":(HSMoon,(1, 38, 4,-45, 0)),
     "SUNRISE":(RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
-    "CLOUDS":(Clouds, ((MADRIX_X, MADRIX_Y),)),
+    "CLOUDS":(Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING":(Thunderstorm, ()),
     "RAIN":(Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "MOONRISE":(HSMoon, ()),
