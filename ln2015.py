@@ -11,6 +11,7 @@ import subprocess as sp
 import platform
 import glob
 import sys
+import argparse
 
 __author__ = 'ajtag'
 
@@ -113,15 +114,19 @@ scene_data = {
     "MOONRISE":(HSMoon, ()),
 }
 
+def clean_images():
+    # delete any files saved from previous runs
+    [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
+
 class LN2015:
     log = logging.getLogger('LN2015')
 
-    def __init__(self, title, width, height, fps, maskonoff=True, save=False):
+    def __init__(self, title, width, height, fps, args):
         self.title = title
         self.width = width
         self.height = height
         self.size = (width, height)
-        self.lightmask = maskonoff
+        self.lightmask = args.mask
         self.mask = pygame.Surface(self.size)
         self.mask.fill((0x30, 0x30, 0x30, 0xff))
         for x, y in ceiling.lamps:
@@ -135,10 +140,13 @@ class LN2015:
         self.ticks = 0
         self.background = black
         self.log.info('done init')
-        self.save_images = True
-        self.save_video = save
+        self.save_images = args.save_images
+        self.save_video = args.save_video
         self.cursor_loc_start = None
         self.cursor_loc_end = None
+        self.warp = int(FPS * args.warp)
+        if self.warp != 0 and (self.save_images or self.save_video):
+            raise Exception("Can not save when warping")
 
     def save(self, x, y, ffmpeg_exe=None):
         if not self.save_video:
@@ -242,34 +250,37 @@ esc - quit
         for e in EVENT_TIMING.get(self.ticks, []):
             self.run_trigger(e)
 
+        draw = (self.ticks >= self.warp) or ((self.ticks % FPS == 0))
         remove = []
         for name, element in self.objects.items():
             try:
                 element.update()
-                element.draw(self.screen)
+                if draw:
+                    element.draw(self.screen)
             except StopIteration:
                 remove.append(name)
         for name in remove:
             del self.objects[name]
 
         self.ticks += 1
-        if self.lightmask:
-            pygame.Surface.blit(self.screen, self.mask, (0, 0))
-        pygame.transform.scale(self.screen, self.display.get_size(), self.display)
+        if draw:
+            if self.lightmask:
+                pygame.Surface.blit(self.screen, self.mask, (0, 0))
+            pygame.transform.scale(self.screen, self.display.get_size(), self.display)
 
-        #  draw a red rect overlay to the display surface by dragging the mouse
-        if self.cursor_loc_start is not None:
-            i, j = self.cursor_loc_start
-            if self.cursor_loc_end is None:
-                x, y = pygame.mouse.get_pos()
-            else:
-                x, y = self.cursor_loc_end
-            r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
-            pygame.draw.rect(self.display, (255, 0, 0), r, 2)
+            #  draw a red rect overlay to the display surface by dragging the mouse
+            if self.cursor_loc_start is not None:
+                i, j = self.cursor_loc_start
+                if self.cursor_loc_end is None:
+                    x, y = pygame.mouse.get_pos()
+                else:
+                    x, y = self.cursor_loc_end
+                r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
+                pygame.draw.rect(self.display, (255, 0, 0), r, 2)
 
-        pygame.display.flip()
+            pygame.display.flip()
 
-        if self.save_images:
+        if self.save_images or self.save_video:
             savepath = os.path.join('images')
 
             if not (os.path.isdir(savepath)):
@@ -278,7 +289,12 @@ esc - quit
             savefile = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
             pygame.image.save(self.screen, savefile)
 
-        self.clock.tick(self.fps)
+        if self.ticks == self.warp:
+            self.log.info("Warp finished")
+
+        if draw:
+            self.clock.tick(self.fps)
+
         return True
 
 
@@ -287,15 +303,23 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
 
-    # delete any files saved from previous runs
-    [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--warp", type=float, default=0.0)
+    parser.add_argument("--no-mask", action="store_false", dest="mask")
+    parser.add_argument("--save-images", action="store_true")
+    parser.add_argument("--save-video", action="store_true")
+    args = parser.parse_args()
 
-    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, maskonoff=True)
+    clean_images()
+
+    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, args)
 
     alive = True
     while alive:
         alive = scene.run()
     scene.save(MADRIX_X, MADRIX_Y)
+    if not scene.save_images:
+        clean_images()
     pygame.quit()
 
 sys.exit()
