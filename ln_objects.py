@@ -149,7 +149,6 @@ class RisingSun(Sprite):
                 dist = dx * dx + dy * dy
                 if dist < d2:
                     color = (255, 255 - int(255 * dist / d2), 0)
-                    print (color)
                     p[x, y] = color
 
     def update(self):
