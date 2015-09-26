@@ -76,6 +76,7 @@ EVENT_TIMING = {
     140 * FPS: [Trigger("LIGHTNING", "end")],  # Lightning SoundsEnd
     150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
     180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
+    190 * FPS: [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))],
     200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
     220 * FPS: [Trigger("BIRDS")],  # Sea Birds SoundsStart
     240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
@@ -112,6 +113,7 @@ scene_data = {
     "LIGHTNING":(Thunderstorm, ()),
     "RAIN":(Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "MOONRISE":(HSMoon, ()),
+    "WAVES":(Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
 }
 
 def clean_images():

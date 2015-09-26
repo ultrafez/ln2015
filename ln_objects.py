@@ -28,12 +28,13 @@ def hls_to_rgb(hue, lightness, saturation):
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x = None, y = None):
         self.log = logging.getLogger(self.__class__.__name__)
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((x, y))
-        self.image.set_colorkey(white)
-        self.image.fill(white)
+        super().__init__()
+        if x is not None:
+            self.image = pygame.Surface((x, y))
+            self.image.set_colorkey(white)
+            self.image.fill(white)
         self.log.debug('##init##')
 
 
@@ -179,7 +180,7 @@ def height_color(height):
     return hls_to_rgb(height_hue, height_lum, randint(90, 100))
 
 
-class Cloud(pygame.sprite.Sprite):
+class Cloud(Sprite):
     def __init__(self, max_x, y, size):
         super().__init__()
         self.x = float(-size)
@@ -398,12 +399,6 @@ class Splash(Sprite):
         Sprite.__init__(self, x, y)
 
 
-class Wave(Sprite):
-    def __init__(self, x, y):
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
-
-
 class Bouy(Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
@@ -475,5 +470,125 @@ class HSMoon(Sprite):
 
     def end(self):
         raise StopIteration
+
+def pythagoras(vector):
+    return math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
+
+class Wave(Sprite):
+    def __init__(self, direction, size):
+        super().__init__()
+        self.direction = direction
+        speed = pythagoras(direction)
+        self.norm = (direction[1] / speed, -direction[0] / speed)
+        self.max_x = size[0]
+        self.max_y = size[1]
+        if direction[0] > 0.0:
+            start_x = 0.0
+        else:
+            start_x = self.max_x
+        if direction[1] > 0.0:
+            start_y = 0.0
+        else:
+            start_y = self.max_y
+        self.pos = (start_x, start_y)
+
+    def update(self, width):
+        x = self.pos[0] + self.direction[0]
+        y = self.pos[1] + self.direction[1]
+        self.pos = (x, y)
+        d = self.distance((0, 0))
+        d = min(d, self.distance((0, self.max_y)))
+        d = min(d, self.distance((self.max_x, self.max_y)))
+        d = min(d, self.distance((self.max_x, 0)))
+        if d > width * 2.0 + 1.0:
+            self.kill()
+
+    def distance(self, point):
+        # for line X = A + tN, the distance to point P is
+        # (A - P) - ((A - P).N)N 
+        ap_x = self.pos[0] - point[0]
+        ap_y = self.pos[1] - point[1]
+        dot = ap_x * self.norm[0] + ap_y * self.norm[1]
+        perp = (ap_x - dot * self.norm[0], ap_y - dot * self.norm[1])
+        dist = pythagoras(perp)
+        # Set sign based on which side of the line we are on
+        dot2 = perp[0] * self.norm[1] - perp[1] * self.norm[0]
+        if dot2 < 0:
+            return dist
+        else:
+            return -dist
+
+class Sea(Group):
+    def __init__(self, size, num_waves, width):
+        super().__init__()
+        self.s = pygame.Surface(size, flags = pygame.SRCALPHA)
+        self.num_waves = num_waves
+        self.width = width
+        self.dw = 0.0
+        self.new_width = width
+        self.new_timer = 0
+        self.size = size
+
+    def change(self, num_waves, width, time):
+        self.dw = (width - self.width) / time
+        self.new_width = width
+        self.num_waves = num_waves
+        self.new_timer = min(self.new_timer, self.size[0] // num_waves)
+
+    def add_wave(self):
+        r = random.random()
+        self.add(Wave((random.choice((r, -r)), random.choice((r - 1.0, 1.0 - r))), self.size))
+
+    def end(self):
+        self.num_waves = 0
+
+    def update(self):
+        if self.num_waves == 0 and len(self) == 0:
+            raise StopIteration
+        if (self.dw > 0.0 and self.width < self.new_width) \
+                or (self.dw < 0.0 and self.width > self.new_width):
+            self.width += self.dw
+
+        if self.new_timer > 0:
+            self.new_timer -= 1
+
+        if len(self) < self.num_waves and self.new_timer == 0:
+            self.add_wave()
+            self.new_timer = self.size[0] // self.num_waves
+
+        for w in self:
+            w.update(self.width)
+
+    def draw(self, surface):
+        if len(self) == 0:
+            return
+        self.s.fill(transparent)
+        a = pygame.PixelArray(self.s)
+        for lamp in ceiling.lamps:
+                x = lamp.x
+                y = lamp.y
+        #for x in range(self.size[0]):
+        #    for y in range(self.size[1]):
+                close = self.width * 2.0 + 1.0
+                for obj in self:
+                    dist = obj.distance((x, y))
+                    if dist > 0.0 and dist < close:
+                        close = dist
+                color = transparent
+                if close > 0.0:
+                    if close <= 1.0:
+                        p = int(255 * close)
+                        color = (255, 255, 255, p)
+                    else:
+                        close = (close - 1.0) / self.width
+                        if close < 1.0:
+                            p = int(255 * (1.0 - close))
+                            color = (p, p, 255, 255)
+                        elif close < 2.0:
+                            p = int(255 * (2.0 - close))
+                            color = (0, 0, 255, p)
+                a[x, y] = color
+        del a
+        surface.blit(self.s, (0, 0))
 
 ceiling = Ceiling('Resources/pixels.csv')
