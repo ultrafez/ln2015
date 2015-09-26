@@ -345,8 +345,8 @@ class Thunderstorm(Group):
     def add_sheet(self, r):
         self.add(SheetLighting(r))
 
-    def add_fork(self, r):
-        self.add(ForkLighting(r))
+    def add_fork(self, size, start, end):
+        self.add(ForkLighting(size, start, end))
 
 
 class Lightning(Sprite):
@@ -357,9 +357,13 @@ class Lightning(Sprite):
         self.potential = 800
         self.breakdown_potential = 800
         self.image.set_colorkey(white)
+        self.flashing = False
+        self.power = 0
 
     def update(self):
-        self.image.fill(white)
+        if self.flashing:
+            self.flash(self.power)
+            return
 
         self.potential += random.randint(0, 30)
         if self.potential > self.breakdown_potential:
@@ -369,6 +373,8 @@ class Lightning(Sprite):
             if chance < 80:
                 self.flash(power / (3 * self.potential))
             self.potential = max(0, self.potential - power)
+        else:
+           self.image.fill(white)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)
@@ -377,6 +383,7 @@ class Lightning(Sprite):
         """
             draw a flash to the surface
         """
+        self.flashing = False
         pass
 
 
@@ -387,10 +394,59 @@ class SheetLighting(Lightning):
         self.log.info('flash power {}'.format(power * 255))
         self.image.set_alpha(power * 255)
         self.image.fill(self.color)
+        self.flashing = False
 
 
 class ForkLighting(Lightning):
     color = (246, 255, 71)
+
+    def __init__(self, size, start, end):
+            print(start, end)
+            self.start = pygame.math.Vector2(start)
+            self.end = pygame.math.Vector2(end)
+            self.ionised = [self.start]
+            self.speed = 3
+            super().__init__(pygame.Rect((0,0), size))
+            #super(ForkLighting, self).__init__(pygame.Rect(min(start[0], end[0]), min(start[1], end[1]),  abs(start[0] - end[0]), abs(start[1] - end[1])))
+
+
+    def flash(self, power):
+        self.flashing = True
+        for i in range(random.randrange(3, 8)):
+            last = self.ionised[-1]
+            togo = self.end - last
+            lp = togo.as_polar()
+            if lp[0] < 2:
+                self.flashing = False
+                self.image.fill(white)
+                self.ionised = [self.ionised[0]]
+                return
+            togo.from_polar((1.5, random.triangular(-180, 180) + lp[1]))
+            n = last + togo
+            self.ionised.append(n)
+            pygame.draw.aaline(self.image, self.color, last, n , False)
+
+    # def nextpath(self):
+    #     p = []
+    #     p_count = 0
+    #     p_total = 0
+    #     start = self.ionised[-1]
+    #     for i in (-1, 0, 1):
+    #         for j in (-1, 0, 1):
+    #
+    #             p.append(( i, j, p_total, 1/((start + (i, j)).distance_to(self.end))))
+    #             p_count += 1
+    #             p_total += p[-1][3]
+    #
+    #     selector = random.uniform(0, p_total)
+    #
+    #     ans = None
+    #     for f in p:
+    #         if f[2] <= selector and f[3] + f[2] > selector:
+    #             self.ionised.append(self.ionised[-1] + (f[:2]))
+    #             self.image.set_at((int(self.ionised[-1].x), int(self.ionised[-1].y)), self.color)
+    #             print((int(self.ionised[-1].x), int(self.ionised[-1].y)))
+
 
 
 class Splash(Sprite):

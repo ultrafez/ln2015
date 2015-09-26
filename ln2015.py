@@ -5,7 +5,6 @@ logging.basicConfig()
 
 from ln_objects import *
 import pygame
-from pygame.event import Event
 
 import subprocess as sp
 import platform
@@ -34,6 +33,8 @@ class Trigger(object):
         return "Trigger(%s,%s,%s)" % (self.scene, self.method, self.args)
 
 key_triggers = {
+    pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),
+    pygame.K_EQUALS: Trigger("LIGHTNING", "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
     pygame.K_w: Trigger("STARS", "fade"),
@@ -244,7 +245,6 @@ esc - quit
                 if event.key in key_triggers:
                     self.log.debug('pressed {}'.format(event.key))
                     self.run_trigger(key_triggers[event.key])
-
 
         self.background = black
         self.screen.fill(self.background)
