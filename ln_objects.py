@@ -407,8 +407,6 @@ class ForkLighting(Lightning):
             self.ionised = [self.start]
             self.speed = 3
             super().__init__(pygame.Rect((0,0), size))
-            #super(ForkLighting, self).__init__(pygame.Rect(min(start[0], end[0]), min(start[1], end[1]),  abs(start[0] - end[0]), abs(start[1] - end[1])))
-
 
     def flash(self, power):
         self.flashing = True
@@ -425,35 +423,6 @@ class ForkLighting(Lightning):
             n = last + togo
             self.ionised.append(n)
             pygame.draw.aaline(self.image, self.color, last, n , False)
-
-    # def nextpath(self):
-    #     p = []
-    #     p_count = 0
-    #     p_total = 0
-    #     start = self.ionised[-1]
-    #     for i in (-1, 0, 1):
-    #         for j in (-1, 0, 1):
-    #
-    #             p.append(( i, j, p_total, 1/((start + (i, j)).distance_to(self.end))))
-    #             p_count += 1
-    #             p_total += p[-1][3]
-    #
-    #     selector = random.uniform(0, p_total)
-    #
-    #     ans = None
-    #     for f in p:
-    #         if f[2] <= selector and f[3] + f[2] > selector:
-    #             self.ionised.append(self.ionised[-1] + (f[:2]))
-    #             self.image.set_at((int(self.ionised[-1].x), int(self.ionised[-1].y)), self.color)
-    #             print((int(self.ionised[-1].x), int(self.ionised[-1].y)))
-
-
-
-class Splash(Sprite):
-    def __init__(self, x, y):
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
-
 
 class Bouy(Sprite):
     def __init__(self):
@@ -472,7 +441,7 @@ class Bird(Sprite):
         Sprite.__init__(self, x, y)
 
 
-class ForestCanopey(Sprite):
+class ForestCanopy(Sprite):
     def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self, x, y)
@@ -480,8 +449,12 @@ class ForestCanopey(Sprite):
 
 class Aurora(Sprite):
     def __init__(self, x, y):
+        colors = [hls_to_rgb(120, 21, 100), hls_to_rgb(300, 21, 100) ]
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self, x, y)
+
+    def update(self):
+        pass
 
 
 class Constallation(Sprite):

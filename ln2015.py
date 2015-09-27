@@ -23,12 +23,17 @@ MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
 
+pygame.font.init()
+FONT = pygame.font.Font(None, 24)
+
+
 class Trigger(object):
     """Create a new Group, or run a method on an existing group"""
     def __init__(self, scene, method=None, args=()):
         self.scene = scene
         self.method = method
         self.args = args
+
     def __repr__(self):
         return "Trigger(%s,%s,%s)" % (self.scene, self.method, self.args)
 
@@ -64,16 +69,21 @@ key_triggers = {
 }
 
 EVENT_TIMING = {
-    0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart
-    30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-    40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
-    60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
-    90 * FPS:[Trigger("CLOUDS", "grey", (FPS * 20,))],
-    100 * FPS: [Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
-        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),  
-        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(77, 38, 50, 15),))],
-
+      0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart
+     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
+     40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
+     60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
+     90 * FPS: [Trigger("CLOUDS", "grey", (FPS * 20,))],
+    100 * FPS: [
+        Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
+        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),
+        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(77, 38, 50, 15),))
+    ],
     110 * FPS: [Trigger("RAIN")],  # Rain SoundsStart
+    114 * FPS: [
+        Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
+        Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
+    ],  # Fork
     140 * FPS: [Trigger("LIGHTNING", "end")],  # Lightning SoundsEnd
     150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
     180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
@@ -150,6 +160,10 @@ class LN2015:
         self.warp = int(FPS * args.warp)
         if self.warp != 0 and (self.save_images or self.save_video):
             raise Exception("Can not save when warping")
+        self.quick = args.quick
+
+
+
 
     def save(self, x, y, ffmpeg_exe=None):
         if not self.save_video:
@@ -231,6 +245,7 @@ class LN2015:
                     self.log.info('''
 F1 - save video on exit
 F2 - view mask
+F3 - toggle fps limiter
 esc - quit
 ''')
 
@@ -241,6 +256,9 @@ esc - quit
                 elif event.key == pygame.K_F2:
                     self.lightmask = not self.lightmask
                     self.log.info('Mask: {}'.format(self.lightmask))
+                elif event.key == pygame.K_F3:
+                    self.quick = not self.quick
+                    self.log.info('FPS de-limiter: {}'.format(self.quick))
 
                 if event.key in key_triggers:
                     self.log.debug('pressed {}'.format(event.key))
@@ -265,6 +283,7 @@ esc - quit
             del self.objects[name]
 
         self.ticks += 1
+
         if draw:
             if self.lightmask:
                 pygame.Surface.blit(self.screen, self.mask, (0, 0))
@@ -279,6 +298,9 @@ esc - quit
                     x, y = self.cursor_loc_end
                 r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
                 pygame.draw.rect(self.display, (255, 0, 0), r, 2)
+
+            self.display.blit(FONT.render('{:.2f}/{:0} fps'.format(self.clock.get_fps(), self.fps), False, red, ), (10,10))
+            self.display.blit(FONT.render('{:02d}:{:02d}.{:02d}'.format(int(1.0*self.ticks/60.0/self.fps), int((self.ticks/self.fps) % 60), self.ticks % self.fps), False, red,), (10,45))
 
             pygame.display.flip()
 
@@ -295,7 +317,10 @@ esc - quit
             self.log.info("Warp finished")
 
         if draw:
-            self.clock.tick(self.fps)
+            if self.quick:
+                self.clock.tick()
+            else:
+                self.clock.tick(self.fps)
 
         return True
 
@@ -310,6 +335,7 @@ if __name__ == "__main__":
     parser.add_argument("--no-mask", action="store_false", dest="mask")
     parser.add_argument("--save-images", action="store_true")
     parser.add_argument("--save-video", action="store_true")
+    parser.add_argument("--quick", action="store_true")
     args = parser.parse_args()
 
     clean_images()
