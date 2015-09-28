@@ -41,10 +41,21 @@ class Group(pygame.sprite.Group):
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
         super().__init__()
+
     def end(self):
         raise StopIteration
 
+class skybox(Sprite):
+    def __init__(self, size):
+        super(self).__init__(self)
+        self.rect = pygame.Rect((0,0), size)
+        self.colour = black
 
+    def update_color(self, color):
+        self.color = color
+
+    def update(self):
+        self.image.fill(self.color)
 
 class Star(Sprite):
     # TODO: shooting star
@@ -69,8 +80,7 @@ class Star(Sprite):
 
     def update(self):
         self.image.set_at((0, 0), self.color)
-
-
+        self.rand_color()
 
 
 class StarrySky(Group):
@@ -202,6 +212,7 @@ class Cloud(Sprite):
                 val = int(255 * (b + (a - b) * x_offset))
                 orig = alpha[px, py]
                 alpha[px, py] = min(orig + val, 255)
+
 
 class Clouds(Group):
     def __init__(self, size, cloud_size, initial_prob, final_prob, ramp_duration):
@@ -580,6 +591,7 @@ class Sea(Group):
         self.s.fill(transparent)
         a = pygame.PixelArray(self.s)
         for lamp in ceiling.lamps:
+                print(lamp)
                 x = lamp.x
                 y = lamp.y
         #for x in range(self.size[0]):
