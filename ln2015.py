@@ -1,41 +1,21 @@
 #! /usr/bin/env python3
-import logging
-
-logging.basicConfig()
 
 from ln_objects import *
 import pygame
-
-import subprocess as sp
-import platform
-import glob
+from Renderer import Player, clean_images, Trigger
 import sys
 import argparse
+import logging
 
 __author__ = 'ajtag'
 
-black = 0, 0, 0
-red = 255, 0, 0
-white = 255, 255, 255
+logging.basicConfig()
+
 
 FPS = 24
 MADRIX_X = 132
 MADRIX_Y = 70
 SCALE = 8
-
-pygame.font.init()
-FONT = pygame.font.Font(None, 24)
-
-
-class Trigger(object):
-    """Create a new Group, or run a method on an existing group"""
-    def __init__(self, scene, method=None, args=()):
-        self.scene = scene
-        self.method = method
-        self.args = args
-
-    def __repr__(self):
-        return "Trigger(%s,%s,%s)" % (self.scene, self.method, self.args)
 
 key_triggers = {
     pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),
@@ -101,20 +81,6 @@ EVENT_TIMING = {
     320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTALATION", "end")],  #
 }
 
-location_rect ={
-    'bubbleroof': pygame.Rect((50, 34), (28, 33)),
-
-    'island': pygame.Rect((0, 41), (12, 7)),
-    'left outer arm': pygame.Rect((16, 42), (18, 8)),
-    'left inner arm': pygame.Rect((33, 37), (16, 13)),
-
-    'top outer arm': pygame.Rect((61, 1), (0, 18)),
-    'top inner arm': pygame.Rect((60, 18), (9, 18)),
-
-    'right inner arm': pygame.Rect((77, 40), (21, 12)),
-    'right outer arm': pygame.Rect((97, 40), (28, 12)),
-}
-
 
 scene_data = {
     "STARS":(StarrySky, ((MADRIX_X, MADRIX_Y),)),
@@ -126,203 +92,6 @@ scene_data = {
     "MOONRISE":(HSMoon, ()),
     "WAVES":(Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
 }
-
-def clean_images():
-    # delete any files saved from previous runs
-    [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
-
-class LN2015:
-    log = logging.getLogger('LN2015')
-
-    def __init__(self, title, width, height, fps, args):
-        self.title = title
-        self.width = width
-        self.height = height
-        self.size = (width, height)
-        self.lightmask = args.mask
-        self.mask = pygame.Surface(self.size)
-        self.mask.fill((0x30, 0x30, 0x30, 0xff))
-        for x, y in ceiling.lamps:
-            self.mask.set_at((x, y), (255, 255, 255, 0))
-        self.mask.set_colorkey((255, 255, 255))
-        self.screen = pygame.Surface(self.size)
-        self.display = pygame.display.set_mode((SCALE * MADRIX_X, SCALE * MADRIX_Y))
-        self.clock = pygame.time.Clock()
-        self.fps = fps
-        self.objects = {}
-        self.ticks = 0
-        self.background = black
-        self.log.info('done init')
-        self.save_images = args.save_images
-        self.save_video = args.save_video
-        self.cursor_loc_start = None
-        self.cursor_loc_end = None
-        self.warp = int(FPS * args.warp)
-        if self.warp != 0 and (self.save_images or self.save_video):
-            raise Exception("Can not save when warping")
-        self.quick = args.quick
-
-
-
-
-    def save(self, x, y, ffmpeg_exe=None):
-        if not self.save_video:
-            return
-
-        if ffmpeg_exe is None:
-            if 'windows' in platform.platform().lower():
-                ffmpeg_exe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
-            else:
-                ffmpeg_exe = 'ffmpeg'
-
-        command = [ffmpeg_exe,
-                   '-y',  # (optional) overwrite output file if it exists
-                   '-r', '{}'.format(self.fps),  # frames per second
-                   '-i', os.path.join('images', '{}_%d.png'.format(self.title)),
-                   '-an',  # Tells FFMPEG not to expect any audio
-                   '-c:v', 'libx264',
-                   '-s', '{}x{}'.format(x, y),  # size of one frame
-                   '{}.mp4'.format(self.title)
-                   ]
-        sp.call(command)
-
-    def run_trigger(self, trigger):
-        if trigger.method is None:
-            try:
-                d = scene_data[trigger.scene]
-            except:
-                self.log.error("No such scene '%s'" % trigger.scene)
-                return
-            try:
-                self.objects[trigger.scene] = d[0](*d[1])
-            except:
-                self.log.error("Failed to create '%s' %s" % (trigger.scene, d))
-                raise
-        else:
-            try:
-                try:
-                    o = self.objects[trigger.scene]
-                except KeyError:
-                    self.log.error("Scene '%s' not running")
-                    return
-                getattr(o, trigger.method)(*trigger.args)
-            except StopIteration:
-                del self.objects[trigger.scene]
-            except:
-                self.log.error("%s" % (trigger))
-                raise
-
-    def run(self):
-        for event in pygame.event.get():
-
-            # Check for quit
-            if event.type == pygame.QUIT:
-                return False
-            # Mouse events
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # left start click
-                self.cursor_loc_start = event.pos
-                self.cursor_loc_end = None
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left finish click
-                self.cursor_loc_end = event.pos
-                print(
-                    math.floor(self.cursor_loc_start[0]/SCALE),
-                    math.floor(self.cursor_loc_start[1]/SCALE),
-                    math.floor((event.pos[0] - self.cursor_loc_start[0])/SCALE),
-                    math.floor((event.pos[1] - self.cursor_loc_start[1])/SCALE)
-                )
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 3:  # right click
-                self.cursor_loc_start = None
-                self.cursor_loc_end = None
-
-            # Check Keys
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return False
-
-                elif event.key == pygame.K_QUESTION:
-                    self.log.info('''
-F1 - save video on exit
-F2 - view mask
-F3 - toggle fps limiter
-esc - quit
-''')
-
-                elif event.key == pygame.K_F1:
-                    self.save_video = not self.save_video
-                    self.log.warning('save video: {}'.format(self.save_video))
-
-                elif event.key == pygame.K_F2:
-                    self.lightmask = not self.lightmask
-                    self.log.info('Mask: {}'.format(self.lightmask))
-                elif event.key == pygame.K_F3:
-                    self.quick = not self.quick
-                    self.log.info('FPS de-limiter: {}'.format(self.quick))
-
-                if event.key in key_triggers:
-                    self.log.debug('pressed {}'.format(event.key))
-                    self.run_trigger(key_triggers[event.key])
-
-        self.background = black
-        self.screen.fill(self.background)
-
-        for e in EVENT_TIMING.get(self.ticks, []):
-            self.run_trigger(e)
-
-        draw = (self.ticks >= self.warp) or ((self.ticks % FPS == 0))
-        remove = []
-        for name, element in self.objects.items():
-            try:
-                element.update()
-                if draw:
-                    element.draw(self.screen)
-            except StopIteration:
-                remove.append(name)
-        for name in remove:
-            del self.objects[name]
-
-        self.ticks += 1
-
-        if draw:
-            if self.lightmask:
-                pygame.Surface.blit(self.screen, self.mask, (0, 0))
-            pygame.transform.scale(self.screen, self.display.get_size(), self.display)
-
-            #  draw a red rect overlay to the display surface by dragging the mouse
-            if self.cursor_loc_start is not None:
-                i, j = self.cursor_loc_start
-                if self.cursor_loc_end is None:
-                    x, y = pygame.mouse.get_pos()
-                else:
-                    x, y = self.cursor_loc_end
-                r = pygame.Rect((min(i, x), min(j, y)), (max(i, x) - min(i, x), max(j, y) - min(j, y)))
-                pygame.draw.rect(self.display, (255, 0, 0), r, 2)
-
-            self.display.blit(FONT.render('{:.2f}/{:0} fps'.format(self.clock.get_fps(), self.fps), False, red, ), (10,10))
-            self.display.blit(FONT.render('{:02d}:{:02d}.{:02d}'.format(int(1.0*self.ticks/60.0/self.fps), int((self.ticks/self.fps) % 60), self.ticks % self.fps), False, red,), (10,45))
-
-            pygame.display.flip()
-
-        if self.save_images or self.save_video:
-            savepath = os.path.join('images')
-
-            if not (os.path.isdir(savepath)):
-                os.mkdir(savepath)
-
-            savefile = os.path.join('images', '{}_{}.png'.format(self.title, self.ticks))
-            pygame.image.save(self.screen, savefile)
-
-        if self.ticks == self.warp:
-            self.log.info("Warp finished")
-
-        if draw:
-            if self.quick:
-                self.clock.tick()
-            else:
-                self.clock.tick(self.fps)
-
-        return True
 
 
 if __name__ == "__main__":
@@ -338,15 +107,27 @@ if __name__ == "__main__":
     parser.add_argument("--quick", action="store_true")
     args = parser.parse_args()
 
+    print(args)
+
     clean_images()
 
-    scene = LN2015('objects', MADRIX_X, MADRIX_Y, FPS, args)
+    LN2015 = Player('objects', MADRIX_X, MADRIX_Y, fps=FPS, display_scale=8,  args=args)
+
+    for key, trig in key_triggers.items():
+        LN2015.set_key_triggers(key, trig)
+
+    for scene, data in scene_data.items():
+        LN2015.load_scene(scene, data)
+
+    for ticks, events in EVENT_TIMING.items():
+        LN2015.load_timed_event(ticks, events)
+
 
     alive = True
     while alive:
-        alive = scene.run()
-    scene.save(MADRIX_X, MADRIX_Y)
-    if not scene.save_images:
+        alive = LN2015.run()
+    LN2015.save(MADRIX_X, MADRIX_Y)
+    if not LN2015.save_images:
         clean_images()
     pygame.quit()
 
