@@ -1,7 +1,6 @@
 __author__ = 'ajtag'
 
 import subprocess as sp
-import platform
 import glob
 import pygame
 import logging
@@ -11,6 +10,7 @@ from Constants import *
 
 pygame.font.init()
 FONT = pygame.font.Font(None, 24)
+
 
 class Trigger(object):
     """Create a new Group, or run a method on an existing group"""
@@ -22,9 +22,11 @@ class Trigger(object):
     def __repr__(self):
         return "Trigger(%s,%s,%s)" % (self.scene, self.method, self.args)
 
+
 def clean_images():
     # delete any files saved from previous runs
     [os.unlink(i) for i in glob.glob(os.path.join('images', '*.png'))]
+
 
 class Player:
     log = logging.getLogger('Player')
@@ -75,15 +77,9 @@ class Player:
             current_events.append(e)
         self.timed_events[ticks] = current_events
 
-    def save(self, x, y, ffmpeg_exe=None):
+    def export_video(self, x, y, ffmpeg_exe='ffmpeg'):
         if not self.save_video:
             return
-
-        if ffmpeg_exe is None:
-            if 'windows' in platform.platform().lower():
-                ffmpeg_exe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
-            else:
-                ffmpeg_exe = 'ffmpeg'
 
         command = [ffmpeg_exe,
                    '-y',  # (optional) overwrite output file if it exists
@@ -218,7 +214,7 @@ esc - quit
 
             pygame.display.flip()
 
-        if self.save_images or self.save_video:
+        if self.save_images:
             savepath = os.path.join('images')
 
             if not (os.path.isdir(savepath)):

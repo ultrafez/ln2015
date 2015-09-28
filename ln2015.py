@@ -6,6 +6,8 @@ from Renderer import Player, clean_images, Trigger
 import sys
 import argparse
 import logging
+import platform
+
 
 __author__ = 'ajtag'
 
@@ -102,7 +104,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--warp", type=float, default=0.0)
     parser.add_argument("--no-mask", action="store_false", dest="mask")
-    parser.add_argument("--save-images", action="store_true")
+    parser.add_argument("--no_images", action="store_false", dest="save_images")
     parser.add_argument("--save-video", action="store_true")
     parser.add_argument("--quick", action="store_true")
     args = parser.parse_args()
@@ -126,9 +128,14 @@ if __name__ == "__main__":
     alive = True
     while alive:
         alive = LN2015.run()
-    LN2015.save(MADRIX_X, MADRIX_Y)
-    if not LN2015.save_images:
-        clean_images()
+
+        if 'windows' in platform.platform().lower():
+            ffmpeg_exe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
+        else:
+            ffmpeg_exe = 'ffmpeg'
+    LN2015.export_video(MADRIX_X, MADRIX_Y, ffmpeg_exe)
+
+
     pygame.quit()
 
 sys.exit()
