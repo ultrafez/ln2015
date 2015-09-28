@@ -591,7 +591,6 @@ class Sea(Group):
         self.s.fill(transparent)
         a = pygame.PixelArray(self.s)
         for lamp in ceiling.lamps:
-                print(lamp)
                 x = lamp.x
                 y = lamp.y
         #for x in range(self.size[0]):
