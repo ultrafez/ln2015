@@ -5,10 +5,8 @@ import colorsys
 from math import pi, sin
 import math
 import os.path
-import csv
-import collections
 import logging
-
+from TrinRoofPlayer.Renderer import ceiling
 import pygame
 import numpy as np
 
@@ -24,7 +22,8 @@ def hls_to_rgb(hue, lightness, saturation):
     :param saturation:  0-100
     :return: list
     """
-    return [i * 255 for i in colorsys.hls_to_rgb(hue / 360, lightness / 100, saturation / 100)]
+    return [i * 255 for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
+
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -45,21 +44,6 @@ class Group(pygame.sprite.Group):
     def end(self):
         raise StopIteration
 
-Lamp = collections.namedtuple("Lamp", ["x", "y"])
-
-
-class Ceiling:
-    def __init__(self, filename):
-        self.lamps = []
-        self.readlamps(filename)
-
-    def readlamps(self, filename):
-        # Generate array of lights fixture locations
-        f = open(filename)
-        csv_f = csv.DictReader(f)
-        for row in csv_f:
-            # Adjusted XY coordinates -1 as Madrix counts from 1
-            self.lamps.append(Lamp(int(row['X']) - 1, int(row['Y']) - 1))
 
 
 class Star(Sprite):
@@ -85,6 +69,8 @@ class Star(Sprite):
 
     def update(self):
         self.image.set_at((0, 0), self.color)
+
+
 
 
 class StarrySky(Group):
@@ -619,5 +605,3 @@ class Sea(Group):
                 a[x, y] = color
         del a
         surface.blit(self.s, (0, 0))
-
-ceiling = Ceiling('Resources/pixels.csv')

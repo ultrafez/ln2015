@@ -1,9 +1,12 @@
 #! /usr/bin/env python3
+import sys
+sys.path.append('TrinRoofPlayer')
+
 
 from ln_objects import *
 import pygame
-from Renderer import Player, clean_images, Trigger
-import sys
+from TrinRoofPlayer.Renderer import Player, clean_images, Trigger
+from TrinRoofPlayer.Constants import MADRIX_X, MADRIX_Y
 import argparse
 import logging
 import platform
@@ -14,9 +17,8 @@ __author__ = 'ajtag'
 logging.basicConfig()
 
 
+
 FPS = 24
-MADRIX_X = 132
-MADRIX_Y = 70
 SCALE = 8
 
 key_triggers = {
@@ -85,14 +87,14 @@ EVENT_TIMING = {
 
 
 scene_data = {
-    "STARS":(StarrySky, ((MADRIX_X, MADRIX_Y),)),
-    "HS_SPIN":(HSMoon,(1, 38, 4,-45, 0)),
-    "SUNRISE":(RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
-    "CLOUDS":(Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
-    "LIGHTNING":(Thunderstorm, ()),
-    "RAIN":(Raindrops, ((MADRIX_X, MADRIX_Y),)),
-    "MOONRISE":(HSMoon, ()),
-    "WAVES":(Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
+    "STARS": (StarrySky, ((MADRIX_X, MADRIX_Y),)),
+    "HS_SPIN": (HSMoon, (1, 38, 4,-45, 0)),
+    "SUNRISE": (RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
+    "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
+    "LIGHTNING": (Thunderstorm, ()),
+    "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
+    "MOONRISE": (HSMoon, ()),
+    "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
 }
 
 
@@ -124,7 +126,6 @@ if __name__ == "__main__":
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
 
-
     alive = True
     while alive:
         alive = LN2015.run()
@@ -133,8 +134,8 @@ if __name__ == "__main__":
             ffmpeg_exe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
         else:
             ffmpeg_exe = 'ffmpeg'
-    LN2015.export_video(MADRIX_X, MADRIX_Y, ffmpeg_exe)
 
+    LN2015.export_video(MADRIX_X*8, MADRIX_Y*8, ffmpeg_exe)
 
     pygame.quit()
 

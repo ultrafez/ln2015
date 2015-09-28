@@ -1,0 +1,3 @@
+[submodule "TrinRoofPlayer"]
+	path = TrinRoofPlayer
+	url = git@github.com:ajtag/TrinRoofPlayer.git
