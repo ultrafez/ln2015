@@ -5,7 +5,7 @@ sys.path.append('TrinRoofPlayer')
 from ln_objects import *
 import pygame
 from TrinRoofPlayer.Renderer import Player, clean_images, Trigger
-from TrinRoofPlayer.Constants import MADRIX_X, MADRIX_Y
+from TrinRoofPlayer.Constants import *
 import argparse
 import logging
 import platform
@@ -19,7 +19,7 @@ FPS = 24
 SCALE = 8
 
 key_triggers = {
-    pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),
+    pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (left_outer_arm,)),
     pygame.K_EQUALS: Trigger("LIGHTNING", "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
@@ -57,8 +57,9 @@ EVENT_TIMING = {
      90 * FPS: [Trigger("CLOUDS", "grey", (FPS * 20,))],
     100 * FPS: [
         Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
-        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(33, 44, 30, 30),)),
-        Trigger("LIGHTNING", "add_sheet", (pygame.Rect(77, 38, 50, 15),))
+        Trigger("LIGHTNING", "add_sheet", (left_arm,)),
+        Trigger("LIGHTNING", "add_sheet", (right_arm,)),
+        Trigger("LIGHTNING", "add_sheet", (top_arm,))
     ],
     110 * FPS: [Trigger("RAIN")],  # Rain SoundsStart
     114 * FPS: [
@@ -85,7 +86,7 @@ EVENT_TIMING = {
 
 scene_data = {
     "STARS": (StarrySky, ((MADRIX_X, MADRIX_Y),)),
-    "HS_SPIN": (HSMoon, (1, 38, 4,-45, 0)),
+    "HS_SPIN": (HSMoon, (1, 39, 4,-45, 0)),
     "SUNRISE": (RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
@@ -134,6 +135,8 @@ if __name__ == "__main__":
         else:
             ffmpeg_exe = 'ffmpeg'
 
+        if LN2015.ticks > 360:
+            alive = False
     LN2015.export_video(MADRIX_X*8, MADRIX_Y*8, ffmpeg_exe)
 
     pygame.quit()
