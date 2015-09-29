@@ -17,6 +17,7 @@ logging.basicConfig()
 
 FPS = 24
 SCALE = 8
+TOTAL_TIME = 360
 
 key_triggers = {
     pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (left_outer_arm,)),
@@ -135,10 +136,9 @@ if __name__ == "__main__":
         else:
             ffmpeg_exe = 'ffmpeg'
 
-        if LN2015.ticks > 360:
+        if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
     LN2015.export_video(MADRIX_X*8, MADRIX_Y*8, ffmpeg_exe)
-
     pygame.quit()
 
 sys.exit()

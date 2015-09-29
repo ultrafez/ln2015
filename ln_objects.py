@@ -31,7 +31,7 @@ class Sprite(pygame.sprite.Sprite):
         self.log = logging.getLogger(self.__class__.__name__)
         super().__init__()
         if x is not None:
-            self.image = pygame.Surface((x, y))
+            self.image = pygame.Surface((abs(x), abs(y)))
             self.image.set_colorkey(white)
             self.image.fill(white)
         self.log.debug('##init##')
