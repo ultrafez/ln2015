@@ -2,7 +2,6 @@
 import sys
 sys.path.append('TrinRoofPlayer')
 
-
 from ln_objects import *
 import pygame
 from TrinRoofPlayer.Renderer import Player, clean_images, Trigger
@@ -15,8 +14,6 @@ import platform
 __author__ = 'ajtag'
 
 logging.basicConfig()
-
-
 
 FPS = 24
 SCALE = 8
@@ -99,6 +96,8 @@ scene_data = {
 
 
 if __name__ == "__main__":
+
+    random.seed('correcthorsebatterystaple')
 
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
