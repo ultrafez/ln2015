@@ -25,7 +25,6 @@ def hls_to_rgb(hue, lightness, saturation):
     return [i * 255 for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
 
 
-
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, x = None, y = None):
         self.log = logging.getLogger(self.__class__.__name__)
@@ -419,7 +418,8 @@ class ForkLighting(Lightning):
             togo.from_polar((1.5, random.triangular(-180, 180) + lp[1]))
             n = last + togo
             self.ionised.append(n)
-            pygame.draw.aaline(self.image, self.color, last, n , False)
+            pygame.draw.line(self.image, self.color, last, n, 2)
+
 
 class Bouy(Sprite):
     def __init__(self):
@@ -433,9 +433,73 @@ class Bouy(Sprite):
 
 
 class Bird(Sprite):
-    def __init__(self, x, y):
+    def __init__(self, rect):
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
+        self.ticks = 0
+        self.active_frame = 0
+        self.rect = rect
+        self.frames = []
+        self.action = 'bob'
+        self.next_action = 'bob'
+        self.frame_loader()
+
+        self.actions = {'bob':(0, ),
+                        'takeoff':(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22),
+                        'soar':(23, 24, 25, 26, 27, 28, 29, 30, 31)
+                        }
+
+        Sprite.__init__(self, self.rect.width, self.rect.height)
+
+    def set_action(self, action):
+        self.next_action = action
+
+    def frame_loader(self, frameid=0):
+        max_x = 0
+        max_y = 0
+        try:
+            while True:
+                fn = os.path.join('Resources','bird', 'bird_{}.png'.format(frameid))
+                if not os.path.isfile(fn):
+                    raise LookupError
+                frame = pygame.image.load(fn)
+                max_x = max(max_x, frame.get_rect().width)
+                max_y = max(max_y, frame.get_rect().height)
+                self.frames.append(frame)
+                frameid += 1
+        except LookupError:
+            pass
+        if len(self.frames) == 0:
+            raise StopIteration
+
+        self.rect.size = (max_x, max_y)
+
+    def update(self):
+
+        if self.ticks == 80:
+            self.set_action('takeoff')
+            self.log.info('takeoff')
+        if self.ticks == 200:
+            self.set_action('soar')
+            self.log.info('soar')
+        if self.ticks == 500:
+            raise StopIteration
+
+        if self.ticks % 5 == 0:
+            self.active_frame += 1
+            self.active_frame = self.active_frame % len(self.actions[self.action])
+            if self.active_frame == 0:
+                self.action = self.next_action
+
+        self.image.fill((255,255,255,128,))
+        self.image.blit(self.frames[self.actions[self.action][self.active_frame]], (0, 0))
+
+        self.ticks += 1
+
+
+
+
+
+
 
 
 class ForestCanopy(Sprite):
@@ -450,11 +514,13 @@ class Aurora(Sprite):
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self, x, y)
 
+
+
     def update(self):
         pass
 
 
-class Constallation(Sprite):
+class Constellation(Sprite):
     def __init__(self, x, y):
         # Call the parent class (Sprite) constructor
         Sprite.__init__(self, x, y)
@@ -497,8 +563,10 @@ class HSMoon(Sprite):
     def end(self):
         raise StopIteration
 
+
 def pythagoras(vector):
     return math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
+
 
 class Wave(Sprite):
     def __init__(self, direction, size):

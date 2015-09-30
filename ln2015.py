@@ -94,6 +94,7 @@ scene_data = {
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
+    "BIRDS": (Bird, ((bubbleroof, )))
 }
 
 
@@ -126,6 +127,8 @@ if __name__ == "__main__":
 
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
+
+    #LN2015.load_sprite("test_bird", Bird(bubbleroof))
 
     alive = True
     while alive:
