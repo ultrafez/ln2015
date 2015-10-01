@@ -88,7 +88,7 @@ EVENT_TIMING = {
 scene_data = {
     "STARS": (StarrySky, ((MADRIX_X, MADRIX_Y),)),
     "HS_SPIN": (HSMoon, (1, 39, 4,-45, 0)),
-    "SUNRISE": (RisingSun, ((66, 70), (66, 35), 10, FPS * 2, FPS)),
+    "SUNRISE": (RisingSun, ((66, 78), (66, 53), 8, FPS * 20, FPS * 5)),
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
