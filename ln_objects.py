@@ -25,12 +25,27 @@ def hls_to_rgb(hue, lightness, saturation):
     return [i * 255 for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
 
 
+def hlsa_to_rgba(hue, lightness, saturation, alpha):
+    """
+    :param hue: 0-360
+    :param lightness:  0-100
+    :param saturation:  0-100
+    :return: list
+    """
+    rgb = colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)
+
+    rgba = [0,0,0,alpha]
+    for n, i in enumerate(rgb):
+        rgba[n] = i * 255
+    return rgba
+
+
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, x = None, y = None):
+    def __init__(self, x=None, y=None, surface_flags=0):
         self.log = logging.getLogger(self.__class__.__name__)
         super().__init__()
         if x is not None:
-            self.image = pygame.Surface((abs(x), abs(y)))
+            self.image = pygame.Surface((abs(x), abs(y)), surface_flags)
             self.image.set_colorkey(white)
             self.image.fill(white)
         self.log.debug('##init##')
@@ -422,15 +437,37 @@ class ForkLighting(Lightning):
 
 
 class Bouy(Sprite):
-    def __init__(self):
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, 1, 1)
-        self.colour = random.choice('red', 'green')
+    def __init__(self, location):
+        Sprite.__init__(self, 19, 19, pygame.SRCALPHA)
+        self.rect = pygame.Rect(location, (19, 19))
+        self.colour = random.choice( (350.0, 30.0, 60.0, 90.0, 230.0) )
+        self.ticks = 0
+        self.flash_age = 20
+        self.flash_speed = 0.3
+
+    def flash(self):
+        self.flash_age = self.flash_speed
 
     def update(self):
-        pass
-        # self.image
+        self.image.fill(transparent)
+        pygame.draw.rect(self.image, (0x30, 0x30, 0x30, 0x30), pygame.Rect(8, 8, 3, 3), 0)  # draw gray bouy
+        if self.flash_age < 9:
+            for i in range(19):
+                for j in range(19):
+                    l = pygame.math.Vector2(9-i, 9-j).length()
+                    if l > self.flash_age:
+                        self.image.set_at((i, j), transparent)
+                    else:
+                        o = ((9-self.flash_age)/9) * (l/self.flash_age)
+                        c = hlsa_to_rgba(self.colour, 40.0, 100.0, o*255)
+                        self.image.set_at((i, j), c)
 
+                    if i == 9 and j == 9:
+                        c = hlsa_to_rgba(self.colour, (100*((9-self.flash_age)/9)), 100.0, 255)
+                        self.image.set_at((i, j), c)
+
+        # self.image
+        self.flash_age += self.flash_speed
 
 class Bird(Sprite):
     def __init__(self, rect):
@@ -496,23 +533,14 @@ class Bird(Sprite):
         self.ticks += 1
 
 
-
-
-
-
-
-
-class ForestCanopy(Sprite):
-    def __init__(self, x, y):
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
-
-
 class Aurora(Sprite):
     def __init__(self, x, y):
-        colors = [hls_to_rgb(120, 21, 100), hls_to_rgb(300, 21, 100) ]
+        colors = [hls_to_rgb(120, 21, 100), hls_to_rgb(300, 21, 100)]
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
+        self.line = (10, 4, 6, 2, 8, 12, 6)
+        Sprite.__init__(self, x, y);
+
+        self.image = pygame.draw.arc()
 
 
 
