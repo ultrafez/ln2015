@@ -106,7 +106,7 @@ scene_data = {
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
     "BIRDS": (Bird, ((bubbleroof,))),
-    "BOUYS": (Bouy, ((55, 50), ))
+    "BOUYS": (Bouy, ((66, 78), ))
 }
 
 
@@ -123,6 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("--no_images", action="store_false", dest="save_images")
     parser.add_argument("--save-video", action="store_true")
     parser.add_argument("--quick", action="store_true")
+    parser.add_argument("--avconv", action="store_true")
     args = parser.parse_args()
 
     print(args)
@@ -148,9 +149,10 @@ if __name__ == "__main__":
 
         if 'windows' in platform.platform().lower():
             ffmpeg_exe = 'C:\\Users\\admin\\Desktop\\ffmpeg-20150921-git-74e4948-win64-static\\bin\\ffmpeg.exe'
+        elif args.avconv:
+            ffmpeg_exe = 'avconv'
         else:
-            ffmpeg_exe = 'ffmpeg'
-
+            ffmpeg_exe = 'ffmpeg'          
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
     LN2015.export_video(MADRIX_X*8, MADRIX_Y*8, ffmpeg_exe)
