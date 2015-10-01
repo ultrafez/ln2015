@@ -34,20 +34,25 @@ key_triggers = {
     pygame.K_x: Trigger("CLOUDS", "end"),
     pygame.K_v: Trigger("RAIN", "end"),
     pygame.K_r: Trigger("BOUYS"),
+
     pygame.K_y: Trigger("BIRDS"),
+    pygame.K_1: Trigger("BIRDS", "set_action", ('bob', )),
+    pygame.K_2: Trigger("BIRDS", "set_action", ('takeoff', )),
+    pygame.K_3: Trigger("BIRDS", "set_action", ('rotate_camera', )),
+
     pygame.K_t: Trigger("BOUYS", "flash"),
     pygame.K_h: Trigger("WAVES", "end"),
     pygame.K_b: Trigger("FOREST"),
     pygame.K_u: Trigger("BIRDS", "end"),
     pygame.K_n: Trigger("FOREST", "end"),
     pygame.K_j: Trigger("SUNSET"),
-    pygame.K_i: Trigger("CONSTALATION"),
+    pygame.K_i: Trigger("CONSTELLATION"),
     pygame.K_k: Trigger("SUNSET", "end"),
     pygame.K_p: Trigger("NORTHERNLIGHTS"),
     pygame.K_LEFTBRACKET: Trigger("NORTHERNLIGHTS", "end"),
     pygame.K_m: Trigger("MOONRISE"),
     pygame.K_COMMA: Trigger("MOONRISE", "end"),
-    pygame.K_o: Trigger("CONSTALATION", "end")
+    pygame.K_o: Trigger("CONSTELLATION", "end")
 }
 
 EVENT_TIMING = {
@@ -72,16 +77,19 @@ EVENT_TIMING = {
     180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
     190 * FPS: [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))],
     200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
-    220 * FPS: [Trigger("BIRDS")],  # Sea Birds SoundsStart
+    220 * FPS: [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))],  # Sea Birds SoundsStart
+    225 * FPS: [Trigger("BIRDS", 'set_action', ('takeoff',))],
+    235 * FPS: [Trigger("BIRDS", 'set_action', ('rotate_camera',))],
+
     240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
     250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
     260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
-    270 * FPS: [Trigger("CONSTALATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
+    270 * FPS: [Trigger("CONSTELLATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
     280 * FPS: [Trigger("SUNSET", "end")],  #
     290 * FPS: [Trigger("NORTHERNLIGHTS")],  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
     310 * FPS: [Trigger("NORTHERNLIGHTS", "end")],  # Northern Lights SoundsEnd
     300 * FPS: [Trigger("MOONRISE")],  #
-    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTALATION", "end")],  #
+    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTELLATION", "end")],  #
 }
 
 
@@ -92,9 +100,10 @@ scene_data = {
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
+    "CONSTELLATION": (Constellation, (49, 29)),
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
-    "BIRDS": (Bird, ((bubbleroof, ))),
+    "BIRDS": (Bird, ((bubbleroof,))),
     "BOUYS": (Bouy, ((55, 50), ))
 }
 
@@ -129,7 +138,7 @@ if __name__ == "__main__":
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
 
-#    LN2015.load_sprite()
+    #LN2015.load_sprite('Bird', Constellation(50, 34))
 
     alive = True
     while alive:

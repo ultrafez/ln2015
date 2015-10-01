@@ -7,7 +7,9 @@ import math
 import os.path
 import logging
 from TrinRoofPlayer.Renderer import ceiling
+from TrinRoofPlayer.Constants import *
 import pygame
+from pygame.math import Vector2
 import numpy as np
 
 white = 255, 255, 255
@@ -322,7 +324,7 @@ class Raindrops(Group):
 
 class RainSplash(Sprite):
     def __init__(self, x, y, size):
-        self.max_radius = size // 2
+        self.max_radius = 10
         self.log = logging.getLogger(self.__class__.__name__)
         Sprite.__init__(self, size, size)
         self.rect = pygame.Rect(x - size // 2, y - size // 2, size, size)
@@ -471,6 +473,9 @@ class Bouy(Sprite):
         # self.image
         self.flash_age += self.flash_speed
 
+    def end(self):
+        self.kill()
+
 class Bird(Sprite):
     def __init__(self, rect):
         # Call the parent class (Sprite) constructor
@@ -483,8 +488,10 @@ class Bird(Sprite):
         self.frame_loader()
 
         self.actions = {'bob':(0, ),
-                        'takeoff':(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22),
-                        'soar':(23, 24, 25, 26, 27, 28, 29, 30, 31)
+                        'takeoff': (1, 2, 3, 4, 5, 6, 32),
+                        'flap': ( 33, 34, 35, 36, 37, 38, 39, 40, 41, 42),
+                        'rotate_camera': (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30),
+                        'soar': (31,)
                         }
 
         Sprite.__init__(self, self.rect.width, self.rect.height)
@@ -514,13 +521,17 @@ class Bird(Sprite):
 
     def update(self):
 
-        if self.ticks == 80:
+        if self.ticks == 100:
             self.set_action('takeoff')
             self.log.info('takeoff')
-        if self.ticks == 200:
-            self.set_action('soar')
-            self.log.info('soar')
+
+
         if self.ticks == 500:
+            self.log.info('rotate_camera')
+            self.set_action('rotate_camera')
+
+
+        if self.ticks == 2500:
             raise StopIteration
 
         if self.ticks % 5 == 0:
@@ -529,10 +540,21 @@ class Bird(Sprite):
             if self.active_frame == 0:
                 self.action = self.next_action
 
-        self.image.fill((255,255,255,128,))
+        self.image.fill((255, 255, 255, 128,))
         self.image.blit(self.frames[self.actions[self.action][self.active_frame]], (0, 0))
 
+
+
+        if self.action == 'takeoff':
+            self.set_action('flap')
+
+        if self.action == 'rotate_camera':
+            self.set_action('soar')
+
         self.ticks += 1
+
+    def end(self):
+        self.kill()
 
 
 class Aurora(Sprite):
@@ -552,8 +574,35 @@ class Aurora(Sprite):
 
 class Constellation(Sprite):
     def __init__(self, x, y):
+        self.pole = Vector2(16, 16)
+        self.patterns = {'ursamajor': (
+                                      Vector2(8, 5),
+                                      Vector2(10, 6),
+                                      Vector2(8, 10),
+                                      Vector2(10, 10),
+                                      Vector2(6, 12),
+                                      Vector2(5, 14),
+                                      Vector2(5, 17)
+                                      )
+        }
+        self.rect = pygame.Rect(x, y, 31, 31)
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
+        Sprite.__init__(self, 32, 32)
+
+        self.angle = 180
+        self.dangle = 2
+
+    def update(self):
+        self.image.fill(white)
+
+        self.image.set_at((int(self.pole.x), int(self.pole.y)), (255,229,0) )
+        for star in self.patterns['ursamajor']:
+
+
+            star = star.rotate(self.angle) + self.pole
+            self.image.set_at((int(star.x), int(star.y)), (255,229,0) )
+
+        self.angle = (self.angle + self.dangle) % 360
 
 
 class HSMoon(Sprite):
@@ -562,9 +611,6 @@ class HSMoon(Sprite):
     """
     164.201, 327.203
     215.657, 275.746
-
-
-
 
     """
 
