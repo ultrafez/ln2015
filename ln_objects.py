@@ -453,7 +453,6 @@ class Bouy(Sprite):
     def update(self):
         self.image.fill(transparent)
         ci = hls_to_rgb(self.colour, 50.0, 100.0)
-        print(ci)
         pygame.draw.rect(self.image, ci, pygame.Rect(8, 8, 3, 3), 0)  # draw gray bouy
         if self.flash_age < 9:
             for i in range(19):
