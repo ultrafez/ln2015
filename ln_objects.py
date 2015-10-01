@@ -469,6 +469,9 @@ class Bouy(Sprite):
         # self.image
         self.flash_age += self.flash_speed
 
+    def end(self):
+        self.kill()
+
 class Bird(Sprite):
     def __init__(self, rect):
         # Call the parent class (Sprite) constructor
@@ -481,8 +484,10 @@ class Bird(Sprite):
         self.frame_loader()
 
         self.actions = {'bob':(0, ),
-                        'takeoff':(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22),
-                        'soar':(23, 24, 25, 26, 27, 28, 29, 30, 31)
+                        'takeoff': (1, 2, 3, 4, 5, 6, 32),
+                        'flap': ( 33, 34, 35, 36, 37, 38, 39, 40, 41, 42),
+                        'rotate_camera': (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30),
+                        'soar': (31,)
                         }
 
         Sprite.__init__(self, self.rect.width, self.rect.height)
@@ -512,13 +517,17 @@ class Bird(Sprite):
 
     def update(self):
 
-        if self.ticks == 80:
+        if self.ticks == 100:
             self.set_action('takeoff')
             self.log.info('takeoff')
-        if self.ticks == 200:
-            self.set_action('soar')
-            self.log.info('soar')
+
+
         if self.ticks == 500:
+            self.log.info('rotate_camera')
+            self.set_action('rotate_camera')
+
+
+        if self.ticks == 2500:
             raise StopIteration
 
         if self.ticks % 5 == 0:
@@ -527,8 +536,16 @@ class Bird(Sprite):
             if self.active_frame == 0:
                 self.action = self.next_action
 
-        self.image.fill((255,255,255,128,))
+        self.image.fill((255, 255, 255, 128,))
         self.image.blit(self.frames[self.actions[self.action][self.active_frame]], (0, 0))
+
+
+
+        if self.action == 'takeoff':
+            self.set_action('flap')
+
+        if self.action == 'rotate_camera':
+            self.set_action('soar')
 
         self.ticks += 1
 

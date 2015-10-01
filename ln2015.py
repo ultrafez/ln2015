@@ -72,7 +72,11 @@ EVENT_TIMING = {
     180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
     190 * FPS: [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))],
     200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
-    220 * FPS: [Trigger("BIRDS")],  # Sea Birds SoundsStart
+    220 * FPS: [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', (('bob')))],  # Sea Birds SoundsStart
+
+    225 * FPS: [Trigger("BIRDS", 'set_action', (('takeoff',)))],
+    235 * FPS: [Trigger("BIRDS", 'set_action', (('rotate_camera',)))],
+
     240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
     250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
     260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
@@ -94,7 +98,7 @@ scene_data = {
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
-    "BIRDS": (Bird, ((bubbleroof, ))),
+    "BIRDS": (Bird, ((bubbleroof,))),
     "BOUYS": (Bouy, ((55, 50), ))
 }
 
@@ -129,7 +133,7 @@ if __name__ == "__main__":
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
 
-#    LN2015.load_sprite()
+    #LN2015.load_sprite('Bird', Bird(bubbleroof))
 
     alive = True
     while alive:
