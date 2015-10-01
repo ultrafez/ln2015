@@ -440,7 +440,7 @@ class Bouy(Sprite):
     def __init__(self, location):
         Sprite.__init__(self, 19, 19, pygame.SRCALPHA)
         self.rect = pygame.Rect(location, (19, 19))
-        self.colour = random.choice( (350.0, 30.0, 60.0, 90.0, 230.0) )
+        self.colour = random.choice( (120.0, 360.0) )
         self.ticks = 0
         self.flash_age = 20
         self.flash_speed = 0.3
@@ -450,7 +450,9 @@ class Bouy(Sprite):
 
     def update(self):
         self.image.fill(transparent)
-        pygame.draw.rect(self.image, (0x30, 0x30, 0x30, 0x30), pygame.Rect(8, 8, 3, 3), 0)  # draw gray bouy
+        ci = hls_to_rgb(self.colour, 50.0, 100.0)
+        print(ci)
+        pygame.draw.rect(self.image, ci, pygame.Rect(8, 8, 3, 3), 0)  # draw gray bouy
         if self.flash_age < 9:
             for i in range(19):
                 for j in range(19):
