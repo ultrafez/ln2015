@@ -549,6 +549,9 @@ class Bird(Sprite):
 
         self.ticks += 1
 
+    def end(self):
+        self.kill()
+
 
 class Aurora(Sprite):
     def __init__(self, x, y):
