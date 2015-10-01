@@ -46,13 +46,13 @@ key_triggers = {
     pygame.K_u: Trigger("BIRDS", "end"),
     pygame.K_n: Trigger("FOREST", "end"),
     pygame.K_j: Trigger("SUNSET"),
-    pygame.K_i: Trigger("CONSTALATION"),
+    pygame.K_i: Trigger("CONSTELLATION"),
     pygame.K_k: Trigger("SUNSET", "end"),
     pygame.K_p: Trigger("NORTHERNLIGHTS"),
     pygame.K_LEFTBRACKET: Trigger("NORTHERNLIGHTS", "end"),
     pygame.K_m: Trigger("MOONRISE"),
     pygame.K_COMMA: Trigger("MOONRISE", "end"),
-    pygame.K_o: Trigger("CONSTALATION", "end")
+    pygame.K_o: Trigger("CONSTELLATION", "end")
 }
 
 EVENT_TIMING = {
@@ -84,12 +84,12 @@ EVENT_TIMING = {
     240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
     250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
     260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
-    270 * FPS: [Trigger("CONSTALATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
+    270 * FPS: [Trigger("CONSTELLATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
     280 * FPS: [Trigger("SUNSET", "end")],  #
     290 * FPS: [Trigger("NORTHERNLIGHTS")],  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
     310 * FPS: [Trigger("NORTHERNLIGHTS", "end")],  # Northern Lights SoundsEnd
     300 * FPS: [Trigger("MOONRISE")],  #
-    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTALATION", "end")],  #
+    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTELLATION", "end")],  #
 }
 
 
@@ -100,6 +100,7 @@ scene_data = {
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
+    "CONSTELLATION": (Constellation, (49, 29)),
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
     "BIRDS": (Bird, ((bubbleroof,))),
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
 
-    #LN2015.load_sprite('Bird', Bird(bubbleroof))
+    #LN2015.load_sprite('Bird', Constellation(50, 34))
 
     alive = True
     while alive:

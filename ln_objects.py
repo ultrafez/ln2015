@@ -7,7 +7,9 @@ import math
 import os.path
 import logging
 from TrinRoofPlayer.Renderer import ceiling
+from TrinRoofPlayer.Constants import *
 import pygame
+from pygame.math import Vector2
 import numpy as np
 
 white = 255, 255, 255
@@ -322,7 +324,7 @@ class Raindrops(Group):
 
 class RainSplash(Sprite):
     def __init__(self, x, y, size):
-        self.max_radius = size // 2
+        self.max_radius = 10
         self.log = logging.getLogger(self.__class__.__name__)
         Sprite.__init__(self, size, size)
         self.rect = pygame.Rect(x - size // 2, y - size // 2, size, size)
@@ -570,8 +572,35 @@ class Aurora(Sprite):
 
 class Constellation(Sprite):
     def __init__(self, x, y):
+        self.pole = Vector2(16, 16)
+        self.patterns = {'ursamajor': (
+                                      Vector2(8, 5),
+                                      Vector2(10, 6),
+                                      Vector2(8, 10),
+                                      Vector2(10, 10),
+                                      Vector2(6, 12),
+                                      Vector2(5, 14),
+                                      Vector2(5, 17)
+                                      )
+        }
+        self.rect = pygame.Rect(x, y, 31, 31)
         # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, x, y)
+        Sprite.__init__(self, 32, 32)
+
+        self.angle = 180
+        self.dangle = 2
+
+    def update(self):
+        self.image.fill(white)
+
+        self.image.set_at((int(self.pole.x), int(self.pole.y)), (255,229,0) )
+        for star in self.patterns['ursamajor']:
+
+
+            star = star.rotate(self.angle) + self.pole
+            self.image.set_at((int(star.x), int(star.y)), (255,229,0) )
+
+        self.angle = (self.angle + self.dangle) % 360
 
 
 class HSMoon(Sprite):
@@ -580,9 +609,6 @@ class HSMoon(Sprite):
     """
     164.201, 327.203
     215.657, 275.746
-
-
-
 
     """
 
