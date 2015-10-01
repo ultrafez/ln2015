@@ -35,7 +35,7 @@ key_triggers = {
     pygame.K_v: Trigger("RAIN", "end"),
     pygame.K_r: Trigger("BOUYS"),
     pygame.K_y: Trigger("BIRDS"),
-    pygame.K_t: Trigger("BOUYS", "end"),
+    pygame.K_t: Trigger("BOUYS", "flash"),
     pygame.K_h: Trigger("WAVES", "end"),
     pygame.K_b: Trigger("FOREST"),
     pygame.K_u: Trigger("BIRDS", "end"),
@@ -51,7 +51,7 @@ key_triggers = {
 }
 
 EVENT_TIMING = {
-      0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart
+      0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
      30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
      40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
      60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
@@ -94,7 +94,8 @@ scene_data = {
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
-    "BIRDS": (Bird, ((bubbleroof, )))
+    "BIRDS": (Bird, ((bubbleroof, ))),
+    "BOUYS": (Bouy, ((55, 50), ))
 }
 
 
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     for ticks, events in EVENT_TIMING.items():
         LN2015.load_timed_event(ticks, events)
 
-    #LN2015.load_sprite("test_bird", Bird(bubbleroof))
+#    LN2015.load_sprite()
 
     alive = True
     while alive:
