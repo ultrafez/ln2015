@@ -769,7 +769,7 @@ class Sea(Group):
         self.num_beacons = n
 
     def add_beacon(self):
-        lamp = random.choice(ceiling.lamps)
+        lamp = random.choice(ceiling.bubbleroof_lamps)
         b = Beacon((lamp.x, lamp.y))
         self.beacons.add(b)
 
