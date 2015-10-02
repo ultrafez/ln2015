@@ -95,9 +95,8 @@ EVENT_TIMING = {
 
 scene_data = {
     "STARS": (StarrySky, ((MADRIX_X, MADRIX_Y),)),
-    "HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
-    "HS_SPIN": (HSMoon, ( pygame.Rect(53, 40, 25, 25), 0, 0-3)),
-#HS_MOON
+    #"HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
+    #"HS_SPIN": (HSMoon, ( pygame.Rect(0, 40, 25, 25), 0, 0-3)),
     "SUNRISE": (RisingSun, ((66, 78), (66, 53), 8, FPS * 20, FPS * 5)),
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
@@ -155,7 +154,7 @@ if __name__ == "__main__":
             ffmpeg_exe = 'ffmpeg'          
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
-    LN2015.export_video(MADRIX_X*8, MADRIX_Y*8, ffmpeg_exe)
+    LN2015.export_video(MADRIX_X, MADRIX_Y, ffmpeg_exe)
     pygame.quit()
 
 sys.exit()
