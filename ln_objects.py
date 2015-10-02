@@ -473,7 +473,7 @@ class Bouy(Sprite):
         self.flash_age += self.flash_speed
 
     def end(self):
-        self.kill()
+        raise StopIteration
 
 class Bird(Sprite):
     def __init__(self, rect):
@@ -553,7 +553,7 @@ class Bird(Sprite):
         self.ticks += 1
 
     def end(self):
-        self.kill()
+        raise StopIteration
 
 
 class Aurora(Sprite):
@@ -609,33 +609,106 @@ class Constellation(Sprite):
 class HSMoon(Sprite):
     # uri = 'Resources/hackspace_logo_large.svg'
 
-    """
-    164.201, 327.203
-    215.657, 275.746
+    #def __init__(self, x=300, y=300, r=150, angle=0, angle_delta=-3):
+    def __init__(self, rect, angle=0, angle_delta=-3):
+        if rect.width != rect.height:
+            self.log.error('HSMoon wants a square surface')
+            raise ValueError()
 
-    """
+        Sprite.__init__(self, rect.width, rect.height)
+        self.image.set_colorkey(black)
+        self.rect = rect
+        self.path_high_res = (
+                      Vector2(0, 0),
+                      Vector2(108, 0),
+                      Vector2(108, 72),
+                      Vector2(84, 72),
+                      Vector2(84, 84),
+                      Vector2(145, 84),
+                      Vector2(145, 72),
+                      Vector2(123, 72),
+                      Vector2(123, 0),
+                      Vector2(231, 0),
+                      Vector2(231, 72),
+                      Vector2(218, 72),
+                      Vector2(218, 158),
+                      Vector2(231, 158),
+                      Vector2(231, 231),
+                      Vector2(123, 231),
+                      Vector2(123, 158),
+                      Vector2(145, 144),
+                      Vector2(84, 144),
+                      Vector2(84, 158),
+                      Vector2(108, 158),
+                      Vector2(108, 231),
+                      Vector2(0, 231),
+                      Vector2(0, 158),
+                      Vector2(12, 158),
+                      Vector2(12, 72),
+                      Vector2(0, 72)
+                    )
+        self.path_low_res = (
+                      Vector2(0, 0),
+                      Vector2(108, 0),
+                      Vector2(108, 72),
+                      Vector2(84, 72),
+                      Vector2(84, 84),
+                      Vector2(145, 84),
+                      Vector2(145, 72),
+                      Vector2(123, 72),
+                      Vector2(123, 0),
+                      Vector2(231, 0),
+                      Vector2(231, 72),
+                      Vector2(218, 72),
+                      Vector2(218, 158),
+                      Vector2(231, 158),
+                      Vector2(231, 231),
+                      Vector2(123, 231),
+                      Vector2(123, 158),
+                      Vector2(145, 144),
+                      Vector2(84, 144),
+                      Vector2(84, 158),
+                      Vector2(108, 158),
+                      Vector2(108, 231),
+                      Vector2(0, 231),
+                      Vector2(0, 158),
+                      Vector2(12, 158),
+                      Vector2(12, 72),
+                      Vector2(0, 72)
+                    )
+        self.scale = self.rect.width / (310 * 1.41)
 
-    def __init__(self, x=300, y=300, r=150, angle=0, angle_delta=-3):
-        Sprite.__init__(self, r*2, r*2)
-        self.rect = pygame.Rect(x, y, r*2, r*2)
+        #self.rect = pygame.Rect(x, y, r*2, r*2)
         self.angle = angle
         self.dangle = angle_delta
-        # Call the parent class (Sprite) constructor
-        self.x, self.y, self.radius = x, y, r
-        self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
-        self.scale_factor = r * 2 / self.hlogo.get_height()
+
+        #self.x, self.y, self.radius = x, y, r
+        #self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
+        #self.scale_factor = r * 2 / self.hlogo.get_height()
 
         #self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
         #self.image.blit(self.hlogo, (0, 0))
         # self.logo = pygame.image.load(self.uri)
 
     def update(self):
-        self.image.fill((255,0,0))
-        self.angle += self.dangle
-        self.image = pygame.transform.rotozoom(self.hlogo, self.angle, self.scale_factor)
+        self.image.fill(black)
+        pygame.draw.circle(self.image, (0, 191, 255), (int(self.rect.height/2), int(self.rect.height/2)),int(self.rect.height/2), 0)
+        path = []
+        for v in self.path_low_res:
+            v = Vector2(v) - (115, 115)
+            v = v.rotate(self.angle)
+            v = v * self.scale
+            v = Vector2(v) +( int(self.rect.height/2), int(self.rect.height/2) )
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect.topleft)
+
+
+            path.append((int(v.x), int(v.y)))
+        #print(path)
+        pygame.draw.polygon(self.image, white, path, 0)
+        #pygame.draw.aalines(self.image, (255, 0, 0), True,  path, True)
+
+        #self.image = pygame.transform.rotozoom(self.hlogo, self.angle, self.scale_factor)
+        self.angle += self.dangle
 
     def end(self):
         raise StopIteration
