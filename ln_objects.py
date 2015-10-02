@@ -596,6 +596,8 @@ class Constellation(Sprite):
 
         self.image.set_at((int(self.pole.x), int(self.pole.y)), (255,229,0) )
         for star in self.patterns['ursamajor']:
+
+
             star = star.rotate(self.angle) + self.pole
             self.image.set_at((int(star.x), int(star.y)), (255,229,0) )
 
@@ -603,8 +605,6 @@ class Constellation(Sprite):
 
     def end(self):
         raise StopIteration
-
-
 
 class HSMoon(Sprite):
     # uri = 'Resources/hackspace_logo_large.svg'
@@ -694,7 +694,7 @@ class HSMoon(Sprite):
         self.image.fill(black)
         pygame.draw.circle(self.image, (0, 191, 255), (int(self.rect.height/2), int(self.rect.height/2)),int(self.rect.height/2), 0)
         path = []
-        for v in self.path:
+        for v in self.path_low_res:
             v = Vector2(v) - (115, 115)
             v = v.rotate(self.angle)
             v = v * self.scale
