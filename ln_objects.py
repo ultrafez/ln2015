@@ -603,6 +603,8 @@ class Constellation(Sprite):
 
         self.angle = (self.angle + self.dangle) % 360
 
+    def end(self):
+        raise StopIteration
 
 class HSMoon(Sprite):
     # uri = 'Resources/hackspace_logo_large.svg'
