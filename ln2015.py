@@ -71,9 +71,9 @@ EVENT_TIMING = [
         Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
     ]),  # Fork
     (140, [Trigger("LIGHTNING", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("WAVES")]),  # Wave and Ambient SoundsStart
-    (180, [Trigger("CLOUDS", "end", (5,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
-    (190, [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))]),
+    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", (3, 180, 10, 5))]),  # Wave and Ambient SoundsStart
+    (150, [Trigger("CLOUDS", "end", (5,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
+    (190, Trigger("WAVES", "spawn", (5, -80, 10, 3))),
     (200, [Trigger("WAVES", "beacon", (5, ))]),  # Waves Ring Bouys to MakeSounds
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', ('takeoff',))]),
@@ -101,7 +101,7 @@ scene_data = {
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "CONSTELLATION": (Constellation, (49, 29)),
     "MOONRISE": (HSMoon, ()),
-    "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
+    "WAVES": (Sea, (0.6,)),
     "BIRDS": (Bird, ((bubbleroof,))),
 }
 
