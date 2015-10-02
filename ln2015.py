@@ -53,42 +53,42 @@ key_triggers = {
     pygame.K_o: Trigger("CONSTELLATION", "end")
 }
 
-EVENT_TIMING = {
-      0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-     40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
-     60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
-     90 * FPS: [Trigger("CLOUDS", "grey", (FPS * 20,))],
-    100 * FPS: [
+EVENT_TIMING = [
+    (  0, [Trigger("STARS"), Trigger("HS_SPIN")]),  # Star Sounds and CricketsStart
+    ( 30, [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
+    ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
+    ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
+    ( 90, [Trigger("CLOUDS", "grey", (FPS * 20,))]),
+    (100, [
         Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
         Trigger("LIGHTNING", "add_sheet", (left_arm,)),
         Trigger("LIGHTNING", "add_sheet", (right_arm,)),
         Trigger("LIGHTNING", "add_sheet", (top_arm,))
-    ],
-    110 * FPS: [Trigger("RAIN")],  # Rain SoundsStart
-    114 * FPS: [
+    ]),
+    (110, [Trigger("RAIN")]),  # Rain SoundsStart
+    (114, [
         Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
         Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
-    ],  # Fork
-    140 * FPS: [Trigger("LIGHTNING", "end")],  # Lightning SoundsEnd
-    150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
-    180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
-    190 * FPS: [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))],
-    200 * FPS: [Trigger("WAVES", "beacon", (5, ))],  # Waves Ring Bouys to MakeSounds
-    220 * FPS: [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))],  # Sea Birds SoundsStart
-    225 * FPS: [Trigger("BIRDS", 'set_action', ('takeoff',))],
-    235 * FPS: [Trigger("BIRDS", 'set_action', ('rotate_camera',))],
+    ]),  # Fork
+    (140, [Trigger("LIGHTNING", "end")]),  # Lightning SoundsEnd
+    (150, [Trigger("WAVES")]),  # Wave and Ambient SoundsStart
+    (180, [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
+    (190, [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))]),
+    (200, [Trigger("WAVES", "beacon", (5, ))]),  # Waves Ring Bouys to MakeSounds
+    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))]),  # Sea Birds SoundsStart
+    (225, [Trigger("BIRDS", 'set_action', ('takeoff',))]),
+    (235, [Trigger("BIRDS", 'set_action', ('rotate_camera',))]),
 
-    240 * FPS: [Trigger("WAVES", "beacon", (0,))],  # Stop beacon respawn
-    250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
-    260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
-    270 * FPS: [Trigger("CONSTELLATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
-    280 * FPS: [Trigger("SUNSET", "end")],  #
-    290 * FPS: [Trigger("NORTHERNLIGHTS")],  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
-    310 * FPS: [Trigger("NORTHERNLIGHTS", "end")],  # Northern Lights SoundsEnd
-    300 * FPS: [Trigger("MOONRISE")],  #
-    320 * FPS: [Trigger("MOONRISE", "end"), Trigger("CONSTELLATION", "end")],  #
-}
+    (240, [Trigger("WAVES", "beacon", (0,))]),  # Stop beacon respawn
+    (250, [Trigger("FOREST")]),  # Forest SoundsStarts
+    (260, [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
+    (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
+    (280, [Trigger("SUNSET", "end")]),  #
+    (290, [Trigger("NORTHERNLIGHTS")]),  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
+    (310, [Trigger("NORTHERNLIGHTS", "end")]),  # Northern Lights SoundsEnd
+    (300, [Trigger("MOONRISE")]),  #
+    (320, [Trigger("MOONRISE", "end"), Trigger("CONSTELLATION", "end")]),  #
+]
 
 
 scene_data = {
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     for scene, data in scene_data.items():
         LN2015.load_scene(scene, data)
 
-    for ticks, events in EVENT_TIMING.items():
+    for ticks, events in EVENT_TIMING:
         LN2015.load_timed_event(ticks, events)
 
     #LN2015.load_sprite('Bird', Constellation(50, 34))
