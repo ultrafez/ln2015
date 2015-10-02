@@ -437,44 +437,6 @@ class ForkLighting(Lightning):
             self.ionised.append(n)
             pygame.draw.line(self.image, self.color, last, n, 2)
 
-
-class Bouy(Sprite):
-    def __init__(self, location):
-        Sprite.__init__(self, 19, 19, pygame.SRCALPHA)
-        self.rect = pygame.Rect(location, (19, 19))
-        self.colour = random.choice( (120.0, 360.0) )
-        self.ticks = 0
-        self.flash_age = 20
-        self.flash_speed = 0.3
-
-    def flash(self):
-        self.flash_age = self.flash_speed
-
-    def update(self):
-        self.image.fill(transparent)
-        ci = hls_to_rgb(self.colour, 50.0, 100.0)
-        pygame.draw.rect(self.image, ci, pygame.Rect(8, 8, 3, 3), 0)  # draw gray bouy
-        if self.flash_age < 9:
-            for i in range(19):
-                for j in range(19):
-                    l = pygame.math.Vector2(9-i, 9-j).length()
-                    if l > self.flash_age:
-                        self.image.set_at((i, j), transparent)
-                    else:
-                        o = ((9-self.flash_age)/9) * (l/self.flash_age)
-                        c = hlsa_to_rgba(self.colour, 40.0, 100.0, o*255)
-                        self.image.set_at((i, j), c)
-
-                    if i == 9 and j == 9:
-                        c = hlsa_to_rgba(self.colour, (100*((9-self.flash_age)/9)), 100.0, 255)
-                        self.image.set_at((i, j), c)
-
-        # self.image
-        self.flash_age += self.flash_speed
-
-    def end(self):
-        raise StopIteration
-
 class Bird(Sprite):
     def __init__(self, rect):
         # Call the parent class (Sprite) constructor
@@ -762,6 +724,24 @@ class Wave(Sprite):
         else:
             return -dist
 
+class Beacon(Sprite):
+    def __init__(self, pos):
+        super().__init__()
+        self.pos = pos
+        self.radius = 0.5
+        self.triggered = False
+        self.max_r = 10.0
+
+    def update(self):
+        self.radius += 0.5
+        if self.radius > self.max_r:
+            self.kill()
+
+    def distance(self, point):
+        x = point[0] - self.pos[0]
+        y = point[1] - self.pos[1]
+        return pythagoras((x, y))
+
 class Sea(Group):
     def __init__(self, size, num_waves, width):
         super().__init__()
@@ -772,6 +752,8 @@ class Sea(Group):
         self.new_width = width
         self.new_timer = 0
         self.size = size
+        self.beacons = Group()
+        self.num_beacons = 0
 
     def change(self, num_waves, width, time):
         self.dw = (width - self.width) / time
@@ -783,10 +765,21 @@ class Sea(Group):
         r = random.random()
         self.add(Wave((random.choice((r, -r)), random.choice((r - 1.0, 1.0 - r))), self.size))
 
+    def beacon(self, n):
+        self.num_beacons = n
+
+    def add_beacon(self):
+        lamp = random.choice(ceiling.lamps)
+        b = Beacon((lamp.x, lamp.y))
+        self.beacons.add(b)
+
     def end(self):
         self.num_waves = 0
 
     def update(self):
+        if len(self.beacons) < self.num_beacons:
+            self.add_beacon()
+
         if self.num_waves == 0 and len(self) == 0:
             raise StopIteration
         if (self.dw > 0.0 and self.width < self.new_width) \
@@ -802,6 +795,14 @@ class Sea(Group):
 
         for w in self:
             w.update(self.width)
+        for b in self.beacons:
+            if b.triggered:
+                b.update()
+            else:
+                for w in self:
+                    dist = w.distance(b.pos)
+                    if dist >= 0 and dist < self.width * 2.0:
+                        b.triggered = True
 
     def draw(self, surface):
         if len(self) == 0:
@@ -809,6 +810,7 @@ class Sea(Group):
         self.s.fill(transparent)
         a = pygame.PixelArray(self.s)
         for lamp in ceiling.lamps:
+            try:
                 x = lamp.x
                 y = lamp.y
         #for x in range(self.size[0]):
@@ -818,19 +820,50 @@ class Sea(Group):
                     dist = obj.distance((x, y))
                     if dist > 0.0 and dist < close:
                         close = dist
-                color = transparent
+                color = (0, 0, 0)
                 if close > 0.0:
                     if close <= 1.0:
                         p = int(255 * close)
-                        color = (255, 255, 255, p)
+                        color = (p, p, p)
                     else:
                         close = (close - 1.0) / self.width
                         if close < 1.0:
                             p = int(255 * (1.0 - close))
-                            color = (p, p, 255, 255)
+                            color = (p, p, 255)
                         elif close < 2.0:
                             p = int(255 * (2.0 - close))
-                            color = (0, 0, 255, p)
+                            color = (0, 0, p)
+                height = 0.0
+                for b in self.beacons:
+                    dist = b.distance((x, y))
+                    if dist < b.radius:
+                        if dist > b.radius - 1.0:
+                            new_height = 1.0
+                        else:
+                            new_height = dist / b.radius
+                    elif dist < b.radius + 1.0:
+                        dr = dist - b.radius
+                        new_height = math.cos(dr * math.pi / 2.0)
+                    else:
+                        new_height = 0.0
+                    new_height *= min(2.0*math.cos((b.radius / b.max_r) * math.pi / 2.0), 1.0)
+                    if new_height > height:
+                        height = new_height
+                if height > 0.0:
+                    intens = int(255 * height)
+                    color = (max(color[0], intens), color[1], color[2])
+                r = color[0]
+                g = color[1]
+                b = color[2]
+                alpha = max(r, g, b)
+                if alpha < 255:
+                    r = min(r * 255, 255)
+                    g = min(g * 255, 255)
+                    b = min(b * 255, 255)
+                color = (r, g, b, alpha)
                 a[x, y] = color
+            except Exception as e:
+                print(e)
+                raise Exception("Here")
         del a
         surface.blit(self.s, (0, 0))

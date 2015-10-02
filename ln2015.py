@@ -33,14 +33,12 @@ key_triggers = {
     pygame.K_g: Trigger("WAVES"),
     pygame.K_x: Trigger("CLOUDS", "end"),
     pygame.K_v: Trigger("RAIN", "end"),
-    pygame.K_r: Trigger("BOUYS"),
 
     pygame.K_y: Trigger("BIRDS"),
     pygame.K_1: Trigger("BIRDS", "set_action", ('bob', )),
     pygame.K_2: Trigger("BIRDS", "set_action", ('takeoff', )),
     pygame.K_3: Trigger("BIRDS", "set_action", ('rotate_camera', )),
 
-    pygame.K_t: Trigger("BOUYS", "flash"),
     pygame.K_h: Trigger("WAVES", "end"),
     pygame.K_b: Trigger("FOREST"),
     pygame.K_u: Trigger("BIRDS", "end"),
@@ -76,12 +74,12 @@ EVENT_TIMING = {
     150 * FPS: [Trigger("WAVES")],  # Wave and Ambient SoundsStart
     180 * FPS: [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")],  # Clouds FadeEnd #Rain SoundsEnd
     190 * FPS: [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))],
-    200 * FPS: [Trigger("BOUYS")],  # Waves Ring Bouys to MakeSounds
+    200 * FPS: [Trigger("WAVES", "beacon", (5, ))],  # Waves Ring Bouys to MakeSounds
     220 * FPS: [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))],  # Sea Birds SoundsStart
     225 * FPS: [Trigger("BIRDS", 'set_action', ('takeoff',))],
     235 * FPS: [Trigger("BIRDS", 'set_action', ('rotate_camera',))],
 
-    240 * FPS: [Trigger("BOUYS", "end")],  # Buoys SoundsStop
+    240 * FPS: [Trigger("WAVES", "beacon", (0,))],  # Stop beacon respawn
     250 * FPS: [Trigger("FOREST")],  # Forest SoundsStarts
     260 * FPS: [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")],  # Sea Birds SoundsEnd #Waves SoundsEnd
     270 * FPS: [Trigger("CONSTELLATION"), Trigger("FOREST", "end")],  # Night Crickets and Star SoundsStart #Forest SoundsEnd
@@ -105,7 +103,6 @@ scene_data = {
     "MOONRISE": (HSMoon, ()),
     "WAVES": (Sea, ((MADRIX_X, MADRIX_Y), 2, 3.0)),
     "BIRDS": (Bird, ((bubbleroof,))),
-    "BOUYS": (Bouy, ((66, 78), ))
 }
 
 
