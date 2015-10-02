@@ -233,6 +233,9 @@ class Cloud(Sprite):
 
 
 class Clouds(Group):
+    CLOUD_NORMAL = 1
+    CLOUD_GREY = 2
+    CLOUD_BLACK = 3
     def __init__(self, size, cloud_size, initial_prob, final_prob, ramp_duration):
         super().__init__()
         self.cloud_size = cloud_size
@@ -240,60 +243,66 @@ class Clouds(Group):
         self.color = (255, 255, 255, 0)
         self.max_x = size[0]
         self.max_y = size[1] - cloud_size
-        self.time = 0
         self.initial_prob = initial_prob
         self.final_prob = final_prob
-        self.ramp_duration = ramp_duration
-        self.grey_time = None
-        self.black_time = None
+        self.ramp_speed = None
+        self.time = None
+        self.set_ramp(ramp_duration)
+        self.phase = self.CLOUD_NORMAL
+        self.greyness = 0.5
 
-    def grey(self, duration):
-        self.grey_time = duration
-        self.time = 0
+    def set_ramp(self, duration):
+        self.ramp_speed = 1.0 / (get_fps() * duration)
+        self.time = 0.0
+
+    def grey(self, greyness, duration):
+        self.set_ramp(duration)
+        self.greyness = greyness
+        self.phase = self.CLOUD_GREY
 
     def update(self):
-        if self.grey is not None:
-            if self.time > self.ramp_duration:
+        if self.phase == self.CLOUD_NORMAL:
+            if self.time >= 1.0:
                 p = self.final_prob
             else:
                 a = self.initial_prob
                 b = self.final_prob
-                p = a + (b - a) * self.time / self.ramp_duration
+                p = a + (b - a) * self.time
             while True:
                 p -= random.random()
                 if p < 0.0:
                     break
                 self.add(Cloud(self.max_x, random.randrange(self.max_y), self.cloud_size))
-        self.time += 1
+        self.time += self.ramp_speed
         super().update()
 
     def draw(self, surface):
         skip = False
-        if self.black_time is not None:
-            if self.time > self.grey_time:
+        alpha = 0
+        shade = 255
+        if self.phase == self.CLOUD_BLACK:
+            if self.time > 1.0:
                 raise StopIteration
-            p = self.time / self.grey_time
-            shade = int(128 * (1.0 - p))
-            surface.fill((shade, shade, shade, 255))
-            return
-        if self.grey_time is not None:
-            if self.time >= self.grey_time:
-                surface.fill((128, 128, 128, 255))
-                return
-            p = self.time / self.grey_time
-            alpha = int(255 * p)
-            shade = 255 - alpha // 2
-            self.color = (shade, shade, shade, alpha)
-        self.s.fill(self.color)
-        a = pygame.surfarray.pixels_alpha(self.s)
-        for cloud in self:
-            cloud.draw(a)
-        del a
+            alpha = int(255 * (1.0 - self.time))
+            shade = 255 * self.greyness
+        if self.phase == self.CLOUD_GREY:
+            if self.time >= 1.0:
+                alpha = 255
+                shade = int(255 * self.greyness)
+            else:
+                alpha = int(255 * self.time)
+                shade = int(255 * (1.0 - (1.0 - self.greyness) * self.time))
+        self.s.fill((shade, shade, shade, alpha))
+        if self.phase != self.CLOUD_BLACK:
+            a = pygame.surfarray.pixels_alpha(self.s)
+            for cloud in self:
+                cloud.draw(a)
+            del a
         surface.blit(self.s, (0, 0))
 
     def end(self, duration):
-        self.black_time = duration
-        self.time = 0
+        self.set_ramp(duration)
+        self.phase = self.CLOUD_BLACK
 
 
 class Raindrops(Group):

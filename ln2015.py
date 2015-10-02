@@ -31,7 +31,6 @@ key_triggers = {
     pygame.K_c: Trigger("RAIN"),
     pygame.K_f: Trigger("LIGHTNING", "end"),
     pygame.K_g: Trigger("WAVES"),
-    pygame.K_x: Trigger("CLOUDS", "end"),
     pygame.K_v: Trigger("RAIN", "end"),
 
     pygame.K_y: Trigger("BIRDS"),
@@ -59,7 +58,7 @@ EVENT_TIMING = [
     ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
     ( 50, Trigger("SUNRISE", "end", (5,))),
     ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
-    ( 90, [Trigger("CLOUDS", "grey", (FPS * 20,))]),
+    ( 90, [Trigger("CLOUDS", "grey", (0.4, 20))]),
     (100, [
         Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
         Trigger("LIGHTNING", "add_sheet", (left_arm,)),
@@ -73,7 +72,7 @@ EVENT_TIMING = [
     ]),  # Fork
     (140, [Trigger("LIGHTNING", "end")]),  # Lightning SoundsEnd
     (150, [Trigger("WAVES")]),  # Wave and Ambient SoundsStart
-    (180, [Trigger("CLOUDS", "end", (5 * FPS,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
+    (180, [Trigger("CLOUDS", "end", (5,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
     (190, [Trigger("WAVES", "change", (5, 5.0, 2 * FPS))]),
     (200, [Trigger("WAVES", "beacon", (5, ))]),  # Waves Ring Bouys to MakeSounds
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))]),  # Sea Birds SoundsStart
@@ -97,7 +96,7 @@ scene_data = {
     #"HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
     #"HS_SPIN": (HSMoon, ( pygame.Rect(0, 40, 25, 25), 0, 0-3)),
     "SUNRISE": (RisingSun, ((66, 78), (66, 53), 8, 10)),
-    "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
+    "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20)),
     "LIGHTNING": (Thunderstorm, ()),
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),
     "CONSTELLATION": (Constellation, (49, 29)),
