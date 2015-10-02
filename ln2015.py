@@ -57,7 +57,7 @@ key_triggers = {
 
 EVENT_TIMING = {
       0 * FPS: [Trigger("STARS"), Trigger("HS_SPIN")],  # Star Sounds and CricketsStart     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
+     30 * FPS: [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")],  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
      40 * FPS: [Trigger("STARS", "end")],  # Star Sounds and CricketsEnd
      60 * FPS: [Trigger("CLOUDS")],  # Clouds and Wind SoundsStart
      90 * FPS: [Trigger("CLOUDS", "grey", (FPS * 20,))],
