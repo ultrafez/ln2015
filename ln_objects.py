@@ -692,13 +692,14 @@ def pythagoras(vector):
 
 
 class Wave(Sprite):
-    def __init__(self, direction, size):
+    def __init__(self, direction, width):
         super().__init__()
+        self.width = width
         self.direction = direction
         speed = pythagoras(direction)
         self.norm = (direction[1] / speed, -direction[0] / speed)
-        self.max_x = size[0]
-        self.max_y = size[1]
+        self.max_x = MADRIX_X
+        self.max_y = MADRIX_Y
         if direction[0] > 0.0:
             start_x = 0.0
         else:
@@ -709,7 +710,7 @@ class Wave(Sprite):
             start_y = self.max_y
         self.pos = (start_x, start_y)
 
-    def update(self, width):
+    def update(self):
         x = self.pos[0] + self.direction[0]
         y = self.pos[1] + self.direction[1]
         self.pos = (x, y)
@@ -717,7 +718,7 @@ class Wave(Sprite):
         d = min(d, self.distance((0, self.max_y)))
         d = min(d, self.distance((self.max_x, self.max_y)))
         d = min(d, self.distance((self.max_x, 0)))
-        if d > width * 2.0 + 1.0:
+        if d > self.width * 2.0 + 1.0:
             self.kill()
 
     def distance(self, point):
@@ -753,28 +754,36 @@ class Beacon(Sprite):
         y = point[1] - self.pos[1]
         return pythagoras((x, y))
 
-class Sea(Group):
-    def __init__(self, size, num_waves, width):
-        super().__init__()
-        self.s = pygame.Surface(size, flags = pygame.SRCALPHA)
-        self.num_waves = num_waves
+class ProtoWave(object):
+    def __init__(self, delay, width, angle):
+        self.delay = int(delay)
         self.width = width
-        self.dw = 0.0
-        self.new_width = width
-        self.new_timer = 0
-        self.size = size
+        self.angle = angle * math.pi * 2 / 360
+    def update(self):
+        self.delay -= 1
+        return self.delay < 0
+
+class Sea(Group):
+    def __init__(self, wave_speed):
+        super().__init__()
+        size = (MADRIX_X, MADRIX_Y)
+        self.s = pygame.Surface(size, flags = pygame.SRCALPHA)
+        self.time = 0
         self.beacons = Group()
         self.num_beacons = 0
+        self.future = []
+        self.wave_speed = wave_speed
 
-    def change(self, num_waves, width, time):
-        self.dw = (width - self.width) / time
-        self.new_width = width
-        self.num_waves = num_waves
-        self.new_timer = min(self.new_timer, self.size[0] // num_waves)
+    def spawn(self, width, angle, num_waves, interval):
+        """Trigger a set of waves"""
+        dt = interval * get_fps()
+        for i in range(num_waves):
+            pw = ProtoWave(dt * i, width, angle)
+            self.future.append(pw)
 
-    def add_wave(self):
-        r = random.random()
-        self.add(Wave((random.choice((r, -r)), random.choice((r - 1.0, 1.0 - r))), self.size))
+    def add_wave(self, pw):
+        direction = (math.cos(pw.angle) * self.wave_speed, math.sin(pw.angle) * self.wave_speed)
+        self.add(Wave(direction, pw.width))
 
     def beacon(self, n):
         self.num_beacons = n
@@ -791,28 +800,27 @@ class Sea(Group):
         if len(self.beacons) < self.num_beacons:
             self.add_beacon()
 
-        if self.num_waves == 0 and len(self) == 0:
+        if len(self.future) == 0 and len(self) == 0:
             raise StopIteration
-        if (self.dw > 0.0 and self.width < self.new_width) \
-                or (self.dw < 0.0 and self.width > self.new_width):
-            self.width += self.dw
 
-        if self.new_timer > 0:
-            self.new_timer -= 1
+        tomorrow = []
+        for pw in self.future:
+            if pw.update():
+                self.add_wave(pw)
+            else:
+                tomorrow.append(pw)
+        self.future = tomorrow
 
-        if len(self) < self.num_waves and self.new_timer == 0:
-            self.add_wave()
-            self.new_timer = self.size[0] // self.num_waves
+        for wave in self:
+            wave.update()
 
-        for w in self:
-            w.update(self.width)
         for b in self.beacons:
             if b.triggered:
                 b.update()
             else:
-                for w in self:
-                    dist = w.distance(b.pos)
-                    if dist >= 0 and dist < self.width * 2.0:
+                for wave in self:
+                    dist = wave.distance(b.pos)
+                    if dist >= 0 and dist < wave.width * 2.0:
                         b.triggered = True
 
     def draw(self, surface):
@@ -826,24 +834,27 @@ class Sea(Group):
                 y = lamp.y
         #for x in range(self.size[0]):
         #    for y in range(self.size[1]):
-                close = self.width * 2.0 + 1.0
-                for obj in self:
-                    dist = obj.distance((x, y))
-                    if dist > 0.0 and dist < close:
-                        close = dist
+                close = None
+                for wave in self:
+                    dist = wave.distance((x, y))
+                    if dist > 0.0:
+                        if dist < 1.0:
+                            dist -= 1.0
+                        else:
+                            dist = (dist - 1.0) / wave.width
+                        if close is None or dist < close:
+                            close = dist
                 color = (0, 0, 0)
-                if close > 0.0:
-                    if close <= 1.0:
-                        p = int(255 * close)
+                if close is not None:
+                    if close <= 0.0:
+                        p = int(255 * (close + 1.0))
                         color = (p, p, p)
-                    else:
-                        close = (close - 1.0) / self.width
-                        if close < 1.0:
-                            p = int(255 * (1.0 - close))
-                            color = (p, p, 255)
-                        elif close < 2.0:
-                            p = int(255 * (2.0 - close))
-                            color = (0, 0, p)
+                    elif close < 1.0:
+                        p = int(255 * (1.0 - close))
+                        color = (p, p, 255)
+                    elif close < 2.0:
+                        p = int(255 * (2.0 - close))
+                        color = (0, 0, p)
                 height = 0.0
                 for b in self.beacons:
                     dist = b.distance((x, y))
