@@ -694,7 +694,7 @@ class HSMoon(Sprite):
         self.image.fill(black)
         pygame.draw.circle(self.image, (0, 191, 255), (int(self.rect.height/2), int(self.rect.height/2)),int(self.rect.height/2), 0)
         path = []
-        for v in self.path:
+        for v in self.path_low_res:
             v = Vector2(v) - (115, 115)
             v = v.rotate(self.angle)
             v = v * self.scale
