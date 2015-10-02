@@ -57,6 +57,7 @@ EVENT_TIMING = [
     (  0, [Trigger("STARS"), Trigger("HS_SPIN")]),  # Star Sounds and CricketsStart
     ( 30, [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
     ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
+    ( 50, Trigger("SUNRISE", "end", (5,))),
     ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
     ( 90, [Trigger("CLOUDS", "grey", (FPS * 20,))]),
     (100, [
@@ -95,7 +96,7 @@ scene_data = {
     "STARS": (StarrySky, ((MADRIX_X, MADRIX_Y),)),
     #"HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
     #"HS_SPIN": (HSMoon, ( pygame.Rect(0, 40, 25, 25), 0, 0-3)),
-    "SUNRISE": (RisingSun, ((66, 78), (66, 53), 8, FPS * 20, FPS * 5)),
+    "SUNRISE": (RisingSun, ((66, 78), (66, 53), 8, 10)),
     "CLOUDS": (Clouds, ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20 * FPS)),
     "LIGHTNING": (Thunderstorm, ()),
     "RAIN": (Raindrops, ((MADRIX_X, MADRIX_Y),)),

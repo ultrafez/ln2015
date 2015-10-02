@@ -6,7 +6,7 @@ from math import pi, sin
 import math
 import os.path
 import logging
-from TrinRoofPlayer.Renderer import ceiling
+from TrinRoofPlayer.Renderer import ceiling, get_fps
 from TrinRoofPlayer.Constants import *
 import pygame
 from pygame.math import Vector2
@@ -136,7 +136,7 @@ class StarrySky(Group):
 
 
 class RisingSun(Sprite):
-    def __init__(self, start, end, size, duration, fade):
+    def __init__(self, start, end, size, duration):
         super().__init__(size * 2, size * 2)
 
         self.start = start
@@ -144,8 +144,8 @@ class RisingSun(Sprite):
         self.move_y = end[1] - start[1]
         self.size = size
         self.rect = self.image.get_rect()
-        self.duration = duration
-        self.fade = 1.0 / fade
+        self.speed = 1.0 / (get_fps() * duration)
+        self.fade_speed = None
 
         self.time = 0.0
         self.alpha = 1.0
@@ -166,16 +166,18 @@ class RisingSun(Sprite):
 
     def update(self):
         if self.time < 1.0:
-            self.time += 1.0 / self.duration
+            self.time += self.speed
             x = self.start[0] + self.time * self.move_x
             y = self.start[1] + self.time * self.move_y
             self.rect.center = (x, y)
-        else:
-            self.time = 1.0
-            self.alpha -= self.fade
+        if self.fade_speed is not None:
+            self.alpha -= self.fade_speed
             if self.alpha < 0.0:
                 raise StopIteration
             self.image.set_alpha(255 * self.alpha)
+
+    def end(self, fade_time):
+        self.fade_speed = 1.0 / (get_fps() * fade_time)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
