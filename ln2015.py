@@ -46,8 +46,8 @@ key_triggers = {
     pygame.K_j: Trigger("SUNSET"),
     pygame.K_i: Trigger("CONSTELLATION"),
     pygame.K_k: Trigger("SUNSET", "end"),
-    pygame.K_p: Trigger("NORTHERNLIGHTS"),
-    pygame.K_LEFTBRACKET: Trigger("NORTHERNLIGHTS", "end"),
+    pygame.K_p: Trigger("AURORA"),
+    pygame.K_LEFTBRACKET: Trigger("AURORA", "end"),
     pygame.K_m: Trigger("MOONRISE"),
     pygame.K_COMMA: Trigger("MOONRISE", "move", (66, 53), 12, 10),
     pygame.K_o: Trigger("CONSTELLATION", "end")
@@ -118,9 +118,10 @@ EVENT_TIMING = [
     (260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
     (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
     (280, [Trigger("SUNSET", "end")]),  #
-    (290, [Trigger("NORTHERNLIGHTS")]),  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
-    (310, [Trigger("NORTHERNLIGHTS", "end")]),  # Northern Lights SoundsEnd
+    (280, Trigger("AURORA")),
+    (290, Trigger("AURORA", "spawn", 10)),
     (300, Trigger("MOONRISE")),
+    (310, Trigger("AURORA", "end")),
     (315, Trigger("MOONRISE", "overlay", 3)), # fade time
     (320, Trigger("MOONRISE", "overlay")), # Disable overlay waits till H faded out
     (325, Trigger("MOONRISE", "move", (80, 53), 6, 5)),  #
@@ -144,6 +145,7 @@ scene_data = {
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
     "WAVES": (70, Sea, 0.6), #wave_speed
+    "AURORA": (5, Aurora, (66, 53), 2, 5) # middle, blob_duration, num_blobs
     #'ripples': (100, ripples, MADRIX_SIZE)
 }
 

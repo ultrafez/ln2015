@@ -715,6 +715,18 @@ class Wave(Sprite):
         else:
             return -dist
 
+def colormixer(color):
+    def do_mix(orig, value):
+        (r, g, b) = orig
+        if color & 1:
+            r = max(r, value)
+        if color & 2:
+            g = max(g, value)
+        if color & 4:
+            b = max(b, value)
+        return (r, g, b)
+    return do_mix
+
 class Beacon(Sprite):
     red = 1
     green = 2
@@ -929,3 +941,106 @@ class Ripples(Sprite):
                 px[i, j] = tuple(water_blue)
             del(px)
         self.ticks += 1
+
+
+class PlasmaBlob(Sprite):
+    def __init__(self, pos, size, duration, angle, color):
+        super().__init__()
+        self.x = pos[0]
+        self.y = pos[1]
+        self.width = size[0]
+        self.height = size[1]
+        rad = angle * math.pi * 2.0 / 360
+        self.cos = math.cos(rad)
+        self.sin = math.sin(rad)
+        if self.width < self.height:
+            Exception("Wibble")
+        self.ell = self.width + self.height
+        self.speed = 1.0 / (get_fps() * duration)
+        self.time = 0.0
+        self.color = color
+
+    def update(self):
+        self.time += self.speed
+        if self.time > 2.0:
+            self.kill()
+
+    def draw(self, pixels):
+        for lamp in ceiling.lamps:
+            x = lamp.x
+            y = lamp.y
+            dx = x - self.x
+            dy = y - self.y
+            du = (dx * self.cos + dy * self.sin) / self.width
+            dv = (dy * self.cos - dx * self.sin) / self.height
+            dist = pythagoras((du, dv))
+            if dist > 1.0:
+                continue
+            dist = dist * dist
+            height = (1.0 - math.cos(dist * math.pi * 2.0)) / 2.0
+            sd = self.time - dist
+            if sd < 0 or sd > 1.0:
+                continue
+            shade = height * (1.0 - math.cos(sd * math.pi * 2)) / 2.0
+            r = int(self.color[0] * shade)
+            g = int(self.color[1] * shade)
+            b = int(self.color[2] * shade)
+            prev = pixels[x, y]
+            if prev != 0:
+                r = max(r, (prev >> 16) & 0xff)
+                g = max(g, (prev >> 8) & 0xff)
+                b = max(b, prev & 0xff)
+            pixels[x, y] = (r, g, b)
+
+class Aurora(Group):
+    blob_colors = [
+        (128, 0, 0),
+        (255, 0, 255),
+        (0, 0, 128),
+        (0, 255, 0),
+    ]
+    def __init__(self, pos, blob_duration, num_blobs):
+        super().__init__()
+        self.x = pos[0]
+        self.y = pos[1]
+        self.time = 0.0
+        self.speed = 0.0
+        self.blob_duration = blob_duration
+        self.num_blobs = 0
+        self.rate = 0.0
+        self.s = pygame.Surface(MADRIX_SIZE)
+        self.s.set_colorkey(black)
+        self.spawn(num_blobs)
+
+    def spawn(self, n):
+        self.num_blobs = n
+        self.rate = n / (get_fps() * self.blob_duration)
+
+    def add_blob(self):
+        width = 20
+        height = 3
+        x = self.x + self.rand.randrange(-width, width)
+        y = self.y + self.rand.randrange(-height, height)
+        angle = self.rand.randrange(360)
+        color = self.rand.choice(self.blob_colors)
+        self.add(PlasmaBlob((x, y), (width, height), self.blob_duration, angle, color))
+
+    def update(self):
+        super().update()
+        self.time -= self.rate * self.rand.random()
+        if self.time < 0.0 and len(self) < self.num_blobs:
+            self.add_blob()
+            self.time += 1.0
+        if self.num_blobs == 0 and len(self) == 0:
+            raise StopIteration
+
+    def draw(self, surface):
+        self.s.fill(0)
+        pixels = pygame.PixelArray(self.s)
+        for blob in self:
+            blob.draw(pixels)
+        del pixels
+        surface.blit(self.s, (0,0))
+
+    def end(self):
+        self.num_blobs = 0
