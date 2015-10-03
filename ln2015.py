@@ -74,7 +74,7 @@ EVENT_TIMING = [
     (160, [Trigger("LIGHTNING_high", "end")]),  
     (160, [Trigger("LIGHTNING_low", "end")]),
     (160, [Trigger("CLOUDS", "end", 5)]), 
-    (160, [Trigger("RAIN", "end")]),  # clouds fadetime
+    (160, [Trigger("RAIN", "end", 5)]),  # clouds fadetime
     (170, [Trigger("WAVES", "beacon", 5)]), #number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),
@@ -97,7 +97,7 @@ scene_data = {
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20), # area of effect size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (40, Raindrops, 5, 0.5, 20, 10),
+    "RAIN": (40, Raindrops, 5, 0.5, 20, 10), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon),
