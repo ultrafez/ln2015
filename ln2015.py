@@ -109,7 +109,7 @@ EVENT_TIMING = [
     (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
     (150, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
     (155, [Trigger("WAVES", "spawn", 5, 180, 1, 3)]),
-    (157.5, [Trigger("WAVES", "spawn", 5, 135, 6, 7)]),
+    (157.5, [Trigger("WAVES", "spawn", 5, 135, 6, 5)]),
     (160, [Trigger("WAVES", "spawn", 5, 180, 4, 5)]),
     (143.75, [Trigger("RAIN", "end", 2)]),
     (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
