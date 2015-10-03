@@ -59,7 +59,7 @@ EVENT_TIMING = [
     ( 60, Trigger("SUNRISE", "move", None, 12, 10)), # newpos, newsize, duration
     ( 70, Trigger("SUNRISE", "end", 5)), # fadetime
     ( 53, [Trigger("CLOUDS")]),
-    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]),
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.6, 20)]),
 
     (90, [
         Trigger("LIGHTNING_outer"),
@@ -120,8 +120,10 @@ EVENT_TIMING = [
     (290, [Trigger("NORTHERNLIGHTS")]),  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
     (310, [Trigger("NORTHERNLIGHTS", "end")]),  # Northern Lights SoundsEnd
     (300, Trigger("MOONRISE")),
-    (315, Trigger("MOONRISE", "move", (80, 53), 6, 5)),  #
-    (320, [Trigger("MOONRISE", "end", 5), Trigger("CONSTELLATION", "end")]),  #
+    (315, Trigger("MOONRISE", "overlay", 3)), # fade time
+    (320, Trigger("MOONRISE", "overlay")), # Disable overlay
+    (325, Trigger("MOONRISE", "move", (80, 53), 6, 5)),  #
+    (330, [Trigger("MOONRISE", "end", 5), Trigger("CONSTELLATION", "end")]),  #
 ]
 
 
@@ -139,7 +141,7 @@ scene_data = {
     "RAIN": (25, Raindrops, 5, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
-    "MOONRISE": (60, HSMoon, (66, 53), 10, 2, 10),
+    "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
     "WAVES": (70, Sea, 0.6),
     #'ripples': (100, ripples, MADRIX_SIZE)
 }
