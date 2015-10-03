@@ -94,22 +94,16 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0,(StarrySky,  ((MADRIX_X, MADRIX_Y),))),
-    #"HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
-    #"HS_SPIN": (HSMoon, ( pygame.Rect(0, 40, 25, 25), 0, 0-3)),
-    "SUNRISE": (10,(RisingSun,  ((66, 78), (66, 53), 8, 10))),
-
-    "LIGHTNING_high": (15, (Thunderstorm, ())),
-    "CLOUDS": (20,(Clouds,  ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20))),
-    "LIGHTNING_low": (30, (Thunderstorm, ())),
-
-    "RAIN": (40, (Raindrops, ((MADRIX_X, MADRIX_Y),))),
-
-    "BIRDS": (41, (Bird,  ((bubbleroof,)))),
-    "CONSTELLATION": (1, (Constellation, (49, 29))),
-    "MOONRISE": (60, (HSMoon, ())),
-    "WAVES": (70,(Sea,  (0.6,))),
-
+    "STARS": (0, StarrySky, (MADRIX_X, MADRIX_Y)),
+    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 10),
+    "LIGHTNING_high": (15, Thunderstorm),
+    "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20),
+    "LIGHTNING_low": (30, Thunderstorm),
+    "RAIN": (40, Raindrops, (MADRIX_X, MADRIX_Y)),
+    "BIRDS": (41, Bird, bubbleroof),
+    "CONSTELLATION": (50, Constellation, 49, 29),
+    "MOONRISE": (60, HSMoon),
+    "WAVES": (70, Sea, 0.6),
 }
 
 
@@ -139,7 +133,7 @@ if __name__ == "__main__":
         LN2015.set_key_triggers(key, trig)
 
     for scene, data in scene_data.items():
-        LN2015.load_scene(scene, data[0], *data[1:])
+        LN2015.load_scene(scene, *data)
 
     for ticks, events in EVENT_TIMING:
         LN2015.load_timed_event(ticks, events)
