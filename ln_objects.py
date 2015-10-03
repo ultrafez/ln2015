@@ -212,18 +212,6 @@ class Sun(MoveableThing):
         del a
         surface.blit(self.s, (0,0))
 
-
-def height_color(height):
-    # height = 0:pi * 4/6
-    height_hue = int(sin(height) * 40 * 6 / 4 / pi)
-    height_lum = int(sin(height) * 6 / 4 / pi * 50)
-
-    height_hue = (350 + randint(height_hue, (height_hue + 20))) % 360
-    height_lum = 40 + randint(height_lum, height_lum + 10)
-
-    return hls_to_rgb(height_hue, height_lum, randint(90, 100))
-
-
 class Cloud(Sprite):
     def __init__(self, max_x, y, size, rand):
         super().__init__()
