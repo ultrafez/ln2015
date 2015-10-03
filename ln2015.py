@@ -24,8 +24,6 @@ key_triggers = {
     pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
-    pygame.K_w: Trigger("STARS", "fade"),
-    pygame.K_e: Trigger("STARS", "end"),
     pygame.K_z: Trigger("CLOUDS"),
     pygame.K_d: Trigger("LIGHTNING_high"),
     pygame.K_f: Trigger("LIGHTNING_low"),
@@ -55,8 +53,7 @@ key_triggers = {
 
 EVENT_TIMING = [
     (  0, [Trigger("STARS"), Trigger("HS_SPIN")]),  # Star Sounds and CricketsStart
-    ( 30, [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-    ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
+    ( 30, [Trigger("SUNRISE"), Trigger("STARS", "end", 10), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
     ( 50, Trigger("SUNRISE", "end", 5)),
     ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
     ( 90, [Trigger("CLOUDS", "grey", 0.4, 20)]),
@@ -94,7 +91,7 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, (MADRIX_X, MADRIX_Y)),
+    "STARS": (0, StarrySky, 40, 10, 0.2, 2.0),
     "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 10),
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20),

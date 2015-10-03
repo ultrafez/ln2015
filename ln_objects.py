@@ -74,65 +74,58 @@ class skybox(Sprite):
         self.image.fill(self.color)
 
 class Star(Sprite):
-    # TODO: shooting star
-
-    def __init__(self, lamp):
-        # Call the parent class (Sprite) constructor
-        Sprite.__init__(self, 1, 1)
-
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        self.rect = (lamp.x, lamp.y, 1, 1)
-
-        self.color = white
-        self.rand_color()
-
-        self.lamp = lamp
-
-        self.log.debug('created star at {},{}'.format(lamp.x, lamp.y))
-
-    def rand_color(self):
+    def __init__(self, lamp, duration):
+        super().__init__()
         self.color = hls_to_rgb(randint(40, 60), randint(20, 100), randint(80, 100))
+        self.lamp = lamp
+        self.time = -1.0
+        self.rate = 1.0 / (get_fps() * duration)
 
     def update(self):
-        self.image.set_at((0, 0), self.color)
-        self.rand_color()
+        self.time += self.rate
+        if self.time >= 1.0:
+            self.kill()
 
+    def draw(self, surface, fade):
+        bright = (1.0 - abs(self.time) * fade)
+        color = tuple(int(c * bright) for c in self.color)
+        pos = (self.lamp.x, self.lamp.y)
+        surface.set_at(pos, color)
 
 class StarrySky(Group):
-    def __init__(self, size):
-        self.log = logging.getLogger(self.__class__.__name__)
-        Group.__init__(self)
+    def __init__(self, max_stars, ramp_time, min_time, max_time):
+        super().__init__()
         self.lamps = ceiling.lamps
-        self.alpha = 0
-        self.dalpha = 2
+        self.ramp_rate = max_stars / (get_fps() * ramp_time)
+        self.num_stars = 1.0
+        self.max_stars = max_stars
+        self.fade = 1.0
+        self.fade_rate = 0.0
+        self.min_time = min_time
+        self.max_time = max_time
 
-        self.s = pygame.Surface(size)
-        self.s.set_colorkey(white)
+    def add_star(self):
+        lamp = random.choice(self.lamps)
+        self.add(Star(lamp, random.uniform(self.min_time, self.max_time)))
 
     def update(self):
-        self.alpha = min(255, max(0, self.alpha + self.dalpha))
-        self.s.set_alpha(self.alpha)
-
-        r = random.randrange(0, 100)
-        if r < 15:
-            self.log.debug('add star')
-            lamp = random.choice(self.lamps)
-            self.add(Star(lamp))
-
-        elif r == 99:
-            self.log.warn('add Shooting Star')
-        Group.update(self)
+        self.fade += self.fade_rate
+        if self.fade <= 0.0:
+            raise StopIteration
+        if self.num_stars < self.max_stars:
+            self.num_stars +=  self.ramp_rate
+        elif self.num_stars > self.max_stars:
+            self.num_stars = self.max_stars
+        while len(self) < self.num_stars:
+            self.add_star()
+        super().update()
 
     def draw(self, surface):
-        self.s.fill(white)
-        Group.draw(self, self.s)
-        surface.blit(self.s, (0, 0))
+        for star in self:
+            star.draw(surface, self.fade)
 
-    def fade(self):
-        self.log.debug('Fade Stars Out')
-        self.dalpha = -5
-        pass
+    def end(self, fade_time):
+        self.fade_rate = -1.0 / (get_fps() * fade_time)
 
 
 class RisingSun(Sprite):
