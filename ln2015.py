@@ -20,8 +20,8 @@ SCALE = 8
 TOTAL_TIME = 360
 
 key_triggers = {
-    pygame.K_MINUS:Trigger("LIGHTNING_high", "add_sheet", (left_outer_arm,)),
-    pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
+    pygame.K_MINUS:Trigger("LIGHTNING_high", "add_sheet", left_outer_arm),
+    pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
     pygame.K_w: Trigger("STARS", "fade"),
@@ -35,9 +35,9 @@ key_triggers = {
     pygame.K_v: Trigger("RAIN", "end"),
 
     pygame.K_y: Trigger("BIRDS"),
-    pygame.K_1: Trigger("BIRDS", "set_action", ('bob', )),
-    pygame.K_2: Trigger("BIRDS", "set_action", ('takeoff', )),
-    pygame.K_3: Trigger("BIRDS", "set_action", ('rotate_camera', )),
+    pygame.K_1: Trigger("BIRDS", "set_action", 'bob'),
+    pygame.K_2: Trigger("BIRDS", "set_action", 'takeoff'),
+    pygame.K_3: Trigger("BIRDS", "set_action", 'rotate_camera'),
 
     pygame.K_h: Trigger("WAVES", "end"),
     pygame.K_b: Trigger("FOREST"),
@@ -57,31 +57,31 @@ EVENT_TIMING = [
     (  0, [Trigger("STARS"), Trigger("HS_SPIN")]),  # Star Sounds and CricketsStart
     ( 30, [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
     ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
-    ( 50, Trigger("SUNRISE", "end", (5,))),
+    ( 50, Trigger("SUNRISE", "end", 5)),
     ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
-    ( 90, [Trigger("CLOUDS", "grey", (0.4, 20))]),
+    ( 90, [Trigger("CLOUDS", "grey", 0.4, 20)]),
     (100, [
         Trigger("LIGHTNING_high"), # Fork and Sheet Lightning SoundsStart
-        Trigger("LIGHTNING_high", "add_sheet", (left_arm,)),
-        Trigger("LIGHTNING_high", "add_sheet", (right_arm,)),
-        Trigger("LIGHTNING_high", "add_sheet", (top_arm,))
+        Trigger("LIGHTNING_high", "add_sheet", left_arm),
+        Trigger("LIGHTNING_high", "add_sheet", right_arm),
+        Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
     (110, [Trigger("RAIN")]),  # Rain SoundsStart
     (114, [
-        Trigger("LIGHTNING_low",  "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
-        Trigger("LIGHTNING_low",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
+        Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)),
+        Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (75, 0), (75, 70))
     ]),  # Fork
     (120, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
     (140, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", (3, 180, 10, 5))]),  # Wave and Ambient SoundsStart
-    (150, [Trigger("CLOUDS", "end", (5,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
-    (190, Trigger("WAVES", "spawn", (5, -80, 10, 3))),
-    (200, [Trigger("WAVES", "beacon", (5, ))]),  # Waves Ring Bouys to MakeSounds
-    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', ('bob', ))]),  # Sea Birds SoundsStart
-    (225, [Trigger("BIRDS", 'set_action', ('takeoff',))]),
-    (235, [Trigger("BIRDS", 'set_action', ('rotate_camera',))]),
+    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 3, 180, 10, 5)]),  # Wave and Ambient SoundsStart
+    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
+    (190, Trigger("WAVES", "spawn", 5, -80, 10, 3)),
+    (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
+    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
+    (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
+    (235, [Trigger("BIRDS", 'set_action', 'rotate_camera')]),
 
-    (240, [Trigger("WAVES", "beacon", (0,))]),  # Stop beacon respawn
+    (240, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (250, [Trigger("FOREST")]),  # Forest SoundsStarts
     (260, [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
     (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
