@@ -52,35 +52,36 @@ key_triggers = {
 }
 
 EVENT_TIMING = [
-    (  0, [Trigger("STARS"), Trigger("HS_SPIN")]),  # Star Sounds and CricketsStart
-    ( 30, [Trigger("SUNRISE"), Trigger("STARS", "end", 10), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-    ( 50, Trigger("SUNRISE", "end", 5)),
-    ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
-    ( 90, [Trigger("CLOUDS", "grey", 0.4, 20)]),
-    (100, [
-        Trigger("LIGHTNING_high"), # Fork and Sheet Lightning SoundsStart
+    (  0, [Trigger("STARS")]),
+    (  0, [Trigger("HS_SPIN")]), 
+    ( 30, [Trigger("SUNRISE")]), 
+    ( 45, [Trigger("STARS", "end", 10)]), #fadetime
+    ( 70, [Trigger("SUNRISE", "end", 5)]), # fadetime
+    ( 53, [Trigger("CLOUDS")]),
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 20)]),
+    ( 90, [Trigger("RAIN")]),
+    (110, [
+        Trigger("LIGHTNING_high"),
         Trigger("LIGHTNING_high", "add_sheet", left_arm),
         Trigger("LIGHTNING_high", "add_sheet", right_arm),
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
-    (110, Trigger("RAIN")),  # Rain SoundsStart
-    (114, [
-        Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)),
+    (120, [
+        Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)), #area effect, start, end
         Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (75, 0), (75, 70))
-    ]),  # Fork
-    (120, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
-    (140, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 3, 180, 10, 5)]),  # Wave and Ambient SoundsStart
-    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end", 5)]),  # Clouds FadeEnd #Rain SoundsEnd
-    (190, Trigger("WAVES", "spawn", 5, -80, 10, 3)),
-    (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
-    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
+    ]),
+    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
+    (160, [Trigger("LIGHTNING_high", "end")]),  
+    (160, [Trigger("LIGHTNING_low", "end")]),
+    (160, [Trigger("CLOUDS", "end", 5)]), 
+    (160, [Trigger("RAIN", "end")]),  # clouds fadetime
+    (170, [Trigger("WAVES", "beacon", 5)]), #number buoys
+    (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
+    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),
     (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
     (235, [Trigger("BIRDS", 'set_action', 'rotate_camera')]),
-
-    (240, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (250, [Trigger("FOREST")]),  # Forest SoundsStarts
-    (260, [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
+    (260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
     (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
     (280, [Trigger("SUNSET", "end")]),  #
     (290, [Trigger("NORTHERNLIGHTS")]),  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
@@ -91,10 +92,10 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, 40, 10, 0.2, 2.0),
-    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 10),
+    "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
+    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 30), #start, end, size, duration
     "LIGHTNING_high": (15, Thunderstorm),
-    "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20),
+    "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20), # area of effect size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_low": (30, Thunderstorm),
     "RAIN": (40, Raindrops, 5, 0.5, 20, 10),
     "BIRDS": (41, Bird, bubbleroof),
