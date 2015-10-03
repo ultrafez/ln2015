@@ -20,9 +20,9 @@ def hls_to_rgb(hue, lightness, saturation):
     :param hue: 0-360
     :param lightness:  0-100
     :param saturation:  0-100
-    :return: list
+    :return: list(int)
     """
-    return [i * 255 for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
+    return [int(i * 255) for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
 
 
 def hlsa_to_rgba(hue, lightness, saturation, alpha):
@@ -30,7 +30,7 @@ def hlsa_to_rgba(hue, lightness, saturation, alpha):
     :param hue: 0-360
     :param lightness:  0-100
     :param saturation:  0-100
-    :return: list
+    :return: list(int)
     """
     rgb = colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)
 
@@ -59,18 +59,6 @@ class Group(pygame.sprite.Group):
 
     def end(self):
         raise StopIteration
-
-class skybox(Sprite):
-    def __init__(self, size):
-        super(self).__init__(self)
-        self.rect = pygame.Rect((0,0), size)
-        self.colour = black
-
-    def update_color(self, color):
-        self.color = color
-
-    def update(self):
-        self.image.fill(self.color)
 
 class Star(Sprite):
     def __init__(self, lamp, duration, color):
@@ -418,6 +406,13 @@ class Thunderstorm(Group):
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
 
+    def trigger_flash(self, ignore=0):
+        for s in self.sprites():
+            if s != ignore:
+                s.charge()
+                s.flash(1, group_trigger=True)
+        return
+
     def add_sheet(self, r):
         self.add(SheetLighting(r))
 
@@ -462,12 +457,17 @@ class Lightning(Sprite):
         """
         self.flashing = False
         pass
+    def charge(self):
+        self.potential += self.breakdown_potential
 
 
 class SheetLighting(Lightning):
     color = (255, 36, 251)
 
-    def flash(self, power):
+    def flash(self, power, group_trigger=False):
+        if not(group_trigger):
+            for g in self.groups():
+                g.trigger_flash(ignore=self)
         self.log.info('flash power {}'.format(power * 255))
         self.image.set_alpha(power * 255)
         self.image.fill(self.color)
@@ -478,15 +478,19 @@ class ForkLighting(Lightning):
     color = (246, 255, 71)
 
     def __init__(self, size, start, end):
-            print(start, end)
             self.start = pygame.math.Vector2(start)
             self.end = pygame.math.Vector2(end)
             self.ionised = [self.start]
             self.speed = 3
             super().__init__(pygame.Rect((0,0), size))
 
-    def flash(self, power):
+    def flash(self, power, group_trigger=False):
         self.flashing = True
+        if not(group_trigger):
+            for g in self.groups():
+                g.trigger_flash(ignore=self)
+
+
         for i in range(self.rand.randrange(3, 8)):
             last = self.ionised[-1]
             togo = self.end - last
@@ -500,6 +504,7 @@ class ForkLighting(Lightning):
             n = last + togo
             self.ionised.append(n)
             pygame.draw.line(self.image, self.color, last, n, 2)
+
 
 class Bird(Sprite):
     def __init__(self, rect):
@@ -854,3 +859,32 @@ class Sea(Group):
                 a[x, y] = color
         del a
         surface.blit(self.s, (0, 0))
+
+
+
+class Ripples(Sprite):
+    def __init__(self, size):
+        super().__init__( size[0], size[1], pygame.SRCALPHA)
+        self.rect = pygame.Rect((0,0), size)
+        self.ticks = 0
+        self.alpha = 0
+
+    def update(self):
+        water_blue = hlsa_to_rgba(210, 60, 70, 0)
+
+        if self.ticks < 180:
+            self.alpha += 128/180
+            self.image.fill(hlsa_to_rgba(210, 60, 70, self.alpha))
+
+        else:
+
+            px = pygame.PixelArray(self.image)
+            for lamp in ceiling.lamps:
+                i = lamp.x
+                j = lamp.y
+            #for j in range(self.rect.height):
+            #    for i in range(self.rect.width):
+                water_blue[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
+                px[i, j] = tuple(water_blue)
+            del(px)
+        self.ticks += 1

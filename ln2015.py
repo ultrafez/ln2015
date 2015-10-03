@@ -48,36 +48,64 @@ key_triggers = {
     pygame.K_p: Trigger("NORTHERNLIGHTS"),
     pygame.K_LEFTBRACKET: Trigger("NORTHERNLIGHTS", "end"),
     pygame.K_m: Trigger("MOONRISE"),
-    pygame.K_COMMA: Trigger("MOONRISE", "end"),
+    pygame.K_COMMA: Trigger("MOONRISE", "move", (66, 53), 12, 10),
     pygame.K_o: Trigger("CONSTELLATION", "end")
 }
 
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
-    ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 53), 8, 30)]), 
+    ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 53), 8, 30)]),
     ( 45, [Trigger("STARS", "end", 10)]), #fadetime
     ( 60, Trigger("SUNRISE", "move", None, 12, 10)), # newpos, newsize, duration
     ( 70, Trigger("SUNRISE", "end", 5)), # fadetime
     ( 53, [Trigger("CLOUDS")]),
-    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]), #greyness, whiteness, duration
-    ( 90, [Trigger("RAIN")]),
-   # (90, [Trigger("ripples")]),  # start to fill with water
-    (110, [
-        Trigger("LIGHTNING_high"),
-        Trigger("LIGHTNING_high", "add_sheet", left_arm),
-        Trigger("LIGHTNING_high", "add_sheet", right_arm),
-        Trigger("LIGHTNING_high", "add_sheet", top_arm)
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]),
+
+    (90, [
+        Trigger("LIGHTNING_outer"),
+        Trigger("LIGHTNING_outer", "add_sheet", left_outer_arm),
+        Trigger("LIGHTNING_outer", "add_sheet", right_outer_arm),
+        Trigger("LIGHTNING_outer", "add_sheet", top_arm),
     ]),
-    (120, [
+
+    (100, [
+        Trigger("LIGHTNING_inner"),
+        Trigger("LIGHTNING_inner", "add_sheet", left_inner_arm),
+        Trigger("LIGHTNING_inner", "add_sheet", right_inner_arm),
+    ]),
+
+    (110, [Trigger("RAIN")]),
+    (110, [Trigger("ripples")]),  # start to fill with water
+
+
+    (109,   [Trigger("LIGHTNING_high"),
+             Trigger("LIGHTNING_outer", "add_sheet", bubbleroof),
+             Trigger("LIGHTNING_init"),
+             Trigger("LIGHTNING_init",  "add_fork", MADRIX_SIZE, (67, 55), (67, 0)),
+             Trigger("LIGHTNING_init",  "add_fork", MADRIX_SIZE, (67, 55), (67, 68)),
+             Trigger("LIGHTNING_init",  "add_fork", MADRIX_SIZE, (67, 55), (3, 44)),
+             Trigger("LIGHTNING_init",  "add_fork", MADRIX_SIZE, (67, 55), (128, 45)),
+             Trigger("LIGHTNING_init",  "trigger_flash" ) #area effect , start/end xy
+            ]),
+    (109.1, [Trigger("LIGHTNING_high", "trigger_flash")]),
+    (109.3, [Trigger("LIGHTNING_high", "trigger_flash")]),
+    (109.7, [Trigger("LIGHTNING_high", "trigger_flash")]),
+
+    (115, [Trigger("LIGHTNING_init", "end")]),
+    (118, [Trigger("LIGHTNING_high", "end")]),
+
+    (115, [
         Trigger("LIGHTNING_low"),
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)), #area effect , start/end xy
-        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
+        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70)),
+        Trigger("LIGHTNING_low",  "trigger_flash" ) #area effect , start/end xy
+
     ]),  # Fork
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
     (155, [Trigger("CLOUDS", "end", 5)]), # clouds fadetime
-    (160, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
-    (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd    
-    (160, [Trigger("RAIN", "end")]),  
+    (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
+    (160, [Trigger("LIGHTNING_outer", "end")]),  # Lightning SoundsEnd
+    (160, [Trigger("RAIN", "end")]),
     (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
@@ -99,7 +127,12 @@ scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "SUNRISE": (10, Sun, (66, 78), 6, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
     "LIGHTNING_high": (30, Thunderstorm),
+    "LIGHTNING_outer": (30, Thunderstorm),
+    "LIGHTNING_inner": (30, Thunderstorm),
+
+
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
+    "LIGHTNING_init": (30, Thunderstorm),
     "LIGHTNING_low": (30, Thunderstorm),
     "RAIN": (25, Raindrops, 5, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
