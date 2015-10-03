@@ -10,6 +10,8 @@ import pygame
 from pygame.math import Vector2
 import numpy as np
 
+#To change random seed add self.rand.seed(1) to innit funciton of group find a number that works!
+
 white = 255, 255, 255
 transparent = 255, 255, 255, 0
 black = 0, 0, 0

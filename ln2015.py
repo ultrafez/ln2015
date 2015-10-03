@@ -14,6 +14,7 @@ import random
 
 __author__ = 'ajtag'
 
+
 logging.basicConfig()
 
 FPS = 24
@@ -104,8 +105,8 @@ EVENT_TIMING = [
     (130, [Trigger("LIGHTNING_outer", "end")]),
     (130, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (130, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
-    (140, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
-    (150, [Trigger("RAIN", "end")]),
+    (145, [Trigger("WAVES"), Trigger("WAVES", "spawn", 10, 180, 10, 5)]),  # width, angle, num_waves, interval
+    (155, [Trigger("RAIN", "end")]),
     (150, [Trigger("CLOUDS", "end", 5)]), # clouds fadetime
     (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
@@ -137,7 +138,7 @@ scene_data = {
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_init": (30, Thunderstorm),
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (25, Raindrops, 1, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
+    "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
