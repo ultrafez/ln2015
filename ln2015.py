@@ -20,16 +20,17 @@ SCALE = 8
 TOTAL_TIME = 360
 
 key_triggers = {
-    pygame.K_MINUS:Trigger("LIGHTNING", "add_sheet", (left_outer_arm,)),
-    pygame.K_EQUALS: Trigger("LIGHTNING", "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
+    pygame.K_MINUS:Trigger("LIGHTNING_high", "add_sheet", (left_outer_arm,)),
+    pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
     pygame.K_w: Trigger("STARS", "fade"),
     pygame.K_e: Trigger("STARS", "end"),
     pygame.K_z: Trigger("CLOUDS"),
-    pygame.K_d: Trigger("LIGHTNING"),
+    pygame.K_d: Trigger("LIGHTNING_high"),
+    pygame.K_f: Trigger("LIGHTNING_low"),
     pygame.K_c: Trigger("RAIN"),
-    pygame.K_f: Trigger("LIGHTNING", "end"),
+    pygame.K_0: Trigger("LIGHTNING", "end"),
     pygame.K_g: Trigger("WAVES"),
     pygame.K_v: Trigger("RAIN", "end"),
 
@@ -60,17 +61,18 @@ EVENT_TIMING = [
     ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
     ( 90, [Trigger("CLOUDS", "grey", (0.4, 20))]),
     (100, [
-        Trigger("LIGHTNING"), # Fork and Sheet Lightning SoundsStart
-        Trigger("LIGHTNING", "add_sheet", (left_arm,)),
-        Trigger("LIGHTNING", "add_sheet", (right_arm,)),
-        Trigger("LIGHTNING", "add_sheet", (top_arm,))
+        Trigger("LIGHTNING_high"), # Fork and Sheet Lightning SoundsStart
+        Trigger("LIGHTNING_high", "add_sheet", (left_arm,)),
+        Trigger("LIGHTNING_high", "add_sheet", (right_arm,)),
+        Trigger("LIGHTNING_high", "add_sheet", (top_arm,))
     ]),
     (110, [Trigger("RAIN")]),  # Rain SoundsStart
     (114, [
-        Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
-        Trigger("LIGHTNING",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
+        Trigger("LIGHTNING_low",  "add_fork", ((MADRIX_X, MADRIX_Y), (130, 55), (0, 55))),
+        Trigger("LIGHTNING_low",  "add_fork", ((MADRIX_X, MADRIX_Y), (75, 0), (75, 70)))
     ]),  # Fork
-    (140, [Trigger("LIGHTNING", "end")]),  # Lightning SoundsEnd
+    (120, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
+    (140, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", (3, 180, 10, 5))]),  # Wave and Ambient SoundsStart
     (150, [Trigger("CLOUDS", "end", (5,)), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
     (190, Trigger("WAVES", "spawn", (5, -80, 10, 3))),
@@ -96,13 +98,18 @@ scene_data = {
     #"HS_SPIN": (HSMoon, ( pygame.Rect(5, 30, 10, 10), -45, -3)),
     #"HS_SPIN": (HSMoon, ( pygame.Rect(0, 40, 25, 25), 0, 0-3)),
     "SUNRISE": (10,(RisingSun,  ((66, 78), (66, 53), 8, 10))),
+
+    "LIGHTNING_high": (15, (Thunderstorm, ())),
     "CLOUDS": (20,(Clouds,  ((MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20))),
-    "LIGHTNING": (30, (Thunderstorm, ())),
+    "LIGHTNING_low": (30, (Thunderstorm, ())),
+
     "RAIN": (40, (Raindrops, ((MADRIX_X, MADRIX_Y),))),
-    "CONSTELLATION": (50, (Constellation, (49, 29))),
+
+    "BIRDS": (41, (Bird,  ((bubbleroof,)))),
+    "CONSTELLATION": (1, (Constellation, (49, 29))),
     "MOONRISE": (60, (HSMoon, ())),
-    "WAVES": (70,(Sea,  ((MADRIX_X, MADRIX_Y), 2, 3.0))),
-    "BIRDS": (80, (Bird,  ((bubbleroof,)))),
+    "WAVES": (70,(Sea,  (0.6,))),
+
 }
 
 
