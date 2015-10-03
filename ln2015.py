@@ -59,7 +59,7 @@ EVENT_TIMING = [
     ( 60, Trigger("SUNRISE", "move", None, 12, 10)), # newpos, newsize, duration
     ( 70, Trigger("SUNRISE", "end", 5)), # fadetime
     ( 53, [Trigger("CLOUDS")]),
-    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]),
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]), #greyness, whiteness, duration
     ( 90, [Trigger("RAIN")]),
    # (90, [Trigger("ripples")]),  # start to fill with water
     (110, [
@@ -74,9 +74,9 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
     ]),  # Fork
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
+    (155, [Trigger("CLOUDS", "end", 5)]), # clouds fadetime
     (160, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
-    (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (160, [Trigger("CLOUDS", "end", 10)]), # clouds fadetime
+    (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd    
     (160, [Trigger("RAIN", "end")]),  
     (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
