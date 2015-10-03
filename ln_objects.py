@@ -86,7 +86,7 @@ class Star(Sprite):
             self.kill()
 
     def draw(self, surface, fade):
-        bright = (1.0 - abs(self.time) * fade)
+        bright = (1.0 - abs(self.time)) * fade
         color = tuple(int(c * bright) for c in self.color)
         pos = (self.lamp.x, self.lamp.y)
         surface.set_at(pos, color)
