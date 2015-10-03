@@ -24,8 +24,6 @@ key_triggers = {
     pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", MADRIX_SIZE, (130, 55), (0, 55)),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
-    pygame.K_w: Trigger("STARS", "fade"),
-    pygame.K_e: Trigger("STARS", "end"),
     pygame.K_z: Trigger("CLOUDS"),
     pygame.K_d: Trigger("LIGHTNING_high"),
     pygame.K_f: Trigger("LIGHTNING_low"),
@@ -54,39 +52,35 @@ key_triggers = {
 }
 
 EVENT_TIMING = [
-    (  0, [Trigger("STARS")]),  # Star Sounds and CricketsStart
-    ( 30, [Trigger("SUNRISE"), Trigger("STARS", "fade"), Trigger("HS_SPIN", "end")]),  # Bird Song Dawn ChorusStart Stars and Crickets FadeEnd
-    ( 40, [Trigger("STARS", "end")]),  # Star Sounds and CricketsEnd
-    ( 50, Trigger("SUNRISE", "end", 5)),
-    ( 60, [Trigger("CLOUDS")]),  # Clouds and Wind SoundsStart
-    ( 90, [Trigger("CLOUDS", "grey", 0.4, 20)]),
-    (100, [
-        Trigger("LIGHTNING_high"), # Sheet Lightning SoundsStart
+    (  0, [Trigger("STARS")]),
+    ( 30, [Trigger("SUNRISE")]), 
+    ( 45, [Trigger("STARS", "end", 10)]), #fadetime
+    ( 70, [Trigger("SUNRISE", "end", 5)]), # fadetime
+    ( 53, [Trigger("CLOUDS")]),
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 20)]),
+    ( 90, [Trigger("RAIN")]),
+   # (90, [Trigger("ripples")]),  # start to fill with water
+    (110, [
+        Trigger("LIGHTNING_high"),
         Trigger("LIGHTNING_high", "add_sheet", left_arm),
         Trigger("LIGHTNING_high", "add_sheet", right_arm),
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
-    (110, [Trigger("RAIN")]),  # Rain SoundsStart
-    (114, [
-        Trigger("LIGHTNING_low"), # Fork Lightning
+    (120, [
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)),
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
     ]),  # Fork
-    #(110, [Trigger("ripples")]),  # start to fill with water
-    (120, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
-    (140, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 3, 180, 10, 5)]),  # Wave and Ambient SoundsStart
+    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
+    (160, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
+    (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
-    (190, Trigger("WAVES", "spawn", 5, -80, 10, 3)),
     (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
-
+    (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
     (235, [Trigger("BIRDS", 'set_action', 'rotate_camera')]),
-
-    (240, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (250, [Trigger("FOREST")]),  # Forest SoundsStarts
-    (260, [Trigger("WAVES", "end"), Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
+    (260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
     (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
     (280, [Trigger("SUNSET", "end")]),  #
     (290, [Trigger("NORTHERNLIGHTS")]),  # Northern Lights Sounds Start (Ambient Sine Bass Notes?)
@@ -97,12 +91,12 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, MADRIX_SIZE),
-    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 10),
+    "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
+    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 30), #start, end, size, duration
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (40, Raindrops, MADRIX_SIZE),
+    "RAIN": (40, Raindrops, 5, 0.5, 20, 10), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon),
