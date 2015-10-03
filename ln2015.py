@@ -108,10 +108,13 @@ EVENT_TIMING = [
     (140, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
     (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
     (150, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
-    (155, [Trigger("WAVES", "spawn", 8, 180, 1, 3)]),
+    (155, [Trigger("WAVES", "spawn", 5, 180, 1, 3)]),
+    (157.5, [Trigger("WAVES", "spawn", 5, 135, 6, 7)]),
+    (160, [Trigger("WAVES", "spawn", 5, 180, 4, 5)]),
     (143.75, [Trigger("RAIN", "end", 2)]),
     (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
     (152, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    (160, [Trigger("WAVES", "beacon", 2)]),
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
     (235, [Trigger("ripples", "end"), Trigger("BIRDS", 'set_action', 'rotate_camera')]),
