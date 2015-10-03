@@ -38,7 +38,7 @@ def hlsa_to_rgba(hue, lightness, saturation, alpha):
 
     rgba = [0,0,0,alpha]
     for n, i in enumerate(rgb):
-        rgba[n] = i * 255
+        rgba[n] = int(i * 255)
     return rgba
 
 
@@ -487,27 +487,13 @@ class Bird(Sprite):
         self.rect.size = (max_x, max_y)
 
     def update(self):
-
-        if self.ticks == 100:
-            self.set_action('takeoff')
-            self.log.info('takeoff')
-
-
-        if self.ticks == 500:
-            self.log.info('rotate_camera')
-            self.set_action('rotate_camera')
-
-
-        if self.ticks == 2500:
-            raise StopIteration
-
         if self.ticks % 5 == 0:
             self.active_frame += 1
             self.active_frame = self.active_frame % len(self.actions[self.action])
             if self.active_frame == 0:
                 self.action = self.next_action
 
-        self.image.fill((255, 255, 255, 128,))
+        self.image.fill((255, 255, 255, 0,))
         self.image.blit(self.frames[self.actions[self.action][self.active_frame]], (0, 0))
 
 
@@ -522,6 +508,7 @@ class Bird(Sprite):
 
     def end(self):
         raise StopIteration
+
 
 
 class Aurora(Sprite):
