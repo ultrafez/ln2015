@@ -9,6 +9,7 @@ from TrinRoofPlayer.Constants import *
 import argparse
 import logging
 import platform
+import random
 
 
 __author__ = 'ajtag'
@@ -119,6 +120,7 @@ if __name__ == "__main__":
     parser.add_argument("--save-video", action="store_true")
     parser.add_argument("--quick", action="store_true")
     parser.add_argument("--avconv", action="store_true")
+    parser.add_argument("--random-seed", type=str, default="LN2015")
     args = parser.parse_args()
 
     print(args)

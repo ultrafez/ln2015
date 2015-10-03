@@ -1,12 +1,10 @@
 __author__ = 'ajtag'
-import random
-from random import randint
 import colorsys
 from math import pi, sin
 import math
 import os.path
 import logging
-from TrinRoofPlayer.Renderer import ceiling, get_fps
+from TrinRoofPlayer.Renderer import ceiling, get_fps, new_random
 from TrinRoofPlayer.Constants import *
 import pygame
 from pygame.math import Vector2
@@ -57,6 +55,7 @@ class Group(pygame.sprite.Group):
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
         super().__init__()
+        self.rand = new_random(self.__class__.__name__)
 
     def end(self):
         raise StopIteration
@@ -74,9 +73,9 @@ class skybox(Sprite):
         self.image.fill(self.color)
 
 class Star(Sprite):
-    def __init__(self, lamp, duration):
+    def __init__(self, lamp, duration, color):
         super().__init__()
-        self.color = hls_to_rgb(randint(40, 60), randint(20, 100), randint(80, 100))
+        self.color = color
         self.lamp = lamp
         self.time = -1.0
         self.rate = 1.0 / (get_fps() * duration)
@@ -105,8 +104,9 @@ class StarrySky(Group):
         self.max_time = max_time
 
     def add_star(self):
-        lamp = random.choice(self.lamps)
-        self.add(Star(lamp, random.uniform(self.min_time, self.max_time)))
+        lamp = self.rand.choice(self.lamps)
+        color = hls_to_rgb(self.rand.randint(40, 60), self.rand.randint(20, 100), self.rand.randint(80, 100))
+        self.add(Star(lamp, self.rand.uniform(self.min_time, self.max_time), color))
 
     def update(self):
         self.fade += self.fade_rate
@@ -188,7 +188,7 @@ def height_color(height):
 
 
 class Cloud(Sprite):
-    def __init__(self, max_x, y, size):
+    def __init__(self, max_x, y, size, rand):
         super().__init__()
         self.x = float(-size)
         self.y = y
@@ -197,7 +197,7 @@ class Cloud(Sprite):
         self.max_x = max_x
         for x in range(size):
             for y in range(size):
-                self.bitmap[x, y] = random.random()
+                self.bitmap[x, y] = rand.random()
 
     def update(self):
         self.x += 0.2
@@ -262,10 +262,10 @@ class Clouds(Group):
                 b = self.final_prob
                 p = a + (b - a) * self.time
             while True:
-                p -= random.random()
+                p -= self.rand.random()
                 if p < 0.0:
                     break
-                self.add(Cloud(self.max_x, random.randrange(self.max_y), self.cloud_size))
+                self.add(Cloud(self.max_x, self.rand.randrange(self.max_y), self.cloud_size, self.rand))
         self.time += self.ramp_speed
         super().update()
 
@@ -320,7 +320,8 @@ class Raindrops(Group):
         max_drops = int(self.num_drops / get_fps()) + 1
         missing = int(self.num_drops) - len(self)
         for _ in range(min(missing, max_drops)):
-            self.add(RainSplash(self.drop_size, self.drop_speed))
+            lamp = self.rand.choice(ceiling.lamps)
+            self.add(RainSplash(self.drop_size, self.drop_speed, lamp))
         super().update()
         if len(self) == 0 and self.num_drops <= 0:
             raise StopIteration
@@ -337,9 +338,8 @@ class Raindrops(Group):
 
 
 class RainSplash(Sprite):
-    def __init__(self, max_r, speed):
+    def __init__(self, max_r, speed, lamp):
         super().__init__()
-        lamp = random.choice(ceiling.lamps)
         self.pos = (lamp.x, lamp.y)
         self.max_radius = max_r
         self.radius = 0
@@ -378,16 +378,17 @@ class Lightning(Sprite):
         self.image.set_colorkey(white)
         self.flashing = False
         self.power = 0
+        self.rand = new_random(self.__class__.__name__)
 
     def update(self):
         if self.flashing:
             self.flash(self.power)
             return
 
-        self.potential += random.randint(0, 30)
+        self.potential += self.rand.randint(0, 30)
         if self.potential > self.breakdown_potential:
-            chance = random.randrange(100)
-            power = random.randint(self.potential, 3 * self.potential)
+            chance = self.rand.randrange(100)
+            power = self.rand.randint(self.potential, 3 * self.potential)
 
             if chance < 80:
                 self.flash(power / (3 * self.potential))
@@ -429,7 +430,7 @@ class ForkLighting(Lightning):
 
     def flash(self, power):
         self.flashing = True
-        for i in range(random.randrange(3, 8)):
+        for i in range(self.rand.randrange(3, 8)):
             last = self.ionised[-1]
             togo = self.end - last
             lp = togo.as_polar()
@@ -438,7 +439,7 @@ class ForkLighting(Lightning):
                 self.image.fill(white)
                 self.ionised = [self.ionised[0]]
                 return
-            togo.from_polar((1.5, random.triangular(-180, 180) + lp[1]))
+            togo.from_polar((1.5, self.rand.triangular(-180, 180) + lp[1]))
             n = last + togo
             self.ionised.append(n)
             pygame.draw.line(self.image, self.color, last, n, 2)
@@ -771,7 +772,7 @@ class Sea(Group):
         self.num_beacons = n
 
     def add_beacon(self):
-        lamp = random.choice(ceiling.bubbleroof_lamps)
+        lamp = self.rand.choice(ceiling.bubbleroof_lamps)
         b = Beacon((lamp.x, lamp.y))
         self.beacons.add(b)
 
