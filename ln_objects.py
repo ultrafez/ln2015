@@ -345,7 +345,6 @@ class Clouds(Group):
                 peak = int(255 - 255 * self.time * self.dirtyness)
         self.s.fill((shade, shade, shade, alpha))
         a = pygame.PixelArray(self.s)
-        print(peak)
         for cloud in self:
             cloud.draw(a, peak)
         del a
@@ -653,7 +652,6 @@ class HSMoon(MoveableThing):
         self.scaled_base.set_alpha(alpha)
         surface.blit(self.scaled_base, pos)
         alpha = int(255 * (1.0 - math.cos(self.overlay_pos)) / 2)
-        print(alpha)
         if alpha > 0:
             self.scaled_overlay.set_alpha(alpha)
             surface.blit(self.scaled_overlay, pos)
