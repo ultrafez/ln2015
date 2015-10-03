@@ -157,7 +157,7 @@ class MoveableThing(Group):
             if self.fade_speed > 0.0 and self.fade >= 1.0:
                 self.fade = 1.0;
                 self.fade_speed = None
-            if self.fade_speed < 0.0 and self.fade <= 0.0:
+            elif self.fade_speed < 0.0 and self.fade <= 0.0:
                 raise StopIteration
 
     def move(self, newpos, newsize, duration = None):
@@ -176,9 +176,9 @@ class MoveableThing(Group):
         else:
             self.size_speed = (newsize - self.size) / self.steps
 
-    def end(self, fade_duration):
+    def end(self, fade_duration = None):
         if fade_duration is None:
-            self.kill()
+            raise StopIteration
         else:
             self.fade_speed = -1.0 / (get_fps() * fade_duration)
 
@@ -611,113 +611,28 @@ class Constellation(Sprite):
     def end(self):
         raise StopIteration
 
-class HSMoon(Sprite):
+class HSMoon(MoveableThing):
     # uri = 'Resources/hackspace_logo_large.svg'
 
-    #def __init__(self, x=300, y=300, r=150, angle=0, angle_delta=-3):
-    def __init__(self, rect, angle=0, angle_delta=-3):
-        if rect.width != rect.height:
-            self.log.error('HSMoon wants a square surface')
-            raise ValueError()
-
-        Sprite.__init__(self, rect.width, rect.height)
-        self.image.set_colorkey(black)
-        self.rect = rect
-        self.path_high_res = (
-                      Vector2(0, 0),
-                      Vector2(108, 0),
-                      Vector2(108, 72),
-                      Vector2(84, 72),
-                      Vector2(84, 84),
-                      Vector2(145, 84),
-                      Vector2(145, 72),
-                      Vector2(123, 72),
-                      Vector2(123, 0),
-                      Vector2(231, 0),
-                      Vector2(231, 72),
-                      Vector2(218, 72),
-                      Vector2(218, 158),
-                      Vector2(231, 158),
-                      Vector2(231, 231),
-                      Vector2(123, 231),
-                      Vector2(123, 158),
-                      Vector2(145, 144),
-                      Vector2(84, 144),
-                      Vector2(84, 158),
-                      Vector2(108, 158),
-                      Vector2(108, 231),
-                      Vector2(0, 231),
-                      Vector2(0, 158),
-                      Vector2(12, 158),
-                      Vector2(12, 72),
-                      Vector2(0, 72)
-                    )
-        self.path_low_res = (
-                      Vector2(0, 0),
-                      Vector2(108, 0),
-                      Vector2(108, 72),
-                      Vector2(84, 72),
-                      Vector2(84, 84),
-                      Vector2(145, 84),
-                      Vector2(145, 72),
-                      Vector2(123, 72),
-                      Vector2(123, 0),
-                      Vector2(231, 0),
-                      Vector2(231, 72),
-                      Vector2(218, 72),
-                      Vector2(218, 158),
-                      Vector2(231, 158),
-                      Vector2(231, 231),
-                      Vector2(123, 231),
-                      Vector2(123, 158),
-                      Vector2(145, 144),
-                      Vector2(84, 144),
-                      Vector2(84, 158),
-                      Vector2(108, 158),
-                      Vector2(108, 231),
-                      Vector2(0, 231),
-                      Vector2(0, 158),
-                      Vector2(12, 158),
-                      Vector2(12, 72),
-                      Vector2(0, 72)
-                    )
-        self.scale = self.rect.width / (310 * 1.41)
-
-        #self.rect = pygame.Rect(x, y, r*2, r*2)
-        self.angle = angle
-        self.dangle = angle_delta
-
-        #self.x, self.y, self.radius = x, y, r
-        #self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
-        #self.scale_factor = r * 2 / self.hlogo.get_height()
-
-        #self.hlogo = pygame.transform.scale(self.hlogo, (200, 200))
-        #self.image.blit(self.hlogo, (0, 0))
-        # self.logo = pygame.image.load(self.uri)
+    def __init__(self, pos, size, fade_duration = None):
+        super().__init__(pos, size, fade_duration)
+        self.hlogo = pygame.image.load(os.path.join('Resources', 'hackspace_logo_large.png'))
+        self.hlogo = self.hlogo.convert()
+        self.scaled_logo = None
 
     def update(self):
-        self.image.fill(black)
-        pygame.draw.circle(self.image, (0, 191, 255), (int(self.rect.height/2), int(self.rect.height/2)),int(self.rect.height/2), 0)
-        path = []
-        for v in self.path_low_res:
-            v = Vector2(v) - (115, 115)
-            v = v.rotate(self.angle)
-            v = v * self.scale
-            v = Vector2(v) +( int(self.rect.height/2), int(self.rect.height/2) )
+        super().update()
+        size = int(round(self.size * 2))
+        image_size = (size, size)
+        if self.scaled_logo is None or self.scaled_logo.get_size() != image_size:
+            self.scaled_logo = pygame.transform.scale(self.hlogo, image_size)
+            self.scaled_logo.set_colorkey(black)
 
-
-
-            path.append((int(v.x), int(v.y)))
-        #print(path)
-        pygame.draw.polygon(self.image, white, path, 0)
-        #pygame.draw.aalines(self.image, (255, 0, 0), True,  path, True)
-
-        #self.image = pygame.transform.rotozoom(self.hlogo, self.angle, self.scale_factor)
-        self.angle += self.dangle
-
-    def end(self):
-        raise StopIteration
-
+    def draw(self, surface):
+        pos = (int(self.x - self.size), int(self.y - self.size))
+        alpha = int(255 * self.fade)
+        self.scaled_logo.set_alpha(alpha)
+        surface.blit(self.scaled_logo, pos)
 
 def pythagoras(vector):
     return math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
