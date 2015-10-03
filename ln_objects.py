@@ -247,10 +247,12 @@ class Cloud(Sprite):
                 v2 = self.bitmap[x, y]
                 val = v2 + (v1 - v2) * x_offset
                 new_alpha = int(255 * val)
-                new_shade = int(peak * val)
                 orig = pixels[px, py]
-                alpha = max(orig >> 24, new_alpha)
-                shade = max(orig & 0xff, new_shade)
+                alpha = orig >> 24
+                shade = orig & 0xff
+                new_shade = shade + (peak) * new_alpha // 255
+                shade = min(max(shade, new_shade), peak)
+                alpha = max(alpha, new_alpha)
                 pixels[px, py] = (shade, shade, shade, alpha)
 
 
@@ -302,7 +304,7 @@ class Clouds(Group):
     def draw(self, surface):
         skip = False
         alpha = 0
-        shade = 255
+        shade = 0
         peak = 255
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:

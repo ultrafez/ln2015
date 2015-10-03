@@ -59,7 +59,7 @@ EVENT_TIMING = [
     ( 60, Trigger("SUNRISE", "move", None, 12, 10)), # newpos, newsize, duration
     ( 70, Trigger("SUNRISE", "end", 5)), # fadetime
     ( 53, [Trigger("CLOUDS")]),
-    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.8, 20)]),
+    ( 80, [Trigger("CLOUDS", "grey", 0.4, 0.6, 20)]),
 
     (90, [
         Trigger("LIGHTNING_outer"),
