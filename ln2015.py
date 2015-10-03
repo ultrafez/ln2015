@@ -106,10 +106,11 @@ EVENT_TIMING = [
     (130, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (130, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
     (140, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
-    (143, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
-    (146, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
-    (145, [Trigger("RAIN", "end", 3)]),
-    (145, [Trigger("CLOUDS", "end", 3)]), # clouds fadetime
+    (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
+    (150, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
+    (155, [Trigger("WAVES", "spawn", 8, 180, 1, 3)]),
+    (143.75, [Trigger("RAIN", "end", 2)]),
+    (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
     (152, [Trigger("WAVES", "beacon", 1)]),  # number buoys
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
