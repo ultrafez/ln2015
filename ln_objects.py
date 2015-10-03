@@ -128,52 +128,101 @@ class StarrySky(Group):
         self.fade_rate = -1.0 / (get_fps() * fade_time)
 
 
-class RisingSun(Sprite):
-    def __init__(self, start, end, size, duration):
-        super().__init__(size * 2, size * 2)
-
-        self.start = start
-        self.move_x = end[0] - start[0]
-        self.move_y = end[1] - start[1]
+class MoveableThing(Group):
+    def __init__(self, pos, size, fade_duration):
+        super().__init__()
+        self.x = float(pos[0])
+        self.y = float(pos[1])
+        self.dx = 0.0
+        self.dy = 0.0
+        self.steps = 0
         self.size = size
-        self.rect = self.image.get_rect()
-        self.speed = 1.0 / (get_fps() * duration)
-        self.fade_speed = None
+        self.size_speed = 0
 
-        self.time = 0.0
-        self.alpha = 1.0
-        self.log.debug('initing sun')
-        self.render()
-
-    def render(self):
-        p = pygame.PixelArray(self.image)
-        d2 = self.size * self.size
-        for x in range(p.shape[0]):
-            for y in range(p.shape[1]):
-                dx = self.size - x
-                dy = self.size - y
-                dist = dx * dx + dy * dy
-                if dist < d2:
-                    color = (255, 255 - int(255 * dist / d2), 0)
-                    p[x, y] = color
+        if fade_duration is not None:
+            self.fade = 0.0
+            self.fade_speed = 1.0 / (get_fps() * fade_duration)
+        else:
+            self.fade = 1.0
+            self.fade_speed = None
 
     def update(self):
-        if self.time < 1.0:
-            self.time += self.speed
-            x = self.start[0] + self.time * self.move_x
-            y = self.start[1] + self.time * self.move_y
-            self.rect.center = (x, y)
+        if self.steps > 0:
+            self.steps -= 1
+            self.x += self.dx
+            self.y += self.dy
+            self.size += self.size_speed
         if self.fade_speed is not None:
-            self.alpha -= self.fade_speed
-            if self.alpha < 0.0:
+            self.fade += self.fade_speed
+            if self.fade_speed > 0.0 and self.fade >= 1.0:
+                self.fade = 1.0;
+                self.fade_speed = None
+            if self.fade_speed < 0.0 and self.fade <= 0.0:
                 raise StopIteration
-            self.image.set_alpha(255 * self.alpha)
 
-    def end(self, fade_time):
-        self.fade_speed = 1.0 / (get_fps() * fade_time)
+    def move(self, newpos, newsize, duration = None):
+        if duration is None:
+            self.steps = 1
+        else:
+            self.steps = max(int(duration * get_fps()), 1)
+        if newpos is None:
+            self.dx = 0.0
+            self.dy = 0.0
+        else:
+            self.dx = (newpos[0] - self.x) / self.steps
+            self.dy = (newpos[1] - self.y) / self.steps
+        if newsize is None:
+            self.size_speed = 0
+        else:
+            self.size_speed = (newsize - self.size) / self.steps
+
+    def end(self, fade_duration):
+        if fade_duration is None:
+            self.kill()
+        else:
+            self.fade_speed = -1.0 / (get_fps() * fade_duration)
+
+class Sun(MoveableThing):
+    def __init__(self, pos, size, ripple_height, ripple_count, ripple_speed, duration = None):
+        super().__init__(pos, size, duration)
+        self.s = pygame.Surface(MADRIX_SIZE, flags = pygame.SRCALPHA)
+        self.ripple_speed = ripple_speed * math.pi * 2.0 / get_fps()
+        self.ripple_distance = ripple_count * math.pi * 2.0
+        self.ripple_height = ripple_height / 2.0
+        self.ripple = 0.0
+
+    def update(self):
+        super().update()
+        self.ripple += self.ripple_speed
+        if self.ripple > math.pi * 2.0:
+            self.ripple -= math.pi * 2.0
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        self.s.fill(transparent)
+        a = pygame.PixelArray(self.s)
+        left = max(int(self.x - self.size) - 1, 0)
+        right = min(int(self.x + self.size) + 2, a.shape[0])
+        top = max(int(self.y - self.size) - 1, 0)
+        bottom = min(int(self.y + self.size) + 2, a.shape[1])
+        for x in range(left, right):
+            for y in range(top, bottom):
+                dx = self.x - x
+                dy = self.y - y
+                dist = dx * dx + dy * dy
+                dist = pythagoras((dx, dy))
+                if dist <= self.size + 1:
+                    height = max(1.0 - dist / self.size, 0.0)
+                    ripple_pos = self.ripple + height * self.ripple_distance
+                    height -= height * self.ripple_height * (sin(ripple_pos) + 1)
+                    if dist <= self.size:
+                        alpha = 255
+                    else:
+                        alpha = 255 * (self.size  + 1 - dist)
+                    alpha = int(alpha * self.fade)
+                    color = (255, int(255 * height), 0, alpha)
+                    a[x, y] = color
+        del a
+        surface.blit(self.s, (0,0))
 
 
 def height_color(height):

@@ -54,9 +54,10 @@ key_triggers = {
 
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
-    ( 30, [Trigger("SUNRISE")]), 
+    ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 53), 8, 30)]), 
     ( 45, [Trigger("STARS", "end", 10)]), #fadetime
-    ( 70, [Trigger("SUNRISE", "end", 5)]), # fadetime
+    ( 60, Trigger("SUNRISE", "move", None, 12, 10)), # newpos, newsize, duration
+    ( 70, Trigger("SUNRISE", "end", 5)), # fadetime
     ( 53, [Trigger("CLOUDS")]),
     ( 80, [Trigger("CLOUDS", "grey", 0.4, 20)]),
     ( 90, [Trigger("RAIN")]),
@@ -93,7 +94,7 @@ EVENT_TIMING = [
 
 scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
-    "SUNRISE": (10, RisingSun, (66, 78), (66, 53), 8, 30), #start, end, size, duration
+    "SUNRISE": (10, Sun, (66, 78), 6, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
