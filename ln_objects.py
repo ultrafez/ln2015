@@ -299,59 +299,61 @@ class Clouds(Group):
 
 
 class Raindrops(Group):
-    def __init__(self, size):
-        Group.__init__(self)
-        self.s = pygame.Surface(size, pygame.SRCALPHA)
-        self.s.set_colorkey(white)
-        self.drop_frequency = 23
-        self.count = 0
-        self.s.set_alpha(100)
-        self.alpha = 100
-        self.active_drops = 0
+    def __init__(self, drop_size, drop_duration, max_drops, ramp_time):
+        super().__init__()
+        self.num_drops = 1.0
+        self.max_drops = max_drops
+        self.ramp_rate = max_drops / (get_fps() * ramp_time)
+        self.drop_size = drop_size
+        self.drop_speed = drop_size / (get_fps() * drop_duration)
 
     def update(self):
-        if self.count == 0:
-            self.count = self.drop_frequency
-            if self.active_drops < 5:
-                self.active_drops += 1
-        self.count -= 1
-        if len(self) < self.active_drops:
-            (w, h) = self.s.get_size()
-            self.add(RainSplash(random.randrange(w), random.randrange(h), 60))
-        Group.update(self)
+        if self.ramp_rate > 0.0:
+            if self.num_drops < self.max_drops:
+                self.num_drops += self.ramp_rate
+            else:
+                self.num_drops = self.max_drops
+                self.ramp_rate = 0
+        else:
+            self.num_drops += self.ramp_rate
+
+        max_drops = int(self.num_drops / get_fps()) + 1
+        missing = int(self.num_drops) - len(self)
+        for _ in range(min(missing, max_drops)):
+            self.add(RainSplash(self.drop_size, self.drop_speed))
+        super().update()
+        if len(self) == 0 and self.num_drops <= 0:
+            raise StopIteration
 
     def draw(self, surface):
-        self.s.fill(transparent)
-        Group.draw(self, self.s)
-        surface.blit(self.s, (0, 0))
+        for drop in self:
+            drop.draw(surface)
+
+    def end(self, ramp_time = None):
+        if ramp_time is not None:
+            self.ramp_rate = -self.num_drops / (get_fps() * ramp_time)
+        else:
+            self.num_drops = 0
 
 
 class RainSplash(Sprite):
-    def __init__(self, x, y, size):
-        self.max_radius = 10
-        self.log = logging.getLogger(self.__class__.__name__)
-        Sprite.__init__(self, size, size)
-        self.rect = pygame.Rect(x - size // 2, y - size // 2, size, size)
+    def __init__(self, max_r, speed):
+        super().__init__()
+        lamp = random.choice(ceiling.lamps)
+        self.pos = (lamp.x, lamp.y)
+        self.max_radius = max_r
         self.radius = 0
+        self.speed = speed
 
     def update(self):
-        self.radius = (self.radius + 2)
+        self.radius += self.speed
         if self.radius >= self.max_radius:
             self.kill()
             return
 
-        self.image.fill(white)
-        # c = hls_to_rgb(210, (1 + sin(self.radius / 20)) * 49, 55)
-        for i in range(self.radius):
-            c = hls_to_rgb(210, (1 + sin(i / 20)) * 49, 55)
-            pygame.draw.circle(self.image, c, (self.max_radius, self.max_radius), self.radius - i)
-
-        self.image.set_alpha(255 - (255 * self.radius / self.max_radius))
-
-        # pygame.draw.circle(self.image, c, (200,200), self.radius)
-        # draw expanding blue/white circle with alpha
-        # self.height = 1/self.radius
-
+    def draw(self, surface):
+        color = (0, 0, 255, 255)
+        pygame.draw.circle(surface, color, self.pos, int(self.radius))
 
 class Thunderstorm(Group):
     def __init__(self):

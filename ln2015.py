@@ -63,7 +63,7 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_high", "add_sheet", right_arm),
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
-    (110, [Trigger("RAIN")]),  # Rain SoundsStart
+    (110, Trigger("RAIN")),  # Rain SoundsStart
     (114, [
         Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (130, 55), (0, 55)),
         Trigger("LIGHTNING_low",  "add_fork", (MADRIX_X, MADRIX_Y), (75, 0), (75, 70))
@@ -71,7 +71,7 @@ EVENT_TIMING = [
     (120, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
     (140, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 3, 180, 10, 5)]),  # Wave and Ambient SoundsStart
-    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
+    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end", 5)]),  # Clouds FadeEnd #Rain SoundsEnd
     (190, Trigger("WAVES", "spawn", 5, -80, 10, 3)),
     (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
@@ -96,7 +96,7 @@ scene_data = {
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, (MADRIX_X, MADRIX_Y), 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (40, Raindrops, (MADRIX_X, MADRIX_Y)),
+    "RAIN": (40, Raindrops, 5, 0.5, 20, 10),
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon),
