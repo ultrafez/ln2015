@@ -69,14 +69,16 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
     (120, [
-        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)),
+        Trigger("LIGHTNING_low"),
+        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)), #area effect , start/end xy
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
     ]),  # Fork
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
     (160, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
     (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
-    (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
+    (160, [Trigger("CLOUDS", "end", 10)]), # clouds fadetime
+    (160, [Trigger("RAIN", "end")]),  
+    (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
@@ -96,10 +98,10 @@ EVENT_TIMING = [
 scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "SUNRISE": (10, Sun, (66, 78), 6, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
-    "LIGHTNING_high": (15, Thunderstorm),
+    "LIGHTNING_high": (30, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (40, Raindrops, 5, 0.5, 20, 10), #drop_size, drop_duration, max_drops, ramp_time
+    "RAIN": (25, Raindrops, 5, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (80, 53), 3, 10),
