@@ -712,12 +712,28 @@ class Wave(Sprite):
             return -dist
 
 class Beacon(Sprite):
-    def __init__(self, pos):
+    red = 1
+    green = 2
+    blue = 4
+    purple = red + blue
+    yellow = red + green
+    cyan = green + blue
+    colors = [
+        red,
+        green,
+        blue,
+        purple,
+        yellow,
+        cyan,
+    ]
+
+    def __init__(self, pos, color):
         super().__init__()
         self.pos = pos
         self.radius = 0.5
         self.triggered = False
         self.max_r = 10.0
+        self.color = color
 
     def update(self):
         self.radius += 0.5
@@ -728,6 +744,16 @@ class Beacon(Sprite):
         x = point[0] - self.pos[0]
         y = point[1] - self.pos[1]
         return pythagoras((x, y))
+
+    def mix(self, color, value):
+        (r, g, b) = color
+        if self.color & 1:
+            r = max(r, value)
+        if self.color & 2:
+            g = max(g, value)
+        if self.color & 4:
+            b = max(b, value)
+        return (r, g, b)
 
 class ProtoWave(object):
     def __init__(self, delay, width, angle):
@@ -765,7 +791,8 @@ class Sea(Group):
 
     def add_beacon(self):
         lamp = self.rand.choice(ceiling.bubbleroof_lamps)
-        b = Beacon((lamp.x, lamp.y))
+        color = self.rand.choice(Beacon.colors)
+        b = Beacon((lamp.x, lamp.y), color)
         self.beacons.add(b)
 
     def end(self):
@@ -830,6 +857,7 @@ class Sea(Group):
                         p = int(255 * (2.0 - close))
                         color = (0, 0, p)
                 height = 0.0
+                mix = None
                 for b in self.beacons:
                     dist = b.distance((x, y))
                     if dist < b.radius:
@@ -845,9 +873,10 @@ class Sea(Group):
                     new_height *= min(2.0*math.cos((b.radius / b.max_r) * math.pi / 2.0), 1.0)
                     if new_height > height:
                         height = new_height
-                if height > 0.0:
+                        mix = b.mix
+                if mix is not None:
                     intens = int(255 * height)
-                    color = (max(color[0], intens), color[1], color[2])
+                    color = mix(color, intens)
                 r = color[0]
                 g = color[1]
                 b = color[2]
