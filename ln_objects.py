@@ -861,7 +861,6 @@ class Sea(Group):
         self.s.fill(transparent)
         a = pygame.PixelArray(self.s)
         for lamp in ceiling.lamps:
-            try:
                 x = lamp.x
                 y = lamp.y
         #for x in range(self.size[0]):
@@ -916,8 +915,5 @@ class Sea(Group):
                     b = min(b * 255, 255)
                 color = (r, g, b, alpha)
                 a[x, y] = color
-            except Exception as e:
-                print(e)
-                raise Exception("Here")
         del a
         surface.blit(self.s, (0, 0))
