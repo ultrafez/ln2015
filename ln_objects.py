@@ -615,30 +615,41 @@ class Constellation(Sprite):
         raise StopIteration
 
 class HSMoon(MoveableThing):
-    def __init__(self, pos, size, overlay_duration, fade_duration = None):
+    def __init__(self, pos, size, fade_duration = None):
         super().__init__(pos, size, fade_duration)
-        self.overlay_rate = math.pi * 2 / (get_fps() * overlay_duration)
-        self.base = pygame.image.load(os.path.join('Resources', 'moon_base.png'))
-        self.base = self.base.convert()
-        self.overlay = pygame.image.load(os.path.join('Resources', 'moon_overlay.png'))
-        self.overlay = self.overlay.convert()
-        self.scaled_logo = None
+        self.raw_base = pygame.image.load(os.path.join('Resources', 'moon_base.png'))
+        self.raw_base = self.raw_base.convert()
+        self.raw_overlay = pygame.image.load(os.path.join('Resources', 'moon_overlay.png'))
+        self.raw_overlay = self.raw_overlay.convert()
+        self.scaled_base = None
         self.scaled_overlay = None
+
         self.overlay_pos = 0.0
+        self.overlay_rate = 0.0
+        self.overlay_enabled = False
+
+    def overlay(self, fade_duration = None):
+        if fade_duration is None:
+            self.overlay_enabled = False
+        else:
+            self.overlay_enabled = True
+            self.overlay_rate = math.pi * 2 / (get_fps() * fade_duration)
 
     def update(self):
         super().update()
         size = int(round(self.size * 2))
         image_size = (size, size)
-        if self.fade == 1.0:
+        if self.overlay_rate != 0.0:
             self.overlay_pos += self.overlay_rate
-            self.overlay_pos %= math.pi * 2.0
-        else:
-            self.overlay_pos = 0.0
-        if self.scaled_logo is None or self.scaled_logo.get_size() != image_size:
-            self.scaled_base = pygame.transform.scale(self.base, image_size)
+            if self.overlay_pos > math.pi * 2.0:
+                self.overlay_pos -= math.pi * 2.0
+                if not self.overlay_enabled:
+                    self.overlay_rate = 0.0
+                    self.overlay_pos = 0.0
+        if self.scaled_base is None or self.scaled_base.get_size() != image_size:
+            self.scaled_base = pygame.transform.scale(self.raw_base, image_size)
             self.scaled_base.set_colorkey(black)
-            self.scaled_overlay = pygame.transform.scale(self.overlay, image_size)
+            self.scaled_overlay = pygame.transform.scale(self.raw_overlay, image_size)
             self.scaled_overlay.set_colorkey(black)
 
     def draw(self, surface):
