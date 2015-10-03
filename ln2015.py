@@ -101,7 +101,7 @@ scene_data = {
     "RAIN": (40, (Raindrops, ((MADRIX_X, MADRIX_Y),))),
     "CONSTELLATION": (50, (Constellation, (49, 29))),
     "MOONRISE": (60, (HSMoon, ())),
-    "WAVES": (70,(Sea,  ((MADRIX_X, MADRIX_Y), 2, 3.0))),
+    "WAVES": (70,(Sea,  (0.6,))),
     "BIRDS": (80, (Bird,  ((bubbleroof,)))),
 }
 
