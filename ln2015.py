@@ -69,14 +69,15 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
     (120, [
-        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)),
+        Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)), #area effect , start/end xy
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
     ]),  # Fork
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
     (160, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
     (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
-    (150, [Trigger("CLOUDS", "end", 5), Trigger("RAIN", "end")]),  # Clouds FadeEnd #Rain SoundsEnd
-    (200, [Trigger("WAVES", "beacon", 5)]),  # Waves Ring Bouys to MakeSounds
+    (160, [Trigger("CLOUDS", "end", 10)]), # clouds fadetime
+    (160, [Trigger("RAIN", "end")]),  
+    (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
     (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
