@@ -69,6 +69,7 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_high", "add_sheet", top_arm)
     ]),
     (120, [
+        Trigger("LIGHTNING_low"),
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (130, 55), (0, 55)), #area effect , start/end xy
         Trigger("LIGHTNING_low",  "add_fork", MADRIX_SIZE, (75, 0), (75, 70))
     ]),  # Fork
@@ -97,7 +98,7 @@ EVENT_TIMING = [
 scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "SUNRISE": (10, Sun, (66, 78), 6, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
-    "LIGHTNING_high": (15, Thunderstorm),
+    "LIGHTNING_high": (30, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
     "RAIN": (40, Raindrops, 5, 0.5, 20, 10), #drop_size, drop_duration, max_drops, ramp_time
