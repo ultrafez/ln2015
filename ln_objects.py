@@ -805,10 +805,21 @@ class Sea(Group):
     def beacon(self, n):
         self.num_beacons = n
 
+    def wave_collision(self, pos):
+        for wave in self:
+            dist = wave.distance(pos)
+            if dist >= 0 and dist < self.wave_speed * 2.0:
+                return True
+        return False
+
     def add_beacon(self):
-        lamp = self.rand.choice(ceiling.bubbleroof_lamps)
+        while True:
+            lamp = self.rand.choice(ceiling.bubbleroof_lamps)
+            pos = (lamp.x, lamp.y)
+            if not self.wave_collision(pos):
+                break;
         color = self.rand.choice(Beacon.colors)
-        b = Beacon((lamp.x, lamp.y), color)
+        b = Beacon(pos, color)
         self.beacons.add(b)
 
     def end(self):
@@ -835,11 +846,8 @@ class Sea(Group):
         for b in self.beacons:
             if b.triggered:
                 b.update()
-            else:
-                for wave in self:
-                    dist = wave.distance(b.pos)
-                    if dist >= 0 and dist < wave.width * 2.0:
-                        b.triggered = True
+            elif self.wave_collision(b.pos):
+                b.triggered = True
 
     def draw(self, surface):
         if len(self) == 0:
