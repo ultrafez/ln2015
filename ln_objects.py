@@ -857,6 +857,13 @@ class Ripples(Sprite):
         self.ticks = 0
         self.alpha = 0
 
+    def takeoff(self):
+        self.dspeed = 1
+        self.speed = 0
+
+
+
+
     def update(self):
         water_blue = hlsa_to_rgba(210, 60, 70, 0)
 

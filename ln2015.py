@@ -101,16 +101,18 @@ EVENT_TIMING = [
         Trigger("LIGHTNING_low",  "trigger_flash" ) #area effect , start/end xy
 
     ]),  # Fork
+    (130, [Trigger("LIGHTNING_inner", "end")]),
+
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 5, 180, 10, 5)]),  # width, angle, num_waves, interval
     (155, [Trigger("CLOUDS", "end", 5)]), # clouds fadetime
     (160, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (160, [Trigger("LIGHTNING_outer", "end")]),  # Lightning SoundsEnd
-    (160, [Trigger("RAIN", "end")]),
+    (160, [Trigger("RAIN", "end")]),  # start to fill with water
     (170, [Trigger("WAVES", "beacon", 5)]),  # number buoys
     (190, [Trigger("WAVES", "beacon", 0)]),  # Stop beacon respawn
     (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
-    (225, [Trigger("BIRDS", 'set_action', 'takeoff')]),
-    (235, [Trigger("BIRDS", 'set_action', 'rotate_camera')]),
+    (225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
+    (235, [Trigger("ripples", "end"), Trigger("BIRDS", 'set_action', 'rotate_camera')]),
     (250, [Trigger("FOREST")]),  # Forest SoundsStarts
     (260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
     (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
