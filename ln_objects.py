@@ -253,7 +253,7 @@ class Cloud(Sprite):
         if self.x > self.max_x:
             self.kill()
 
-    def draw(self, alpha):
+    def draw(self, pixels, peak):
         """Anti-aliased x transparency mask"""
         x_start = int(self.x)
         if self.x < 0:
@@ -261,17 +261,21 @@ class Cloud(Sprite):
         x_offset = self.x - x_start
         for y in range(self.size):
             py = y + self.y
-            if py < 0 or py >= alpha.shape[1]:
+            if py < 0 or py >= pixels.shape[1]:
                 continue
             for x in range(self.size + 1):
                 px = x_start + x
-                if px < 0 or px >= alpha.shape[0]:
+                if px < 0 or px >= pixels.shape[0]:
                     continue
-                a = self.bitmap[x - 1, y]
-                b = self.bitmap[x, y]
-                val = int(255 * (b + (a - b) * x_offset))
-                orig = alpha[px, py]
-                alpha[px, py] = min(orig + val, 255)
+                v1 = self.bitmap[x - 1, y]
+                v2 = self.bitmap[x, y]
+                val = v2 + (v1 - v2) * x_offset
+                new_alpha = int(255 * val)
+                new_shade = int(peak * val)
+                orig = pixels[px, py]
+                alpha = max(orig >> 24, new_alpha)
+                shade = max(orig & 0xff, new_shade)
+                pixels[px, py] = (shade, shade, shade, alpha)
 
 
 class Clouds(Group):
@@ -291,30 +295,31 @@ class Clouds(Group):
         self.time = None
         self.set_ramp(ramp_duration)
         self.phase = self.CLOUD_NORMAL
-        self.greyness = 0.5
+        self.greyness = None
+        self.dirtyness = None
 
     def set_ramp(self, duration):
         self.ramp_speed = 1.0 / (get_fps() * duration)
         self.time = 0.0
 
-    def grey(self, greyness, duration):
+    def grey(self, greyness, whiteness, duration):
         self.set_ramp(duration)
         self.greyness = greyness
+        self.dirtyness = 1.0 - whiteness
         self.phase = self.CLOUD_GREY
 
     def update(self):
-        if self.phase == self.CLOUD_NORMAL:
-            if self.time >= 1.0:
-                p = self.final_prob
-            else:
-                a = self.initial_prob
-                b = self.final_prob
-                p = a + (b - a) * self.time
-            while True:
-                p -= self.rand.random()
-                if p < 0.0:
-                    break
-                self.add(Cloud(self.max_x, self.rand.randrange(self.max_y), self.cloud_size, self.rand))
+        if self.time >= 1.0:
+            p = self.final_prob
+        else:
+            a = self.initial_prob
+            b = self.final_prob
+            p = a + (b - a) * self.time
+        while True:
+            p -= self.rand.random()
+            if p < 0.0:
+                break
+            self.add(Cloud(self.max_x, self.rand.randrange(self.max_y), self.cloud_size, self.rand))
         self.time += self.ramp_speed
         super().update()
 
@@ -322,24 +327,28 @@ class Clouds(Group):
         skip = False
         alpha = 0
         shade = 255
+        peak = 255
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:
                 raise StopIteration
             alpha = int(255 * (1.0 - self.time))
-            shade = 255 * self.greyness
+            shade = int(255 * self.greyness)
+            peak = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_GREY:
             if self.time >= 1.0:
                 alpha = 255
                 shade = int(255 * self.greyness)
+                peak = int(255 - 255 * self.dirtyness)
             else:
                 alpha = int(255 * self.time)
-                shade = int(255 * (1.0 - (1.0 - self.greyness) * self.time))
+                shade = int(255 * self.time * self.greyness)
+                peak = int(255 - 255 * self.time * self.dirtyness)
         self.s.fill((shade, shade, shade, alpha))
-        if self.phase != self.CLOUD_BLACK:
-            a = pygame.surfarray.pixels_alpha(self.s)
-            for cloud in self:
-                cloud.draw(a)
-            del a
+        a = pygame.PixelArray(self.s)
+        print(peak)
+        for cloud in self:
+            cloud.draw(a, peak)
+        del a
         surface.blit(self.s, (0, 0))
 
     def end(self, duration):
