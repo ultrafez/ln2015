@@ -99,7 +99,7 @@ scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "SUNRISE": (10, Sun, (66, 78), 6, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
     "LIGHTNING_high": (30, Thunderstorm),
-    "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
+    "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_low": (30, Thunderstorm),
     "RAIN": (25, Raindrops, 5, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
