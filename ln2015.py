@@ -148,7 +148,7 @@ scene_data = {
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
-    "WAVES": (70, Sea, 0.6), #wave_speed
+    "WAVES": (70, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
     "AURORA": (5, Aurora, (66, 53), 2, 5) # middle, blob_duration, num_blobs
     #'ripples': (100, ripples, MADRIX_SIZE)
 }

@@ -743,16 +743,17 @@ class Beacon(Sprite):
         cyan,
     ]
 
-    def __init__(self, pos, color):
+    def __init__(self, pos, color, max_r, speed):
         super().__init__()
         self.pos = pos
         self.radius = 0.5
         self.triggered = False
-        self.max_r = 10.0
+        self.max_r = max_r
+        self.speed = speed
         self.color = color
 
     def update(self):
-        self.radius += 0.5
+        self.radius += self.speed
         if self.radius > self.max_r:
             self.kill()
 
@@ -781,7 +782,7 @@ class ProtoWave(object):
         return self.delay < 0
 
 class Sea(Group):
-    def __init__(self, wave_speed):
+    def __init__(self, wave_speed, beacon_speed, beacon_size):
         super().__init__()
         size = (MADRIX_X, MADRIX_Y)
         self.s = pygame.Surface(size, flags = pygame.SRCALPHA)
@@ -790,6 +791,8 @@ class Sea(Group):
         self.num_beacons = 0
         self.future = []
         self.wave_speed = wave_speed
+        self.beacon_speed = beacon_speed
+        self.beacon_size = beacon_size
 
     def spawn(self, width, angle, num_waves, interval):
         """Trigger a set of waves"""
@@ -819,7 +822,7 @@ class Sea(Group):
             if not self.wave_collision(pos):
                 break;
         color = self.rand.choice(Beacon.colors)
-        b = Beacon(pos, color)
+        b = Beacon(pos, color, self.beacon_size, self.beacon_speed)
         self.beacons.add(b)
 
     def end(self):
