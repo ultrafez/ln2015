@@ -121,7 +121,7 @@ EVENT_TIMING = [
     (310, [Trigger("NORTHERNLIGHTS", "end")]),  # Northern Lights SoundsEnd
     (300, Trigger("MOONRISE")),
     (315, Trigger("MOONRISE", "overlay", 3)), # fade time
-    (320, Trigger("MOONRISE", "overlay")), # Disable overlay
+    (320, Trigger("MOONRISE", "overlay")), # Disable overlay waits till H faded out
     (325, Trigger("MOONRISE", "move", (80, 53), 6, 5)),  #
     (330, [Trigger("MOONRISE", "end", 5), Trigger("CONSTELLATION", "end")]),  #
 ]
@@ -142,7 +142,7 @@ scene_data = {
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
-    "WAVES": (70, Sea, 0.6),
+    "WAVES": (70, Sea, 0.6), #wave_speed
     #'ripples': (100, ripples, MADRIX_SIZE)
 }
 
