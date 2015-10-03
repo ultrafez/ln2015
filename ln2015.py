@@ -101,7 +101,7 @@ scene_data = {
     "LIGHTNING_high": (30, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.1, 0.25, 20),
     "LIGHTNING_low": (30, Thunderstorm),
-    "RAIN": (40, Raindrops, 5, 0.5, 20, 10), #drop_size, drop_duration, max_drops, ramp_time
+    "RAIN": (25, Raindrops, 5, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (80, 53), 3, 10),
