@@ -155,7 +155,7 @@ if __name__ == "__main__":
     pygame.init()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--warp", type=float, default=0.0)
+    parser.add_argument("--warp", type=float, default=-1.0)
     parser.add_argument("--no-mask", action="store_false", dest="mask")
     parser.add_argument("--no_images", action="store_false", dest="save_images")
     parser.add_argument("--save-video", action="store_true")
@@ -164,6 +164,7 @@ if __name__ == "__main__":
     parser.add_argument("--random-seed", type=str, default="LN2015")
     parser.add_argument("--sparse", type=int, default=2)
     parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
+    parser.add_argument("--pause", action="store_true")
     args = parser.parse_args()
 
     print(args)
