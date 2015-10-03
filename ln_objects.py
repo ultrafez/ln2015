@@ -229,7 +229,7 @@ class Cloud(Sprite):
         if self.x > self.max_x:
             self.kill()
 
-    def draw(self, pixels, peak):
+    def draw(self, pixels, peak, fade):
         """Anti-aliased x transparency mask"""
         x_start = int(self.x)
         if self.x < 0:
@@ -246,7 +246,7 @@ class Cloud(Sprite):
                 v1 = self.bitmap[x - 1, y]
                 v2 = self.bitmap[x, y]
                 val = v2 + (v1 - v2) * x_offset
-                new_alpha = int(255 * val)
+                new_alpha = int(255 * val * fade)
                 orig = pixels[px, py]
                 alpha = orig >> 24
                 shade = orig & 0xff
@@ -306,10 +306,12 @@ class Clouds(Group):
         alpha = 0
         shade = 0
         peak = 255
+        fade = 1.0
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:
                 raise StopIteration
-            alpha = int(255 * (1.0 - self.time))
+            fade = 1.0 - self.time
+            alpha = int(255 * fade)
             shade = int(255 * self.greyness)
             peak = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_GREY:
@@ -324,7 +326,7 @@ class Clouds(Group):
         self.s.fill((shade, shade, shade, alpha))
         a = pygame.PixelArray(self.s)
         for cloud in self:
-            cloud.draw(a, peak)
+            cloud.draw(a, peak, fade)
         del a
         surface.blit(self.s, (0, 0))
 
