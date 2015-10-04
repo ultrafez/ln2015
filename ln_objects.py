@@ -1035,29 +1035,44 @@ class Sea(Group):
 
 
 class Ripples(Sprite):
-    def __init__(self, size):
-        super().__init__( size[0], size[1], pygame.SRCALPHA)
-        self.rect = pygame.Rect((0,0), size)
-        self.ticks = 0
+    def __init__(self):
+        super().__init__( MADRIX_X, MADRIX_Y, pygame.SRCALPHA)
+        self.rect = pygame.Rect((0, 0), MADRIX_SIZE)
+        self.color = (0, 0, 0, 0)
+
+        self.hue = 210
         self.alpha = 0
+        self.dalpha = 0
+
         self.brightness = 60
         self.target_brightness = 60
         self.dbright = 0
-        self.dalpha = 0
+
+        self.saturation = 70
 
     def takeoff(self):
         self.dspeed = 1
         self.speed = 0
         self.dalpha = -5
 
-    def fade_to(self, target_brightness=100, duration=3):
-        self.target_brightness = target_brightness
-        self.dbright = (self.target_brightness - self.brightness) / (duration * get_fps())
+    def fade_in(self, duration):
+        if self.ticks < 180:
+            self.alpha += 128/180
+            self.alpha = 1
+            self.image.fill(hlsa_to_rgba(210, self.brightness, self.saturation, self.alpha))
+
+    def fade_to(self, h=None, s=None, l=None, duration=3):
+        if h is not None:
+            self.hue = h
+        if s is not None:
+            self.saturation = s
+        if l is not None:
+            self.brightness = l
+        ##self.target_brightness = target_brightness
+        #self.dbright = (self.target_brightness - self.brightness) / (duration * get_fps())
 
     def update(self):
-        self.alpha += self.dalpha
-
-        water_blue = hlsa_to_rgba(210, self.brightness, 70, self.alpha)
+        self.color = hlsa_to_rgba(self.hue, self.brightness, self.saturation, self.alpha)
         if self.target_brightness != self.brightness:
             if abs(self .brightness - self.target_brightness) < self.dbright:
                 self.brightness = self.target_brightness
@@ -1065,27 +1080,17 @@ class Ripples(Sprite):
                 self.brightness += self.dbright
         self.ticks += 1
 
-
-
     def draw(self, surface):
-        water_blue = hlsa_to_rgba(210, self.brightness, 70, self.alpha)
 
-        if self.ticks < 180:
-            self.alpha += 128/180
-            self.alpha = 1
-            self.image.fill(hlsa_to_rgba(210, self.brightness, 70, self.alpha))
-
-        else:
-
-            px = pygame.PixelArray(self.image)
-            for lamp in ceiling.lamps:
-                i = lamp.x
-                j = lamp.y
-            #for j in range(self.rect.height):
-            #    for i in range(self.rect.width):
-                water_blue[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
-                px[i, j] = tuple(water_blue)
-            del(px)
+        px = pygame.PixelArray(self.image)
+        for lamp in ceiling.lamps:
+            i = lamp.x
+            j = lamp.y
+        #for j in range(self.rect.height):
+        #    for i in range(self.rect.width):
+            self.color[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
+            px[i, j] = tuple(self.color)
+        del px
 
 
         surface.blit(self.image, self.rect)

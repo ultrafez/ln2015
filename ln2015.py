@@ -87,6 +87,9 @@ EVENT_TIMING = [
     (154.75, Trigger("CLOUDS", "end", 2)), # fadetime
     (154.75, Trigger("FOG", "end", 2)), # fadetime
 
+    (160, [Trigger("ripples")], ),  # number buoys
+
+
     #WAVES AND BEACONS
     (155, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
     (160, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
@@ -98,7 +101,6 @@ EVENT_TIMING = [
     (185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
     (192, [Trigger("WAVES", "beacon", 0)]),  # number buoys
 
-    (WAVE_END_TIME-4, [Trigger("ripples")], ),  # number buoys
     (WAVE_END_TIME, [Trigger("ripples", 'fade_to', 100, 5)]),  # change brightness to
 
     (WAVE_END_TIME+1, [Trigger("BIRDS"),
@@ -153,7 +155,7 @@ scene_data = {
     "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "LIGHTNING_low": (25, Thunderstorm),
     "BIRDS": (30, Bird, pygame.Rect(60, 44, 20, 20)),
-    'ripples': ( 40, Ripples, MADRIX_SIZE),
+    'ripples': (28, Ripples),
     "WAVES": (50, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
 
     "CONSTELLATION": (50, Constellation, 49, 29),
