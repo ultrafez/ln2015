@@ -52,6 +52,9 @@ key_triggers = {
     pygame.K_o: Trigger("CONSTELLATION", "end")
 }
 
+WAVE_END_TIME = 197
+
+
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
     ( 30, Trigger("MORNINGSKY")),
@@ -95,27 +98,35 @@ EVENT_TIMING = [
     (185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
     (192, [Trigger("WAVES", "beacon", 0)]),  # number buoys
 
+    (WAVE_END_TIME-4, [Trigger("ripples")], ),  # number buoys
+    (WAVE_END_TIME, [Trigger("ripples", 'fade_to', 100, 5)]),  # change brightness to
+
+    (WAVE_END_TIME+1, [Trigger("BIRDS"),
+           Trigger("BIRDS", 'set_action', 'bob')
+          ]),  # Sea Birds SoundsStart
+
+    (WAVE_END_TIME+2, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger('ripples', 'takeoff')]),
+
+
     #SUNSET
-    (196, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
-    (202, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
-    (232, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
-    (232, [Trigger("SUNSET", "end", 10)]), # fadetime
+    (WAVE_END_TIME+4, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
+    (202+15, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
+    (232+15, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
+    (232+15, [Trigger("SUNSET", "end", 10)]), # fadetime
 
     #NIGHTSKY
-    (217, [Trigger("NIGHTSTARS")]),
-    (235, [Trigger("AURORA")]),
-    (245, [Trigger("AURORA", "spawn", 10)]),
-    (260, [Trigger("AURORA", "end")]),
-    (270, [Trigger("MOONRISE")]),
-    (285, [Trigger("MOONRISE", "overlay", 3)]), # fade time
-    (295, [Trigger("MOONRISE", "overlay")]),
-    (305, [Trigger("MOONRISE", "end", 10)]),
-    (305, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
+    (217+15, [Trigger("NIGHTSTARS")]),
+    (235+15, [Trigger("AURORA")]),
+    (245+15, [Trigger("AURORA", "spawn", 10)]),
+    (260+15, [Trigger("AURORA", "end")]),
+    (270+15, [Trigger("MOONRISE")]),
+    (285+15, [Trigger("MOONRISE", "overlay", 3)]), # fade time
+    (295+15, [Trigger("MOONRISE", "overlay")]),
+    (305+15, [Trigger("MOONRISE", "end", 10)]),
+    (305+15, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
 
 
 
-    #(220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
-    #(225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
     #(235, [Trigger("ripples", "end"), Trigger("BIRDS", 'set_action', 'rotate_camera')]),
     #(250, [Trigger("FOREST")]),  # Forest SoundsStarts
     #(260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
@@ -127,23 +138,26 @@ scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "MORNINGSKY":(5, Fog, (119, 181, 254), 25), 
     "CLOUDSKY":(7, Fog, (0, 66, 128), 3),  
+    "NIGHTSTARS": (0, StarrySky, 60, 10, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
+
+    "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
+
     "SUNRISE": (10, Sun, (66, 90), 20, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
+    "SUNSET": (10, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
 
+    "FOG": (12, Fog, (100, 100, 100), 10),
 
-    "FOG":(12, Fog, (100, 100, 100), 10),
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
-    "LIGHTNING_low": (25, Thunderstorm),
 
     "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
-    "BIRDS": (41, Bird, bubbleroof),
+    "LIGHTNING_low": (25, Thunderstorm),
+    "BIRDS": (30, Bird, pygame.Rect(60, 44, 20, 20)),
+    'ripples': ( 40, Ripples, MADRIX_SIZE),
+    "WAVES": (50, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
+
     "CONSTELLATION": (50, Constellation, 49, 29),
     "MOONRISE": (60, HSMoon, (66, 51), 7, 10), # position, size, fade_duration
-    "WAVES": (70, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
-    "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
-    "SUNSET": (10, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
-    "NIGHTSTARS": (0, StarrySky, 60, 10, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
-    'ripples': (100, Ripples, MADRIX_SIZE)
 }
 
 

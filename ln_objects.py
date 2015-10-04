@@ -546,6 +546,7 @@ class SheetLighting(Lightning):
         super().update()
 
     def flash(self, power, group_trigger=False, pulse=False):
+        self.log.debug((power, group_trigger, pulse))
         if group_trigger:
             for g in self.groups():
                 try:
@@ -637,25 +638,21 @@ class Bird(Sprite):
                         'soar': (31,)
                         }
 
-        Sprite.__init__(self, self.rect.width, self.rect.height)
+        Sprite.__init__(self, self.rect.width, self.rect.height, surface_flags=pygame.SRCALPHA)
 
-    def set_action(self, start, end, action):
+    def set_action(self, action):
         self.next_action = action
-        self.start = pygame.math.Vector2(start)
-        self.end = pygame.math.Vector2(end)
-        self.ionised = [self.start]
-        self.speed = 3
-        super().__init__()
 
     def frame_loader(self, frameid=0):
         max_x = 0
         max_y = 0
         try:
             while True:
-                fn = os.path.join('Resources','bird', 'bird_{}.png'.format(frameid))
+                fn = os.path.join('Resources', 'bird', 'bird_{}.png'.format(frameid))
                 if not os.path.isfile(fn):
                     raise LookupError
                 frame = pygame.image.load(fn)
+                frame.convert_alpha()
                 max_x = max(max_x, frame.get_rect().width)
                 max_y = max(max_y, frame.get_rect().height)
                 self.frames.append(frame)
@@ -665,8 +662,6 @@ class Bird(Sprite):
         if len(self.frames) == 0:
             raise StopIteration
 
-        self.rect.size = (max_x, max_y)
-
     def update(self):
         if self.ticks % 5 == 0:
             self.active_frame += 1
@@ -674,11 +669,9 @@ class Bird(Sprite):
             if self.active_frame == 0:
                 self.action = self.next_action
 
-        self.image.fill((255, 255, 255, 0,))
-        self.image.blit(self.frames[self.actions[self.action][self.active_frame]], (0, 0))
-
-
-
+        #self.image.fill((255, 0, 0, 255,))
+        pygame.transform.scale(self.frames[self.actions[self.action][self.active_frame]], self.rect.size, self.image)
+        
         if self.action == 'takeoff':
             self.set_action('flap')
 
@@ -1047,20 +1040,39 @@ class Ripples(Sprite):
         self.rect = pygame.Rect((0,0), size)
         self.ticks = 0
         self.alpha = 0
+        self.brightness = 60
+        self.target_brightness = 60
+        self.dbright = 0
+        self.dalpha = 0
 
-    def takeoff(self):
+    def takeoff(self, woo):
         self.dspeed = 1
         self.speed = 0
+        self.dalpha = -5
+
+    def fade_to(self, target_brightness=100, duration=3):
+        self.target_brightness = target_brightness
+        self.dbright = (self.target_brightness - self.brightness) / (duration * get_fps())
 
     def update(self):
+        self.alpha += self.dalpha
+
+        water_blue = hlsa_to_rgba(210, self.brightness, 70, self.alpha)
+        if self.target_brightness != self.brightness:
+            if abs(self .brightness - self.target_brightness) < self.dbright:
+                self.brightness = self.target_brightness
+            else:
+                self.brightness += self.dbright
         self.ticks += 1
 
+
+
     def draw(self, surface):
-        water_blue = hlsa_to_rgba(210, 60, 70, 0)
 
         if self.ticks < 180:
             self.alpha += 128/180
-            self.image.fill(hlsa_to_rgba(210, 60, 70, self.alpha))
+            self.alpha = 1
+            self.image.fill(hlsa_to_rgba(210, self.brightness, 70, self.alpha))
 
         else:
 
@@ -1073,6 +1085,8 @@ class Ripples(Sprite):
                 water_blue[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
                 px[i, j] = tuple(water_blue)
             del(px)
+
+
         surface.blit(self.image, self.rect)
 
 
