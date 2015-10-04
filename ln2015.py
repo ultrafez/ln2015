@@ -166,7 +166,7 @@ scene_data = {
     "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
-    "MOONRISE": (60, HSMoon, (66, 51), 7, 10), # position, size, fade_duration
+    "MOONRISE": (60, HSMoon, (66, 51), 10, 10), # position, size, fade_duration
     "WAVES": (70, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
     "SUNSET": (10, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
