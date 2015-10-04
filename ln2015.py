@@ -55,12 +55,7 @@ key_triggers = {
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
     ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 51), 7, 30)]),
-    ( 38, [Trigger("STARS", "end", 5)]),
-    ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 51), 7, 30)]),
     ( 38, [Trigger("STARS", "end", 5)]),  #fadetime
-    ( 53, [Trigger("CLOUDS")]),
-    ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
-    ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
     ( 53, [Trigger("CLOUDS")]),
     ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
     ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
