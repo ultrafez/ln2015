@@ -152,7 +152,7 @@ scene_data = {
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
 
-    "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
+    "RAIN": (25, Raindrops, 1, 0.5, 50, 20), #drop_size, drop_duration, max_drops, ramp_time
     "LIGHTNING_low": (25, Thunderstorm),
     "BIRDS": (30, Bird, pygame.Rect(60, 44, 20, 20)),
     'ripples': (28, Ripples),
