@@ -267,6 +267,11 @@ class Cloud(Sprite):
         if self.x < 0:
             x_start -= 1
         x_offset = self.x - x_start
+        bb = pygame.Rect((x_start, self.y), (self.size + 1, self.size))
+        for r in offscreen:
+            if r.contains(bb):
+                return
+
         for y in range(self.size):
             py = y + self.y
             if py < 0 or py >= pixels.shape[1]:
