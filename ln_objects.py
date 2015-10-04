@@ -51,6 +51,7 @@ class Sprite(pygame.sprite.Sprite):
             self.image.set_colorkey(white)
             self.image.fill(white)
         self.log.debug('##init##')
+        self.ticks = 0
 
 
 class Group(pygame.sprite.Group):
@@ -313,16 +314,16 @@ class Clouds(Group):
             if self.time > 1.0:
                 raise StopIteration
             fade = 1.0 - self.time
-            alpha = int(255 * fade)
+            alpha = int(100 * fade)
             shade = int(255 * self.greyness)
             peak = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_GREY:
             if self.time >= 1.0:
-                alpha = 255
+                alpha = 100
                 shade = int(255 * self.greyness)
                 peak = int(255 - 255 * self.dirtyness)
             else:
-                alpha = int(255 * self.time)
+                alpha = int(100 * self.time)
                 shade = int(255 * self.time * self.greyness)
                 peak = int(255 - 255 * self.time * self.dirtyness)
         self.s.fill((shade, shade, shade, alpha))
@@ -385,6 +386,7 @@ class RainSplash(Sprite):
         self.speed = speed
 
     def update(self):
+
         self.radius += self.speed
         if self.radius >= self.max_radius:
             self.kill()
@@ -394,21 +396,71 @@ class RainSplash(Sprite):
         color = (0, 0, 255, 255)
         pygame.draw.circle(surface, color, self.pos, int(self.radius))
 
+
 class Thunderstorm(Group):
     def __init__(self):
-
         self.log = logging.getLogger(self.__class__.__name__)
         Group.__init__(self)
+        self.ticks = 0
+        self.group_trigger = False
+        self.log.info('started storm')
+        self.named_groups = {}
+        self.program = None
+        self.next_program = None
 
-    def trigger_flash(self, ignore=0):
-        for s in self.sprites():
-            if s != ignore:
-                s.charge()
-                s.flash(1, group_trigger=True)
-        return
+    def add_group(self, groupname, sprite):
+        if groupname not in self.named_groups:
+            self.named_groups[groupname] = Group()
+        self.named_groups[groupname].add(sprite)
+        self.add(sprite)
 
-    def add_sheet(self, r):
-        self.add(SheetLighting(r))
+    def del_group(self, groupname):
+        if groupname in self.named_groups:
+            for s in self.named_groups[groupname].sprites():
+                s.kill()
+
+    def big_hit(self):
+        self.log.info('big_hit')
+
+        self.add_group('big_hit_sheet', SheetLighting(pygame.Rect((0, 0), MADRIX_SIZE)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45)))
+        self.trigger_flash(None, pulse=2*get_fps())
+
+
+    def incoming(self, duration):
+        self.log.info('incoming')
+        self.empty()
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration))
+
+
+    def outgoing(self, duration):
+        self.log.info('outgoing')
+        self.empty()
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -34, 132, 70), Vector2(  0, -36), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2( -51,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2(52,  0), duration))
+
+    def set_group_trigger(self, state):
+        self.group_trigger = state
+
+    def trigger_flash(self, groupname=None, ignore=0, pulse=0):
+        if self.group_trigger:
+            if groupname in self.named_groups:
+                g = self.named_groups[groupname]
+            else:
+                g = self
+                for s in g.sprites():
+                    if s != ignore:
+                        s.charge()
+                        s.flash(1, group_trigger=True, pulse=pulse)
+            return
+
+    def add_sheet(self, r, dx, duration):
+        self.add(SheetLighting(r, dx, duration))
 
     def add_fork(self, size, start, end):
         self.add(ForkLighting(size, start, end))
@@ -418,13 +470,15 @@ class Lightning(Sprite):
     def __init__(self, rect):
         # Call the parent class (Sprite) constructor
         self.rect = rect
-        Sprite.__init__(self, rect.width, rect.height)
+        Sprite.__init__(self, rect.width, rect.height, surface_flags=pygame.SRCALPHA)
         self.potential = 800
         self.breakdown_potential = 800
-        self.image.set_colorkey(white)
         self.flashing = False
         self.power = 0
         self.rand = new_random(self.__class__.__name__)
+        self.ticks = 0
+        self.pulse = 0
+        self.pulse_duration = 0
 
     def update(self):
         if self.flashing:
@@ -440,69 +494,118 @@ class Lightning(Sprite):
                 self.flash(power / (3 * self.potential))
             self.potential = max(0, self.potential - power)
         else:
-           self.image.fill(white)
+           self.image.fill(transparent)
 
-    def draw(self, surface):
-        surface.blit(self.image, self.rect.topleft)
+        self.ticks += 1
+
 
     def flash(self, power):
         """
-            draw a flash to the surface
         """
         self.flashing = False
-        pass
-    def charge(self):
-        self.potential += self.breakdown_potential
+        pass # start lightning incoming
 
+    def charge(self):
+        self.potentential += self.potential
 
 class SheetLighting(Lightning):
-    color = (255, 36, 251)
+    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0):
+        super().__init__(r)
+        self.color = (255, 36, 251)
 
-    def flash(self, power, group_trigger=False):
-        if not(group_trigger):
+        self.duration = duration * get_fps()
+        self.move = move
+        self.origin = self.rect.topleft
+
+    def move_to(self, move, duration):
+        self.move = move
+        self.duration = duration * get_fps()
+        self.ticks = 0
+
+    def update(self):
+        # move position if required
+        if self.duration is not None and self.duration != 0:
+            newpos = self.origin + (self.move * min(1, (self.ticks/self.duration)))
+            self.rect.topleft = (round(newpos.x), round(newpos.y))
+        super().update()
+
+    def flash(self, power, group_trigger=False, pulse=False):
+        if group_trigger:
             for g in self.groups():
-                g.trigger_flash(ignore=self)
-        self.log.info('flash power {}'.format(power * 255))
+                try:
+                    g.trigger_flash(ignore=self, pulse=pulse)
+                except AttributeError:
+                    pass
+
+        self.log.debug('flash power {}'.format(power * 255))
         self.image.set_alpha(power * 255)
         self.image.fill(self.color)
         self.flashing = False
 
 
 class ForkLighting(Lightning):
-    color = (246, 255, 71)
-
     def __init__(self, size, start, end):
+            self.color = [246, 255, 71, 255]
             self.start = pygame.math.Vector2(start)
             self.end = pygame.math.Vector2(end)
             self.ionised = [self.start]
-            self.speed = 3
-            super().__init__(pygame.Rect((0,0), size))
+            self.pulse = 0
+            self.pulse_duration = 500
+            super().__init__(pygame.Rect((0, 0), size), )
 
-    def flash(self, power, group_trigger=False):
+    def update(self):
+        super().update()
+        # render to image
+        self.image.fill(transparent)
+        start_segment = self.ionised[0]
+        a_color = self.color
+
+        if self.flashing or self.pulse < self.pulse_duration:
+            for point in self.ionised[1:]:
+                pygame.draw.line(self.image, self.color, start_segment, point, 1)
+                if not self.flashing:
+                    if self.pulse <= self.pulse_duration:
+                        a_color[3] = 128 * sin(self.pulse/24) + 128
+                        self.pulse += 1
+                        pygame.draw.line(self.image, a_color, start_segment, point, 3)
+                start_segment = point
+        else:
+            self.ionised = [self.ionised[0]]
+            self.image.fill(transparent)
+
+    def flash(self, power, group_trigger=False, pulse=None):
         self.flashing = True
-        if not(group_trigger):
-            for g in self.groups():
-                g.trigger_flash(ignore=self)
+        if pulse is not None:
+            self.pulse_duration = pulse
 
+        if self.rand.randint(0, 100) < 20:
+            self.pulse_duration = 2 * get_fps()
+            self.pulse = 0
+
+        if group_trigger:
+            for g in self.groups():
+                try:
+                    g.trigger_flash(ignore=self, pulse=self.pulse_duration)
+                except AttributeError:
+                    pass
 
         for i in range(self.rand.randrange(3, 8)):
             last = self.ionised[-1]
             togo = self.end - last
             lp = togo.as_polar()
-            if lp[0] < 2:
+            if lp[0] > 2:
+                togo.from_polar((1.5, self.rand.triangular(-180, 180) + lp[1]))
+                n = last + togo
+                self.ionised.append(n)
+            else:
                 self.flashing = False
-                self.image.fill(white)
-                self.ionised = [self.ionised[0]]
                 return
-            togo.from_polar((1.5, self.rand.triangular(-180, 180) + lp[1]))
-            n = last + togo
-            self.ionised.append(n)
-            pygame.draw.line(self.image, self.color, last, n, 2)
 
 
 class Bird(Sprite):
     def __init__(self, rect):
-        # Call the parent class (Sprite) constructor
+        # Call the parent class (Sprite) constructor        if self.flashing or self.pulse < self.pulse_duration:
+
         self.ticks = 0
         self.active_frame = 0
         self.rect = rect
@@ -520,8 +623,13 @@ class Bird(Sprite):
 
         Sprite.__init__(self, self.rect.width, self.rect.height)
 
-    def set_action(self, action):
+    def set_action(self, start, end, action):
         self.next_action = action
+        self.start = pygame.math.Vector2(start)
+        self.end = pygame.math.Vector2(end)
+        self.ionised = [self.start]
+        self.speed = 3
+        super().__init__()
 
     def frame_loader(self, frameid=0):
         max_x = 0
