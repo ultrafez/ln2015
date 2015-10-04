@@ -54,11 +54,15 @@ key_triggers = {
 
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
+    ( 30, Trigger("MORNINGSKY")),
     ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 51), 7, 30)]),
     ( 38, [Trigger("STARS", "end", 5)]),  #fadetime
     ( 53, [Trigger("CLOUDS")]),
+    ( 65, Trigger("CLOUDSKY")),
+    ( 75, Trigger("MORNINGSKY", "end", 5)),
     ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
     ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
+    ( 75, Trigger("CLOUDSKY", "end", 15)),
     ( 85, [Trigger("CLOUDS", "grey", 0.6, 10)]),
     ( 85, Trigger("FOG")),
 
@@ -120,6 +124,8 @@ EVENT_TIMING = [
 
 scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
+    "MORNINGSKY":(5, Fog, (119, 181, 254), 25), 
+    "CLOUDSKY":(7, Fog, (0, 66, 128), 3),  
     "SUNRISE": (10, Sun, (66, 90), 20, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
 
 
