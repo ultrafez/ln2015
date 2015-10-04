@@ -1052,10 +1052,10 @@ class Ripples(Sprite):
         self.dspeed = 1
         self.speed = 0
 
-
-
-
     def update(self):
+        self.ticks += 1
+
+    def draw(self, surface):
         water_blue = hlsa_to_rgba(210, 60, 70, 0)
 
         if self.ticks < 180:
@@ -1073,7 +1073,7 @@ class Ripples(Sprite):
                 water_blue[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
                 px[i, j] = tuple(water_blue)
             del(px)
-        self.ticks += 1
+        surface.blit(self.image, self.rect)
 
 
 class PlasmaBlob(Sprite):
