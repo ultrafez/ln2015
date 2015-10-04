@@ -58,8 +58,9 @@ EVENT_TIMING = [
     ( 38, [Trigger("STARS", "end", 5)]), #fadetime
     ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
     ( 75, Trigger("SUNRISE", "end", 10)), # fadetime
-    ( 53, [Trigger("CLOUDS")]),
-    ( 85, [Trigger("CLOUDS", "grey", 0.4, 0.6, 10)]),
+    ( 53, Trigger("CLOUDS")),
+    ( 85, Trigger("FOG")),
+    ( 85, Trigger("CLOUDS", "grey", 0.6, 10)),
 
     (100, [
         Trigger("LIGHTNING_outer"),
@@ -110,7 +111,8 @@ EVENT_TIMING = [
     
     #END RAIN CLOUDS
     (143.75, [Trigger("RAIN", "end", 2)]),
-    (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
+    (144.75, Trigger("CLOUDS", "end", 2)), # fadetime
+    (144.75, Trigger("FOG", "end", 2)), # fadetime
 
     #WAVES AND BEACONS
     (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
@@ -159,6 +161,7 @@ scene_data = {
     "LIGHTNING_inner": (30, Thunderstorm),
 
 
+    "FOG":(12, Fog, (100, 100, 100), 10),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_init": (30, Thunderstorm),
     "LIGHTNING_low": (30, Thunderstorm),
