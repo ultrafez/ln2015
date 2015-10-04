@@ -76,8 +76,8 @@ EVENT_TIMING = [
     
     #Trigger("ripples")
     (140, [Trigger("LIGHTNING_low", "end"), Trigger("LIGHTNING_high", "outgoing", 10)]),  # stop main storm and fade  outer storm
-    (135, [Trigger("RAIN")]),  # start rain and ripples
-    (140, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
+    (140, [Trigger("RAIN")]),  # start rain and ripples
+    (150, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
 
     #FIRST WAVE
     (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
@@ -151,7 +151,7 @@ scene_data = {
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
 
-    "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
+    "RAIN": (25, Raindrops, 1, 0.5, 50, 20), #drop_size, drop_duration, max_drops, ramp_time
     "LIGHTNING_low": (25, Thunderstorm),
     "BIRDS": (30, Bird, pygame.Rect(60, 44, 16, 10)),
     'ripples': (28, Ripples),
