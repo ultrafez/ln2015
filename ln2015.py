@@ -105,31 +105,50 @@ EVENT_TIMING = [
     (130, [Trigger("LIGHTNING_outer", "end")]),
     (130, [Trigger("LIGHTNING_low", "end")]),  # Lightning SoundsEnd
     (130, [Trigger("LIGHTNING_high", "end")]),  # Lightning SoundsEnd
+    
+    #FIRST WAVE
     (140, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
-    (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
-    (150, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
-    (155, [Trigger("WAVES", "spawn", 5, 180, 1, 3)]),
-    (157.5, [Trigger("WAVES", "spawn", 5, 135, 6, 5)]),
-    (160, [Trigger("WAVES", "spawn", 5, 180, 4, 5)]),
+    
+    #END RAIN CLOUDS
     (143.75, [Trigger("RAIN", "end", 2)]),
     (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
+
+    #WAVES AND BEACONS
+    (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
+    (150, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
     (152, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    (160, [Trigger("WAVES", "beacon", 2)]),
-    (220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
-    (225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
-    (235, [Trigger("ripples", "end"), Trigger("BIRDS", 'set_action', 'rotate_camera')]),
-    (250, [Trigger("FOREST")]),  # Forest SoundsStarts
-    (260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
-    (270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
-    (280, [Trigger("SUNSET", "end")]),  #
-    (280, Trigger("AURORA")),
-    (290, Trigger("AURORA", "spawn", 10)),
-    (300, Trigger("MOONRISE")),
-    (310, Trigger("AURORA", "end")),
-    (315, Trigger("MOONRISE", "overlay", 3)), # fade time
-    (320, Trigger("MOONRISE", "overlay")), # Disable overlay waits till H faded out
-    (325, Trigger("MOONRISE", "move", (80, 53), 6, 5)),  #
-    (330, [Trigger("MOONRISE", "end", 5), Trigger("CONSTELLATION", "end")]),  #
+    (152, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
+    (159, [Trigger("WAVES", "beacon", 3)]),  # number buoys
+    (157, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
+    (175, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
+    (175, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    (182, [Trigger("WAVES", "beacon", 0)]),  # number buoys
+
+    #SUNSET
+    (186, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
+    (192, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
+    (222, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
+    (222, [Trigger("SUNSET", "end", 10)]), # fadetime
+
+    #NIGHTSKY
+    (207, [Trigger("NIGHTSTARS")]),
+    (225, [Trigger("AURORA")]),
+    (235, [Trigger("AURORA", "spawn", 10)]),
+    (250, [Trigger("AURORA", "end")]),
+    (260, [Trigger("MOONRISE")]),
+    (275, [Trigger("MOONRISE", "overlay", 3)]), # fade time
+    (285, [Trigger("MOONRISE", "overlay")]),
+    (295, [Trigger("MOONRISE", "end", 10)]),
+    (295, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
+
+
+
+    #(220, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
+    #(225, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger("ripples", 'set_action', 'takeoff2'),]),
+    #(235, [Trigger("ripples", "end"), Trigger("BIRDS", 'set_action', 'rotate_camera')]),
+    #(250, [Trigger("FOREST")]),  # Forest SoundsStarts
+    #(260, [Trigger("SUNSET"), Trigger("BIRDS", "end")]),  # Sea Birds SoundsEnd #Waves SoundsEnd
+    #(270, [Trigger("CONSTELLATION"), Trigger("FOREST", "end")]),  # Night Crickets and Star SoundsStart #Forest SoundsEnd
 ]
 
 
@@ -147,9 +166,11 @@ scene_data = {
     "RAIN": (25, Raindrops, 3, 0.5, 25, 15), #drop_size, drop_duration, max_drops, ramp_time
     "BIRDS": (41, Bird, bubbleroof),
     "CONSTELLATION": (50, Constellation, 49, 29),
-    "MOONRISE": (60, HSMoon, (66, 53), 10, 10), # position, size, fade_duration
+    "MOONRISE": (60, HSMoon, (66, 51), 8, 10), # position, size, fade_duration
     "WAVES": (70, Sea, 0.6, 0.5, 10), #wave_speed, beacon_speed, beacon_size
-    "AURORA": (5, Aurora, (66, 53), 2, 5) # middle, blob_duration, num_blobs
+    "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
+    "SUNSET": (10, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
+    "NIGHTSTARS": (0, StarrySky, 60, 10, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     #'ripples': (100, ripples, MADRIX_SIZE)
 }
 

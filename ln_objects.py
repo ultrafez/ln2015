@@ -737,9 +737,7 @@ class Beacon(Sprite):
     colors = [
         red,
         green,
-        blue,
         purple,
-        yellow,
         cyan,
     ]
 
