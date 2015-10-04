@@ -18,7 +18,6 @@ __author__ = 'ajtag'
 logging.basicConfig()
 
 FPS = 24
-SCALE = 8
 TOTAL_TIME = 360
 
 key_triggers = {
@@ -185,7 +184,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--warp", type=float, default=-1.0)
     parser.add_argument("--no-mask", action="store_false", dest="mask")
-    parser.add_argument("--no_images", action="store_false", dest="save_images")
+    parser.add_argument("--image-format", default="png")
+    parser.add_argument("--no-images", action="store_const", dest="image_format", const=None)
     parser.add_argument("--save-video", action="store_true")
     parser.add_argument("--quick", action="store_true")
     parser.add_argument("--avconv", action="store_true")
@@ -193,13 +193,15 @@ if __name__ == "__main__":
     parser.add_argument("--sparse", type=int, default=2)
     parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
     parser.add_argument("--pause", action="store_true")
+    parser.add_argument("--scale", type=int, default=8)
+    parser.add_argument("--export-display", action="store_true")
     args = parser.parse_args()
 
     print(args)
 
     clean_images()
 
-    LN2015 = Player('objects', MADRIX_X, MADRIX_Y, fps=FPS, display_scale=8,  args=args)
+    LN2015 = Player('objects', MADRIX_X, MADRIX_Y, fps=FPS, args=args)
 
     for key, trig in key_triggers.items():
         LN2015.set_key_triggers(key, trig)
@@ -224,7 +226,7 @@ if __name__ == "__main__":
             ffmpeg_exe = 'ffmpeg'          
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
-    LN2015.export_video(MADRIX_X, MADRIX_Y, ffmpeg_exe)
+    LN2015.export_video(ffmpeg_exe)
     pygame.quit()
 
 sys.exit()
