@@ -72,7 +72,7 @@ EVENT_TIMING = [
     (109, [Trigger("LIGHTNING_low"), Trigger("LIGHTNING_low", 'big_hit')]),
     
     #Trigger("ripples")
-    (130, [Trigger("LIGHTNING_low", "end"), Trigger("LIGHTNING_high", "outgoing", 10)]),  # stop main storm and fade  outer storm
+    (140, [Trigger("LIGHTNING_low", "end"), Trigger("LIGHTNING_high", "outgoing", 10)]),  # stop main storm and fade  outer storm
     (135, [Trigger("RAIN")]),  # start rain and ripples
     (140, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
 
