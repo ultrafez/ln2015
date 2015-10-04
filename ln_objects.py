@@ -1038,61 +1038,91 @@ class Ripples(Sprite):
     def __init__(self):
         super().__init__( MADRIX_X, MADRIX_Y, pygame.SRCALPHA)
         self.rect = pygame.Rect((0, 0), MADRIX_SIZE)
-        self.color = (0, 0, 0, 0)
+        self.color = (210, 60, 70, 0)
 
-        self.hue = 210
-        self.alpha = 0
-        self.dalpha = 0
+        self.h = 210
+        self.tgt_h = 210
+        self.dh = 0
 
-        self.brightness = 60
-        self.target_brightness = 60
-        self.dbright = 0
+        self.l = 60
+        self.tgt_l = 60
+        self.dl = 0
 
-        self.saturation = 70
+        self.s = 70
+        self.tgt_s = 70
+        self.ds = 0
+
+        self.a = 0
+        self.tgt_a = 128
+        self.da = 0
+
 
     def takeoff(self):
         self.dspeed = 1
         self.speed = 0
-        self.dalpha = -5
+        self.da = -5
 
-    def fade_in(self, duration):
-        if self.ticks < 180:
-            self.alpha += 128/180
-            self.alpha = 1
-            self.image.fill(hlsa_to_rgba(210, self.brightness, self.saturation, self.alpha))
+    # def fade_in(self, duration):
+    #     if self.ticks < 180:
+    #         self.alpha += 128/180
+    #         self.alpha = 1
+    #         self.image.fill(hlsa_to_rgba(210, self.brightness, self.saturation, self.alpha))
 
-    def fade_to(self, h=None, s=None, l=None, duration=3):
+    def fade_to(self, h=None, s=None, l=None, a=None, duration=3):
         if h is not None:
-            self.hue = h
+            self.tgt_h = h
+            self.dh = (self.tgt_h - self.h) / (duration * get_fps())  #TODO: change so path is always < 180
+
         if s is not None:
-            self.saturation = s
+            self.tgt_s = s
+            self.ds = (self.tgt_s - self.s) / (duration * get_fps())
+
         if l is not None:
-            self.brightness = l
-        ##self.target_brightness = target_brightness
-        #self.dbright = (self.target_brightness - self.brightness) / (duration * get_fps())
+            self.tgt_l = l
+            self.dl = (self.tgt_l - self.l) / (duration * get_fps())
+
+        if a is not None:
+            self.tgt_a = a
+            self.da = (self.tgt_a - self.a) / (duration * get_fps())
 
     def update(self):
-        self.color = hlsa_to_rgba(self.hue, self.brightness, self.saturation, self.alpha)
-        if self.target_brightness != self.brightness:
-            if abs(self .brightness - self.target_brightness) < self.dbright:
-                self.brightness = self.target_brightness
+        if self.tgt_h != self.h:
+            if abs(self.h - self.tgt_h) < self.dh:
+                self.h = self.tgt_h
             else:
-                self.brightness += self.dbright
+                self.h += self.dh
+
+        if self.tgt_s != self.s:
+            if abs(self.s - self.tgt_s) < self.ds:
+                self.s = self.tgt_s
+            else:
+                self.s += self.ds
+
+        if self.tgt_l != self.l:
+            if abs(self.l - self.tgt_l) < self.dl:
+                self.l = self.tgt_l
+            else:
+                self.l += self.dl
+
+        if self.tgt_a != self.a:
+            if abs(self.a - self.tgt_a) < self.da:
+                self.a = self.tgt_a
+            else:
+                self.a += self.da
+
+        self.color = hlsa_to_rgba(self.h, self.l, self.s, self.a)
         self.ticks += 1
 
     def draw(self, surface):
-
         px = pygame.PixelArray(self.image)
         for lamp in ceiling.lamps:
             i = lamp.x
             j = lamp.y
         #for j in range(self.rect.height):
         #    for i in range(self.rect.width):
-            self.color[3] = int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))
+            self.color[3] = min(255, max(0, int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))))
             px[i, j] = tuple(self.color)
         del px
-
-
         surface.blit(self.image, self.rect)
 
 
