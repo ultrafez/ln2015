@@ -180,7 +180,7 @@ if __name__ == "__main__":
 
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
-
+    
     parser = argparse.ArgumentParser()
     parser.add_argument("--warp", type=float, default=-1.0)
     parser.add_argument("--no-mask", action="store_false", dest="mask")
