@@ -77,7 +77,7 @@ EVENT_TIMING = [
     (140, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
 
     #FIRST WAVE
-    (110, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
+    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
 
     #END RAIN CLOUDS
     (153.75, [Trigger("RAIN", "end", 2)]),
