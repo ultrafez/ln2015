@@ -18,7 +18,6 @@ __author__ = 'ajtag'
 logging.basicConfig()
 
 FPS = 24
-SCALE = 8
 TOTAL_TIME = 360
 
 key_triggers = {
@@ -193,13 +192,14 @@ if __name__ == "__main__":
     parser.add_argument("--sparse", type=int, default=2)
     parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
     parser.add_argument("--pause", action="store_true")
+    parser.add_argument("--scale", type=int, default=8)
     args = parser.parse_args()
 
     print(args)
 
     clean_images()
 
-    LN2015 = Player('objects', MADRIX_X, MADRIX_Y, fps=FPS, display_scale=8,  args=args)
+    LN2015 = Player('objects', MADRIX_X, MADRIX_Y, fps=FPS, args=args)
 
     for key, trig in key_triggers.items():
         LN2015.set_key_triggers(key, trig)
