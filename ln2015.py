@@ -194,6 +194,7 @@ if __name__ == "__main__":
     parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
     parser.add_argument("--pause", action="store_true")
     parser.add_argument("--scale", type=int, default=8)
+    parser.add_argument("--export-display", action="store_true")
     args = parser.parse_args()
 
     print(args)
@@ -225,7 +226,7 @@ if __name__ == "__main__":
             ffmpeg_exe = 'ffmpeg'          
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
-    LN2015.export_video(MADRIX_X, MADRIX_Y, ffmpeg_exe)
+    LN2015.export_video(ffmpeg_exe)
     pygame.quit()
 
 sys.exit()
