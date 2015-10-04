@@ -21,6 +21,8 @@ FPS = 24
 TOTAL_TIME = 360
 
 key_triggers = {
+    pygame.K_MINUS:Trigger("LIGHTNING_high", "add_sheet", left_outer_arm),
+    pygame.K_EQUALS: Trigger("LIGHTNING_low", "add_fork", MADRIX_SIZE, (130, 55), (0, 55)),
     pygame.K_q: Trigger("STARS"),
     pygame.K_a: Trigger("SUNRISE"),
     pygame.K_z: Trigger("CLOUDS"),
@@ -56,13 +58,14 @@ EVENT_TIMING = [
     ( 38, [Trigger("STARS", "end", 5)]),
     ( 30, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (66, 51), 7, 30)]),
     ( 38, [Trigger("STARS", "end", 5)]),  #fadetime
+    ( 53, [Trigger("CLOUDS")])
     ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
     ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
     ( 53, [Trigger("CLOUDS")]),
     ( 75, Trigger("SUNRISE", "move", None, 0, 10)), # newpos, newsize, duration
     ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
-    ( 53, [Trigger("CLOUDS")]),
-    ( 85, [Trigger("CLOUDS", "grey", 0.4, 0.6, 10)]),
+    ( 85, [Trigger("CLOUDS", "grey", 0.6, 10)]),
+    ( 85, Trigger("FOG")),
 
 
     #FIRST LIGHTNING STRIKES
@@ -77,7 +80,8 @@ EVENT_TIMING = [
 
     #END RAIN CLOUDS
     (143.75, [Trigger("RAIN", "end", 2)]),
-    (144.75, [Trigger("CLOUDS", "end", 2)]), # clouds fadetime
+    (144.75, Trigger("CLOUDS", "end", 2)), # fadetime
+    (144.75, Trigger("FOG", "end", 2)), # fadetime
 
     #WAVES AND BEACONS
     (145, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
@@ -122,6 +126,8 @@ scene_data = {
     "STARS": (0, StarrySky, 60, 20, 0.2, 2.0), # max_stars, ramp_time, min_time, max_time
     "SUNRISE": (10, Sun, (66, 90), 20, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
 
+
+    "FOG":(12, Fog, (100, 100, 100), 10),
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
     "LIGHTNING_low": (25, Thunderstorm),

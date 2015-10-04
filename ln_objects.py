@@ -215,6 +215,35 @@ class Sun(MoveableThing):
         del a
         surface.blit(self.s, (0,0))
 
+class Fog(Sprite):
+    def __init__(self, color, duration = None):
+        if duration is None:
+            self.level = 1.0
+            self.rate = None
+        else:
+            self.rate = 1.0 / (get_fps() * duration)
+            self.level = 0.0
+        self.s = pygame.Surface(MADRIX_SIZE)
+        self.s.fill(color)
+
+    def update(self):
+        if self.rate is not None:
+            self.level += self.rate
+            if self.level > 1.0:
+                self.level = 1.0
+                self.rate = None
+            if self.level <= 0.0:
+                raise StopIteration
+
+    def end(self, duration = None):
+        if duration is None:
+            raise StopIteration
+        self.rate = -1.0 / (get_fps() * duration)
+
+    def draw(self, surface):
+        self.s.set_alpha(int(255 * self.level))
+        surface.blit(self.s, (0,0))
+
 class Cloud(Sprite):
     def __init__(self, max_x, y, size, rand):
         super().__init__()
@@ -232,7 +261,7 @@ class Cloud(Sprite):
         if self.x > self.max_x:
             self.kill()
 
-    def draw(self, pixels, peak, fade):
+    def draw(self, pixels, fade):
         """Anti-aliased x transparency mask"""
         x_start = int(self.x)
         if self.x < 0:
@@ -250,13 +279,9 @@ class Cloud(Sprite):
                 v2 = self.bitmap[x, y]
                 val = v2 + (v1 - v2) * x_offset
                 new_alpha = int(255 * val * fade)
-                orig = pixels[px, py]
-                alpha = orig >> 24
-                shade = orig & 0xff
-                new_shade = shade + (peak) * new_alpha // 255
-                shade = min(max(shade, new_shade), peak)
+                alpha = pixels[px, py]
                 alpha = max(alpha, new_alpha)
-                pixels[px, py] = (shade, shade, shade, alpha)
+                pixels[px, py] = alpha
 
 
 class Clouds(Group):
@@ -276,16 +301,14 @@ class Clouds(Group):
         self.time = None
         self.set_ramp(ramp_duration)
         self.phase = self.CLOUD_NORMAL
-        self.greyness = None
-        self.dirtyness = None
+        self.dirtyness = 0.0
 
     def set_ramp(self, duration):
         self.ramp_speed = 1.0 / (get_fps() * duration)
         self.time = 0.0
 
-    def grey(self, greyness, whiteness, duration):
+    def grey(self, whiteness, duration):
         self.set_ramp(duration)
-        self.greyness = greyness
         self.dirtyness = 1.0 - whiteness
         self.phase = self.CLOUD_GREY
 
@@ -305,31 +328,19 @@ class Clouds(Group):
         super().update()
 
     def draw(self, surface):
-        skip = False
-        alpha = 0
-        shade = 0
-        peak = 255
         fade = 1.0
+        shade = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:
                 raise StopIteration
             fade = 1.0 - self.time
-            alpha = int(100 * fade)
-            shade = int(255 * self.greyness)
-            peak = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_GREY:
-            if self.time >= 1.0:
-                alpha = 100
-                shade = int(255 * self.greyness)
-                peak = int(255 - 255 * self.dirtyness)
-            else:
-                alpha = int(100 * self.time)
-                shade = int(255 * self.time * self.greyness)
-                peak = int(255 - 255 * self.time * self.dirtyness)
-        self.s.fill((shade, shade, shade, alpha))
-        a = pygame.PixelArray(self.s)
+            if self.time < 1.0:
+                shade = int(255  - 255 * self.dirtyness * self.time)
+        self.s.fill((shade, shade, shade, 0))
+        a = pygame.surfarray.pixels_alpha(self.s)
         for cloud in self:
-            cloud.draw(a, peak, fade)
+            cloud.draw(a, fade)
         del a
         surface.blit(self.s, (0, 0))
 
