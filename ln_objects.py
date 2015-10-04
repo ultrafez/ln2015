@@ -1045,7 +1045,7 @@ class Ripples(Sprite):
         self.dbright = 0
         self.dalpha = 0
 
-    def takeoff(self, woo):
+    def takeoff(self):
         self.dspeed = 1
         self.speed = 0
         self.dalpha = -5
@@ -1068,6 +1068,7 @@ class Ripples(Sprite):
 
 
     def draw(self, surface):
+        water_blue = hlsa_to_rgba(210, self.brightness, 70, self.alpha)
 
         if self.ticks < 180:
             self.alpha += 128/180
