@@ -448,17 +448,17 @@ class Thunderstorm(Group):
     def incoming(self, duration):
         self.log.info('incoming')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration, '1'))
+        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration, '2'))
+        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration, '3'))
 
 
     def outgoing(self, duration):
         self.log.info('outgoing')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(   0, -34, 132, 70), Vector2(  0, -36), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2( -51,  0), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2(52,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(  0, -34, 132, 70), Vector2(  0, -36), duration, '4'))
+        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2(-51,   0), duration, '5'))
+        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2( 52,   0), duration, '6'))
 
     def set_group_trigger(self, state):
         self.group_trigger = state
@@ -483,7 +483,7 @@ class Thunderstorm(Group):
 
 
 class Lightning(Sprite):
-    def __init__(self, rect):
+    def __init__(self, rect, random_seed='0'):
         # Call the parent class (Sprite) constructor
         self.rect = rect
         Sprite.__init__(self, rect.width, rect.height, surface_flags=pygame.SRCALPHA)
@@ -491,7 +491,7 @@ class Lightning(Sprite):
         self.breakdown_potential = 800
         self.flashing = False
         self.power = 0
-        self.rand = new_random(self.__class__.__name__)
+        self.rand = new_random(random_seed)
         self.ticks = 0
         self.pulse = 0
         self.pulse_duration = 0
@@ -524,9 +524,10 @@ class Lightning(Sprite):
     def charge(self):
         self.potentential += self.potential
 
+
 class SheetLighting(Lightning):
-    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0):
-        super().__init__(r)
+    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0, random_seed='0'):
+        super().__init__(r, random_seed=random_seed)
         self.color = (255, 36, 251)
 
         self.duration = duration * get_fps()
