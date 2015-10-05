@@ -545,6 +545,7 @@ class SheetLighting(Lightning):
             newpos = self.origin + (self.move * min(1, (self.ticks/self.duration)))
             self.rect.topleft = (round(newpos.x), round(newpos.y))
         super().update()
+        #self.image.fill(red)
 
     def flash(self, power, group_trigger=False, pulse=False):
         self.log.debug((power, group_trigger, pulse))
@@ -563,13 +564,13 @@ class SheetLighting(Lightning):
 
 class ForkLighting(Lightning):
     def __init__(self, size, start, end):
-            self.color = [246, 255, 71, 255]
-            self.start = pygame.math.Vector2(start)
-            self.end = pygame.math.Vector2(end)
-            self.ionised = [self.start]
-            self.pulse = 0
-            self.pulse_duration = 500
-            super().__init__(pygame.Rect((0, 0), size), )
+        self.color = [246, 255, 71, 255]
+        self.start = pygame.math.Vector2(start)
+        self.end = pygame.math.Vector2(end)
+        self.ionised = [self.start]
+        self.pulse = 0
+        self.pulse_duration = 500
+        super().__init__(pygame.Rect((0, 0), size), )
 
     def update(self):
         super().update()
@@ -581,7 +582,7 @@ class ForkLighting(Lightning):
         if self.flashing or self.pulse < self.pulse_duration:
             for point in self.ionised[1:]:
                 pygame.draw.line(self.image, self.color, start_segment, point, 1)
-                if not self.flashing:
+                if not self.flashing:  # draw a 3 px, alpha line behind
                     if self.pulse <= self.pulse_duration:
                         a_color[3] = 128 * sin(self.pulse/24) + 128
                         self.pulse += 1
@@ -593,10 +594,11 @@ class ForkLighting(Lightning):
 
     def flash(self, power, group_trigger=False, pulse=None):
         self.flashing = True
+
         if pulse is not None:
             self.pulse_duration = pulse
 
-        if self.rand.randint(0, 100) < 20:
+        elif self.rand.randint(0, 100) > 2:
             self.pulse_duration = 2 * get_fps()
             self.pulse = 0
 
@@ -622,8 +624,6 @@ class ForkLighting(Lightning):
 
 class Bird(Sprite):
     def __init__(self, rect):
-        # Call the parent class (Sprite) constructor        if self.flashing or self.pulse < self.pulse_duration:
-
         self.ticks = 0
         self.active_frame = 0
         self.rect = rect
