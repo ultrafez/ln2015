@@ -70,61 +70,67 @@ EVENT_TIMING = [
     ( 85, Trigger("FOG")),
 
 
-    #FIRST LIGHTNING STRIKES
+    #LIGHTNING
     ( 90, [Trigger("LIGHTNING_high"), Trigger("LIGHTNING_high", 'incoming', 10)]),  # start lightning incoming
     (109, [Trigger("LIGHTNING_low"), Trigger("LIGHTNING_low", 'big_hit')]),
     
-    #Trigger("ripples")
-    (140, [Trigger("LIGHTNING_low", "end"), Trigger("LIGHTNING_high", "outgoing", 10)]),  # stop main storm and fade  outer storm
-    (140, [Trigger("RAIN")]),  # start rain and ripples
-    (150, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
+    #LIGHTNING END RAIN TRANSITION
+    (140, [Trigger("LIGHTNING_low", "end")]),  
+    (145, [Trigger("RAINSMALL")]),  # start rain and ripples
+    (150, [Trigger("LIGHTNING_high", "outgoing", 5)]),  # stop main storm and fade  outer storm
+    (151, [Trigger("RAINMID")]),  # start rain and ripples
+    (155, [Trigger("LIGHTNING_high", "end")]),  # Lightning End
+    (154, [Trigger("RAINBIG")]),  # start rain and ripples
+    
+    #RIPPLE OCEAN BUILDS (FIX)
+    #(160, [Trigger("ripples")], ),  # number buoys
+    #(161, [Trigger("ripples", 'fade_to', 0, None, None, 250, 3)]),  # fade brightness up
+    #(165, [Trigger("ripples", 'fade_to', 200, None, None, None, 20)]),  # change hue
 
     #FIRST WAVE
-    (150, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
+    (173, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
 
     #END RAIN CLOUDS
-    (153.75, [Trigger("RAIN", "end", 2)]),
-    (154.75, Trigger("CLOUDS", "end", 2)), # fadetime
-    (154.75, Trigger("FOG", "end", 2)), # fadetime
+    (177.5, [Trigger("RAINSMALL", "end", 0.5)]),
+    (177.5, [Trigger("RAINMID", "end", 0.5)]),
+    (177.5, [Trigger("RAINBIG", "end", 0.5)]),
+    (177.5, Trigger("CLOUDS", "end", 1.5)), # fadetime
+    (178, Trigger("FOG", "end", 1.5)), # fadetime
 
-    (160, [Trigger("ripples")], ),  # number buoys
-    (161, [Trigger("ripples", 'fade_to', 0, None, None, 250, 3)]),  # fade brightness up
-    (165, [Trigger("ripples", 'fade_to', 200, None, None, None, 20)]),  # change hue
+
 
     #WAVES AND BEACONS
-    (155, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
-    (160, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
-    (162, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    (162, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
-    (169, [Trigger("WAVES", "beacon", 3)]),  # number buoys
-    (167, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
-    (185, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
-    (185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    (192, [Trigger("WAVES", "beacon", 0)]),  # number buoys
+    #(155, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
+    #(160, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
+    #(162, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    #(162, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
+    #(169, [Trigger("WAVES", "beacon", 3)]),  # number buoys
+    #(167, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
+    #(185, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
+    #(185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    #(192, [Trigger("WAVES", "beacon", 0)]),  # number buoys
 
-    (WAVE_END_TIME+1, [Trigger("BIRDS"),
-           Trigger("BIRDS", 'set_action', 'bob')
-          ]),  # Sea Birds SoundsStart
-
-    (WAVE_END_TIME+2, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger('ripples', 'takeoff')]),
+    #BIRD - WILL FIT IN ONCE DONE
+    #(WAVE_END_TIME+1, [Trigger("BIRDS"),Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
+    #(WAVE_END_TIME+2, [Trigger("BIRDS", 'set_action', 'takeoff'), Trigger('ripples', 'takeoff')]),
 
 
     #SUNSET
-    (WAVE_END_TIME+4, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
-    (202+15, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
-    (232+15, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
-    (232+15, [Trigger("SUNSET", "end", 10)]), # fadetime
+    #(197, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
+    #(202, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
+    #(232, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
+    #(232, [Trigger("SUNSET", "end", 10)]), # fadetime
 
     #NIGHTSKY
-    (217+15, [Trigger("NIGHTSTARS")]),
-    (235+15, [Trigger("AURORA")]),
-    (245+15, [Trigger("AURORA", "spawn", 10)]),
-    (260+15, [Trigger("AURORA", "end")]),
-    (270+15, [Trigger("MOONRISE")]),
-    (285+15, [Trigger("MOONRISE", "overlay", 3)]), # fade time
-    (295+15, [Trigger("MOONRISE", "overlay")]),
-    (305+15, [Trigger("MOONRISE", "end", 10)]),
-    (305+15, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
+    #(217, [Trigger("NIGHTSTARS")]),
+    #(235, [Trigger("AURORA")]),
+    #(245, [Trigger("AURORA", "spawn", 10)]),
+    #(260, [Trigger("AURORA", "end")]),
+    #(270, [Trigger("MOONRISE")]),
+    #(285, [Trigger("MOONRISE", "overlay", 3)]), # fade time
+    #(295, [Trigger("MOONRISE", "overlay")]),
+    #(305, [Trigger("MOONRISE", "end", 10)]),
+    #(305, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
 
 
 
@@ -151,7 +157,9 @@ scene_data = {
     "LIGHTNING_high": (15, Thunderstorm),
     "CLOUDS": (20, Clouds, MADRIX_SIZE, 4, 0.2, 0.50, 20), #size, cloud_size, initial_prob, final_prob, ramp_duration
 
-    "RAIN": (25, Raindrops, 1, 0.5, 50, 20), #drop_size, drop_duration, max_drops, ramp_time
+    "RAINSMALL": (25, Raindrops, 1, 0.33, 75, 30), #drop_size, drop_duration, max_drops, ramp_time
+    "RAINMID": (25, Raindrops, 3, 0.33, 30, 15), #drop_size, drop_duration, max_drops, ramp_time
+    "RAINBIG": (25, Raindrops, 4, 0.50, 10, 5),
     "LIGHTNING_low": (25, Thunderstorm),
     "BIRDS": (30, Bird, pygame.Rect(60, 44, 16, 10)),
     'ripples': (28, Ripples),
