@@ -439,9 +439,9 @@ class Thunderstorm(Group):
         self.log.info('big_hit')
 
         self.add_group('big_hit_sheet', SheetLighting(pygame.Rect((0, 0), MADRIX_SIZE)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0), '0'))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44), '1'))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45), '2'))
         self.trigger_flash(None, pulse=2*get_fps())
 
 
@@ -563,14 +563,14 @@ class SheetLighting(Lightning):
 
 
 class ForkLighting(Lightning):
-    def __init__(self, size, start, end):
+    def __init__(self, size, start, end, seed='0'):
         self.color = [246, 255, 71, 255]
         self.start = pygame.math.Vector2(start)
         self.end = pygame.math.Vector2(end)
         self.ionised = [self.start]
         self.pulse = 0
         self.pulse_duration = 500
-        super().__init__(pygame.Rect((0, 0), size), )
+        super().__init__(pygame.Rect((0, 0), size), random_seed=seed)
 
     def update(self):
         super().update()
