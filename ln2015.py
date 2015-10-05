@@ -100,15 +100,15 @@ EVENT_TIMING = [
 
 
     #WAVES AND BEACONS
-    #(155, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
-    #(160, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
-    #(162, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    #(162, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
-    #(169, [Trigger("WAVES", "beacon", 3)]),  # number buoys
-    #(167, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
-    #(185, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
-    #(185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    #(192, [Trigger("WAVES", "beacon", 0)]),  # number buoys
+    (178, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
+    (183, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
+    (185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    (185, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
+    (192, [Trigger("WAVES", "beacon", 3)]),  # number buoys
+    (190, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
+    (208, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
+    (208, [Trigger("WAVES", "beacon", 1)]),  # number buoys
+    (215, [Trigger("WAVES", "beacon", 0)]),  # number buoys
 
     #BIRD - WILL FIT IN ONCE DONE
     #(WAVE_END_TIME+1, [Trigger("BIRDS"),Trigger("BIRDS", 'set_action', 'bob')]),  # Sea Birds SoundsStart
@@ -116,21 +116,21 @@ EVENT_TIMING = [
 
 
     #SUNSET
-    #(197, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
-    #(202, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
-    #(232, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
-    #(232, [Trigger("SUNSET", "end", 10)]), # fadetime
+    (219, [Trigger("SUNSET"), Trigger("SUNSET", "move", None, 7, 5)]),
+    (225, [Trigger("SUNSET", "move", (66, 110), 40, 30)]), # newpos, newsize, duration
+    (255, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
+    (255, [Trigger("SUNSET", "end", 10)]), # fadetime
 
     #NIGHTSKY
-    #(217, [Trigger("NIGHTSTARS")]),
-    #(235, [Trigger("AURORA")]),
-    #(245, [Trigger("AURORA", "spawn", 10)]),
-    #(260, [Trigger("AURORA", "end")]),
-    #(270, [Trigger("MOONRISE")]),
-    #(285, [Trigger("MOONRISE", "overlay", 3)]), # fade time
-    #(295, [Trigger("MOONRISE", "overlay")]),
-    #(305, [Trigger("MOONRISE", "end", 10)]),
-    #(305, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
+    (240, [Trigger("NIGHTSTARS")]),
+    (256, [Trigger("AURORA")]),
+    (266, [Trigger("AURORA", "spawn", 10)]),
+    (278, [Trigger("AURORA", "end")]),
+    (283, [Trigger("MOONRISE")]),
+    (296, [Trigger("MOONRISE", "overlay", 3)]), # fade time
+    (306, [Trigger("MOONRISE", "overlay")]),
+    (306, [Trigger("MOONRISE", "end", 10)]),
+    (306, [Trigger("NIGHTSTARS", "end", 10)]), #fadetime
 
 
 
