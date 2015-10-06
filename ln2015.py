@@ -84,9 +84,8 @@ EVENT_TIMING = [
     (154, [Trigger("RAINBIG")]),  # start rain and ripples
     
     #RIPPLE OCEAN BUILDS (FIX)
-    #(160, [Trigger("ripples")], ),  # number buoys
-    #(161, [Trigger("ripples", 'fade_to', 0, None, None, 250, 3)]),  # fade brightness up
-    #(165, [Trigger("ripples", 'fade_to', 200, None, None, None, 20)]),  # change hue
+    (163, [Trigger("ripples")], ),  # number buoys
+    (163, [Trigger("ripples", 'fade_to', 210, 60, 50, 128, 9)]),  # fade brightness up
 
     #FIRST WAVE
     (173, [Trigger("WAVES"), Trigger("WAVES", "spawn", 20, 180, 1, 3)]),  # width, angle, num_waves, interval
@@ -95,6 +94,7 @@ EVENT_TIMING = [
     (177.5, [Trigger("RAINSMALL", "end", 0.5)]),
     (177.5, [Trigger("RAINMID", "end", 0.5)]),
     (177.5, [Trigger("RAINBIG", "end", 0.5)]),
+    (177.5, [Trigger("ripples", 'fade_to', None, None, None, 0, 0.5)]),
     (177.5, Trigger("CLOUDS", "end", 1.5)), # fadetime
     #(178, Trigger("FOG", "end", 1.5)), # fadetime
 

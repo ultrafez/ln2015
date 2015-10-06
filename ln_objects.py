@@ -439,26 +439,26 @@ class Thunderstorm(Group):
         self.log.info('big_hit')
 
         self.add_group('big_hit_sheet', SheetLighting(pygame.Rect((0, 0), MADRIX_SIZE)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 51), (67, 0), '0'))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 51), (3, 44), '1'))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 51), (128, 45), '2'))
         self.trigger_flash(None, pulse=2*get_fps())
 
 
     def incoming(self, duration):
         self.log.info('incoming')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration, '1'))
+        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration, '2'))
+        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration, '3'))
 
 
     def outgoing(self, duration):
         self.log.info('outgoing')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(   0, -34, 132, 70), Vector2(  0, -36), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2( -51,  0), duration))
-        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2(52,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -34, 132, 70), Vector2(  0, -36), duration, '4'))
+        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2( -51,  0), duration, '5'))
+        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2(52,  0), duration, '6'))
 
     def set_group_trigger(self, state):
         self.group_trigger = state
@@ -483,7 +483,7 @@ class Thunderstorm(Group):
 
 
 class Lightning(Sprite):
-    def __init__(self, rect):
+    def __init__(self, rect, random_seed='0'):
         # Call the parent class (Sprite) constructor
         self.rect = rect
         Sprite.__init__(self, rect.width, rect.height, surface_flags=pygame.SRCALPHA)
@@ -491,7 +491,7 @@ class Lightning(Sprite):
         self.breakdown_potential = 800
         self.flashing = False
         self.power = 0
-        self.rand = new_random(self.__class__.__name__)
+        self.rand = new_random(random_seed)
         self.ticks = 0
         self.pulse = 0
         self.pulse_duration = 0
@@ -506,7 +506,7 @@ class Lightning(Sprite):
             chance = self.rand.randrange(100)
             power = self.rand.randint(self.potential, 3 * self.potential)
 
-            if chance < 80:
+            if chance < 50:
                 self.flash(power / (3 * self.potential))
             self.potential = max(0, self.potential - power)
         else:
@@ -525,10 +525,10 @@ class Lightning(Sprite):
         self.potentential += self.potential
 
 class SheetLighting(Lightning):
-    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0):
-        super().__init__(r)
+    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0, random_seed='0'):
+        super().__init__(r, random_seed)
         self.color = (255, 36, 251)
-
+        self.random_seed = '0'
         self.duration = duration * get_fps()
         self.move = move
         self.origin = self.rect.topleft
@@ -561,14 +561,14 @@ class SheetLighting(Lightning):
 
 
 class ForkLighting(Lightning):
-    def __init__(self, size, start, end):
+    def __init__(self, size, start, end, seed = '0'):
             self.color = [246, 255, 71, 255]
             self.start = pygame.math.Vector2(start)
             self.end = pygame.math.Vector2(end)
             self.ionised = [self.start]
             self.pulse = 0
             self.pulse_duration = 500
-            super().__init__(pygame.Rect((0, 0), size), )
+            super().__init__(pygame.Rect((0, 0), size), random_seed = seed)
 
     def update(self):
         super().update()
@@ -1120,7 +1120,7 @@ class Ripples(Sprite):
             j = lamp.y
         #for j in range(self.rect.height):
         #    for i in range(self.rect.width):
-            self.color[3] = min(255, max(0, int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))))
+            self.color[3] = min(255, max(0, int(self.a + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))))
             px[i, j] = tuple(self.color)
         del px
         surface.blit(self.image, self.rect)
