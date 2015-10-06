@@ -439,26 +439,26 @@ class Thunderstorm(Group):
         self.log.info('big_hit')
 
         self.add_group('big_hit_sheet', SheetLighting(pygame.Rect((0, 0), MADRIX_SIZE)))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0), '0'))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44), '1'))
-        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45), '2'))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (67, 0)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (3, 44)))
+        self.add_group('big_hit', ForkLighting(MADRIX_SIZE, (67, 55), (128, 45)))
         self.trigger_flash(None, pulse=2*get_fps())
 
 
     def incoming(self, duration):
         self.log.info('incoming')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration, '1'))
-        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration, '2'))
-        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration, '3'))
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -70, 132, 70), Vector2(  0, 36), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(-132,   0, 132, 70), Vector2( 51,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect( 132,   0, 132, 70), Vector2(-52,  0), duration))
 
 
     def outgoing(self, duration):
         self.log.info('outgoing')
         self.empty()
-        self.add_group('outer', SheetLighting(pygame.Rect(  0, -34, 132, 70), Vector2(  0, -36), duration, '4'))
-        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2(-51,   0), duration, '5'))
-        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2( 52,   0), duration, '6'))
+        self.add_group('outer', SheetLighting(pygame.Rect(   0, -34, 132, 70), Vector2(  0, -36), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect(-81,   0, 132, 70), Vector2( -51,  0), duration))
+        self.add_group('outer', SheetLighting(pygame.Rect( 80,   0, 132, 70), Vector2(52,  0), duration))
 
     def set_group_trigger(self, state):
         self.group_trigger = state
@@ -483,7 +483,7 @@ class Thunderstorm(Group):
 
 
 class Lightning(Sprite):
-    def __init__(self, rect, random_seed='0'):
+    def __init__(self, rect):
         # Call the parent class (Sprite) constructor
         self.rect = rect
         Sprite.__init__(self, rect.width, rect.height, surface_flags=pygame.SRCALPHA)
@@ -491,7 +491,7 @@ class Lightning(Sprite):
         self.breakdown_potential = 800
         self.flashing = False
         self.power = 0
-        self.rand = new_random(random_seed)
+        self.rand = new_random(self.__class__.__name__)
         self.ticks = 0
         self.pulse = 0
         self.pulse_duration = 0
@@ -524,10 +524,9 @@ class Lightning(Sprite):
     def charge(self):
         self.potentential += self.potential
 
-
 class SheetLighting(Lightning):
-    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0, random_seed='0'):
-        super().__init__(r, random_seed=random_seed)
+    def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0):
+        super().__init__(r)
         self.color = (255, 36, 251)
 
         self.duration = duration * get_fps()
@@ -545,7 +544,6 @@ class SheetLighting(Lightning):
             newpos = self.origin + (self.move * min(1, (self.ticks/self.duration)))
             self.rect.topleft = (round(newpos.x), round(newpos.y))
         super().update()
-        #self.image.fill(red)
 
     def flash(self, power, group_trigger=False, pulse=False):
         self.log.debug((power, group_trigger, pulse))
@@ -563,14 +561,14 @@ class SheetLighting(Lightning):
 
 
 class ForkLighting(Lightning):
-    def __init__(self, size, start, end, seed='0'):
-        self.color = [246, 255, 71, 255]
-        self.start = pygame.math.Vector2(start)
-        self.end = pygame.math.Vector2(end)
-        self.ionised = [self.start]
-        self.pulse = 0
-        self.pulse_duration = 500
-        super().__init__(pygame.Rect((0, 0), size), random_seed=seed)
+    def __init__(self, size, start, end):
+            self.color = [246, 255, 71, 255]
+            self.start = pygame.math.Vector2(start)
+            self.end = pygame.math.Vector2(end)
+            self.ionised = [self.start]
+            self.pulse = 0
+            self.pulse_duration = 500
+            super().__init__(pygame.Rect((0, 0), size), )
 
     def update(self):
         super().update()
@@ -582,7 +580,7 @@ class ForkLighting(Lightning):
         if self.flashing or self.pulse < self.pulse_duration:
             for point in self.ionised[1:]:
                 pygame.draw.line(self.image, self.color, start_segment, point, 1)
-                if not self.flashing:  # draw a 3 px, alpha line behind
+                if not self.flashing:
                     if self.pulse <= self.pulse_duration:
                         a_color[3] = 128 * sin(self.pulse/24) + 128
                         self.pulse += 1
@@ -594,11 +592,10 @@ class ForkLighting(Lightning):
 
     def flash(self, power, group_trigger=False, pulse=None):
         self.flashing = True
-
         if pulse is not None:
             self.pulse_duration = pulse
 
-        elif self.rand.randint(0, 100) > 2:
+        if self.rand.randint(0, 100) < 20:
             self.pulse_duration = 2 * get_fps()
             self.pulse = 0
 
@@ -624,11 +621,11 @@ class ForkLighting(Lightning):
 
 class Bird(Sprite):
     def __init__(self, rect):
+        # Call the parent class (Sprite) constructor        if self.flashing or self.pulse < self.pulse_duration:
+
         self.ticks = 0
         self.active_frame = 0
         self.rect = rect
-        self.realposn = Vector2(self.rect.topleft)
-        self.dxy = Vector2(0, 0)
         self.frames = []
         self.action = 'bob'
         self.next_action = 'bob'
@@ -636,11 +633,10 @@ class Bird(Sprite):
 
         self.actions = {'bob':(0, ),
                         'takeoff': (1, 2, 3, 4, 5, 6, 32),
-                        'flap': (33, 34, 35, 36, 37, 38, 39, 40, 41, 42),
+                        'flap': ( 33, 34, 35, 36, 37, 38, 39, 40, 41, 42),
                         'rotate_camera': (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30),
-                        'soar': (31, 43, 44, 45, 46, 47)
+                        'soar': (31,)
                         }
-
 
         Sprite.__init__(self, self.rect.width, self.rect.height, surface_flags=pygame.SRCALPHA)
 
@@ -682,14 +678,7 @@ class Bird(Sprite):
         if self.action == 'rotate_camera':
             self.set_action('soar')
 
-        self.realposn = self.realposn + self.dxy
-        self.rect.topleft = (round(self.realposn.x), round(self.realposn.y))
-
         self.ticks += 1
-
-
-    def exit(self):
-        self.dxy = Vector2(0, -0.3)
 
     def end(self):
         raise StopIteration
@@ -1051,10 +1040,6 @@ class Ripples(Sprite):
         self.rect = pygame.Rect((0, 0), MADRIX_SIZE)
         self.color = (210, 60, 70, 0)
 
-        self.ripple_height = 64
-        self.tgt_ripple_height = 64
-        self.dripple_height = 0
-
         self.h = 210
         self.tgt_h = 210
         self.dh = 0
@@ -1071,65 +1056,34 @@ class Ripples(Sprite):
         self.tgt_a = 128
         self.da = 0
 
-        self.speed = Vector2(0, 0)
-        self.tgt_speed = Vector2(0, 0)
-        self.dspeed = Vector2(0, 0)
 
-    def end(self):
-        raise StopIteration
     def takeoff(self):
-        # speed ripples up
-        self.tgt_speed = Vector2(70, 0)
-        self.dspeed = self.tgt_speed / 5 * get_fps()
+        self.dspeed = 1
+        self.speed = 0
+        self.da = -5
 
-        # turn rippples into sky
-
-    def rotate(self):
-        self.tgt_speed = Vector2(0, -1000)
-        self.dspeed = self.tgt_speed/5 * get_fps()
-
-        self.tgt_ripple_height = 0
-        self.dripple_height = self.tgt_ripple_height / 5 * get_fps()
-
-    def fade_out(self):
-        self.fade_to(h=None, s=None, l=0, a=0, duration=15)
+    # def fade_in(self, duration):
+    #     if self.ticks < 180:
+    #         self.alpha += 128/180
+    #         self.alpha = 1
+    #         self.image.fill(hlsa_to_rgba(210, self.brightness, self.saturation, self.alpha))
 
     def fade_to(self, h=None, s=None, l=None, a=None, duration=3):
         if h is not None:
-            if duration > 0:
-                self.tgt_h = h
-                self.dh = (self.tgt_h - self.h) / (duration * get_fps())  #TODO: change so path is always < 180
-            else:
-                self.tgt_h = h
-                self.h = h
-                self.dh = 0
+            self.tgt_h = h
+            self.dh = (self.tgt_h - self.h) / (duration * get_fps())  #TODO: change so path is always < 180
 
         if s is not None:
-            if duration > 0:
-                self.tgt_s = s
-                self.ds = (self.tgt_s - self.s) / (duration * get_fps())
-            else:
-                self.tgt_s = s
-                self.s = s
-                self.ds = 0
+            self.tgt_s = s
+            self.ds = (self.tgt_s - self.s) / (duration * get_fps())
 
         if l is not None:
-            if duration > 0:
-                self.tgt_l = l
-                self.dl = (self.tgt_l - self.l) / (duration * get_fps())
-            else:
-                self.tgt_l = l
-                self.l = l
-                self.dl = 0
+            self.tgt_l = l
+            self.dl = (self.tgt_l - self.l) / (duration * get_fps())
 
         if a is not None:
-            if duration > 0:
-                self.tgt_a = a
-                self.da = (self.tgt_a - self.a) / (duration * get_fps())
-            else:
-                self.tgt_a = a
-                self.a = a
-                self.da = 0
+            self.tgt_a = a
+            self.da = (self.tgt_a - self.a) / (duration * get_fps())
 
     def update(self):
         if self.tgt_h != self.h:
@@ -1156,20 +1110,6 @@ class Ripples(Sprite):
             else:
                 self.a += self.da
 
-
-        if self.tgt_ripple_height != self.ripple_height:
-            if abs(self.ripple_height - self.tgt_ripple_height) < self.dripple_height:
-                self.ripple_height = self.tgt_ripple_height
-            else:
-                self.ripple_height += self.dripple_height
-
-
-        if self.tgt_speed != self.speed:
-            if (self.speed - self.tgt_speed).length() < self.dspeed.length():
-                self.speed = self.tgt_speed
-            else:
-                self.speed += self.dspeed
-
         self.color = hlsa_to_rgba(self.h, self.l, self.s, self.a)
         self.ticks += 1
 
@@ -1178,7 +1118,9 @@ class Ripples(Sprite):
         for lamp in ceiling.lamps:
             i = lamp.x
             j = lamp.y
-            self.color[3] = min(255, max(0, int(self.a + ((math.sin(i + (self.ticks * self.speed.x)) - math.sin(j + (self.ticks * self.speed.y)))) * ((0.5 * math.sin(self.ticks/15))  * self.ripple_height))))
+        #for j in range(self.rect.height):
+        #    for i in range(self.rect.width):
+            self.color[3] = min(255, max(0, int(128 + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))))
             px[i, j] = tuple(self.color)
         del px
         surface.blit(self.image, self.rect)
@@ -1281,7 +1223,7 @@ class Aurora(Group):
         for blob in self:
             blob.draw(pixels)
         del pixels
-        surface.blit(self.s, (0, 0))
+        surface.blit(self.s, (0,0))
 
     def end(self):
         self.num_blobs = 0
