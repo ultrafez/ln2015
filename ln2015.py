@@ -4,7 +4,7 @@ sys.path.append('TrinRoofPlayer')
 
 from ln_objects import *
 import pygame
-from TrinRoofPlayer.Renderer import Player, clean_images, Trigger
+from TrinRoofPlayer.Renderer import Player, clean_images, Trigger, cmd_line_args
 from TrinRoofPlayer.Constants import *
 import argparse
 import logging
@@ -187,22 +187,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
     
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--warp", type=float, default=-1.0)
-    parser.add_argument("--no-mask", action="store_false", dest="mask")
-    parser.add_argument("--image-format", default="png")
-    parser.add_argument("--no-images", action="store_const", dest="image_format", const=None)
-    parser.add_argument("--save-video", action="store_true")
-    parser.add_argument("--quick", action="store_true")
-    parser.add_argument("--avconv", action="store_true")
-    parser.add_argument("--random-seed", type=str, default="LN2015")
-    parser.add_argument("--sparse", type=int, default=2)
-    parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
-    parser.add_argument("--pause", action="store_true")
-    parser.add_argument("--scale", type=int, default=8)
-    parser.add_argument("--export-display", action="store_true")
-    args = parser.parse_args()
-
+    args = cmd_line_args()
     print(args)
 
     clean_images()
