@@ -3,9 +3,9 @@ import os.path
 
 __author__ = 'admin'
 
-#pf = open(os.path.join('..', 'Resources', 'revised_patch.mpf', 'wb'))
+#pf = open(os.path.join('..', 'Resources', 'revised.mpf', 'wb'))
 
-fh = open(os.path.join('..', 'Resources', 'test_patch2.mpf'), 'rb')
+fh = open(os.path.join('..', 'Resources', 'rework.mpf'), 'rb')
 tp = fh.read()
 fh.close()
 
