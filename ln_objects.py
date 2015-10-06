@@ -483,7 +483,7 @@ class Thunderstorm(Group):
 
 
 class Lightning(Sprite):
-    def __init__(self, rect, random_seed='0'):
+    def __init__(self, rect, random_seed='taaaash'):
         # Call the parent class (Sprite) constructor
         self.rect = rect
         Sprite.__init__(self, rect.width, rect.height, surface_flags=pygame.SRCALPHA)
@@ -854,8 +854,6 @@ class Beacon(Sprite):
     colors = [
         red,
         green,
-        purple,
-        cyan,
     ]
 
     def __init__(self, pos, color, max_r, speed):
