@@ -182,7 +182,7 @@ scene_data = {
 
 if __name__ == "__main__":
 
-    random.seed('correcthorsebatterystaple')
+    random.seed('taaaash')
 
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
