@@ -1120,7 +1120,10 @@ class Ripples(Sprite):
             j = lamp.y
         #for j in range(self.rect.height):
         #    for i in range(self.rect.width):
+            
             self.color[3] = min(255, max(0, int(self.a + ((math.sin(i + self.ticks/50) - math.sin(j))) * ((0.5 * math.sin(self.ticks/15)))  * min(self.ticks*0.1, 64))))
+            self.color = [min(255, max(0, g)) for g in self.color]
+                
             px[i, j] = tuple(self.color)
         del px
         surface.blit(self.image, self.rect)
