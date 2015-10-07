@@ -59,14 +59,14 @@ SUNSET_TIME = 219
 EVENT_TIMING = [
     (  0, [Trigger("STARS")]),
     ( 30, Trigger("MORNINGSKY")),
-    ( 25, [Trigger("SUNRISE"), Trigger("SUNRISE", "move", (13, 51), 40, 5)]),
+    ( 30, Trigger("SUNRISE")),
     ( 30, [Trigger("SUNRISE", "move", (66, 51), 15, 30)]),
     ( 38, [Trigger("STARS", "end", 5)]),  #fadetime
     ( 53, [Trigger("CLOUDS")]),
     ( 65, Trigger("CLOUDSKY")),
     ( 75, Trigger("MORNINGSKY", "end", 5)),
-    ( 75, Trigger("SUNRISE", "move", None, 1, 8)), # newpos, newsize, duration
-    ( 75, Trigger("SUNRISE", "end", 10)),  # fadetime
+    ( 75, Trigger("SUNRISE", "move", None, 0, 8)), # newpos, newsize, duration
+    ( 75, Trigger("SUNRISE", "end", 8)),  # fadetime
     ( 75, Trigger("CLOUDSKY", "end", 15)),
     ( 85, [Trigger("CLOUDS", "grey", 0.6, 10)]),
     #( 85, Trigger("FOG")),
@@ -101,12 +101,12 @@ EVENT_TIMING = [
 
     #WAVES AND BEACONS
     (178, [Trigger("WAVES", "spawn", 15, 180, 1, 3)]),
-    (183, [Trigger("WAVES", "spawn", 10, 180, 1, 3)]),
+    (183, [Trigger("WAVES", "spawn", 13, 180, 1, 3)]),
     (185, [Trigger("WAVES", "beacon", 1)]),  # number buoys
-    (185, [Trigger("WAVES", "spawn", 6, 180, 2, 3)]),
+    (185, [Trigger("WAVES", "spawn", 13, 180, 2, 3)]),
     (192, [Trigger("WAVES", "beacon", 3)]),  # number buoys
-    (190, [Trigger("WAVES", "spawn", 4, 180, 10, 2)]),
-    (208, [Trigger("WAVES", "spawn", 4, 180, 3, 3)]),
+    (190, [Trigger("WAVES", "spawn", 13, 180, 10, 2)]),
+    (208, [Trigger("WAVES", "spawn", 1, 180, 3, 3)]),
     (208, [Trigger("WAVES", "beacon", 1)]),  # number buoys
 
     #(214.5, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob'), Trigger('ripples', 'fade_to', None, 90, 80, 200, 6)]),  # Sea Birds SoundsStart
@@ -125,7 +125,7 @@ EVENT_TIMING = [
     #(235, [Trigger("BIRDS", 'exit')]),
     #SUNSET
     (SUNSET_TIME, [Trigger("SUNSET"), Trigger("SUNSET", "move", (None), 15, 5)]),
-    (SUNSET_TIME+6, [Trigger("SUNSET", "move", (-40, 51), 50, 30)]), # newpos, newsize, duration
+    (SUNSET_TIME+6, [Trigger("SUNSET", "move", (66, 120), 40, 30)]), # newpos, newsize, duration
     (SUNSET_TIME+36, [Trigger("SUNSET", "move", None, 0, 10)]), # newpos, newsize, duration
     (SUNSET_TIME+36, [Trigger("SUNSET", "end", 10)]),  # fadetime
 
@@ -157,8 +157,8 @@ scene_data = {
 
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
 
-    "SUNRISE": (10, Sun, (-40, 51), 40, 0.5, 0.5, 3, 2.0), # pos, size, extrabright, rippleheight, ripplecount, ripplespeed
-    "SUNSET": (29, Sun, (66, 51), 0, 0.5, 0.5, 3, 2.0),
+    "SUNRISE": (10, Sun, (66, 110), 40, 0.5, 0.25, 3, 1.0), # pos, size, extrabright, rippleheight, ripplecount, ripplespeed
+    "SUNSET": (29, Sun, (66, 51), 0, 0.5, 0.5, 2, 2.0),
 
     "FOG": (12, Fog, (100, 100, 100), 10),
 
