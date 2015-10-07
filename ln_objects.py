@@ -77,13 +77,14 @@ class StarrySky(Group):
 
 
 class Sun(MoveableThing):
-    def __init__(self, pos, size, ripple_height, ripple_count, ripple_speed, duration = None):
+    def __init__(self, pos, size, extra_bright, ripple_height, ripple_count, ripple_speed, duration = None):
         super().__init__(pos, size, duration)
         self.s = pygame.Surface(MADRIX_SIZE, flags = pygame.SRCALPHA)
         self.ripple_speed = ripple_speed * math.pi * 2.0 / get_fps()
         self.ripple_distance = ripple_count * math.pi * 2.0
         self.ripple_height = ripple_height / 2.0
         self.ripple = 0.0
+        self.extra_bright = extra_bright
 
     def update(self):
         super().update()
@@ -113,8 +114,11 @@ class Sun(MoveableThing):
                     else:
                         alpha = 255 * (self.size  + 1 - dist)
                     alpha = int(alpha * self.fade)
-                    color = (255, int(255 * height), 0, alpha)
-                    a[x, y] = color
+                    height = int(255 * (height + self.extra_bright))
+                    r = 255
+                    g = min(height, 255)
+                    b = max(height - 255, 0)
+                    a[x, y] = (r, g, b)
         del a
         surface.blit(self.s, (0,0))
 

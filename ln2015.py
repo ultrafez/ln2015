@@ -157,8 +157,8 @@ scene_data = {
 
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
 
-    "SUNRISE": (10, Sun, (-40, 51), 40, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
-    "SUNSET": (29, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
+    "SUNRISE": (10, Sun, (-40, 51), 40, 0.5, 0.5, 3, 2.0), # pos, size, extrabright, rippleheight, ripplecount, ripplespeed
+    "SUNSET": (29, Sun, (66, 51), 0, 0.5, 0.5, 3, 2.0),
 
     "FOG": (12, Fog, (100, 100, 100), 10),
 
