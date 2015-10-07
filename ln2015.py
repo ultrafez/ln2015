@@ -150,10 +150,10 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, 600, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
+    "STARS": (0, StarrySky, 500, 20, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
     "MORNINGSKY":(5, Fog, (0, 0, 255), 25), 
     "CLOUDSKY":(7, Fog, (0, 66, 128), 3),  
-    "NIGHTSTARS": (0, StarrySky, 600, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
+    "NIGHTSTARS": (0, StarrySky, 500, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
 
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
 
