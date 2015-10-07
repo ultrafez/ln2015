@@ -57,6 +57,8 @@ class StarrySky(Group):
     def update(self):
         self.fade += self.fade_rate
         if self.fade <= 0.0:
+            for obj in self:
+                obj.kill()
             raise StopIteration
         if self.num_stars < self.max_stars:
             self.num_stars +=  self.ramp_rate
@@ -238,6 +240,8 @@ class Clouds(Group):
         shade = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:
+                for s in self:
+                    s.kill()
                 raise StopIteration
             fade = 1.0 - self.time
         if self.phase == self.CLOUD_GREY:
@@ -381,6 +385,10 @@ class Thunderstorm(Group):
 
     def add_fork(self, size, start, end):
         self.add(ForkLighting(size, start, end))
+
+    def end(self):
+        for n in self.named_groups:
+            self.del_group(n)
 
 
 class Lightning(Sprite):
