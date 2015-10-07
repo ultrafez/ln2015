@@ -219,6 +219,6 @@ if __name__ == "__main__":
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
     LN2015.export_video(ffmpeg_exe)
-    pygame.quit()
+    LN2015.end()
 
 sys.exit()
