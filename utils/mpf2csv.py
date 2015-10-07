@@ -173,10 +173,10 @@ class PatchFile(object):
 
 def main():
 
-    pf = PatchFile(os.path.join('..','Resources', 'rework.mpf'))
+    pf = PatchFile(os.path.join('..','Resources', 'mapped.mpf'))
     pf.decode()
 
-    f = open(os.path.join('..', 'Resources', 'pixels_rework.csv'), 'wb')
+    f = open(os.path.join('..', 'Resources', 'pixels_mapped.csv'), 'wb')
     pf.write_csv(f)
     f.close()
 
