@@ -1,12 +1,12 @@
 __author__ = 'ajtag'
-import colorsys
 from math import pi, sin
-import math
-import os.path
-import logging
-from TrinRoofPlayer.Renderer import ceiling, get_fps, new_random
+# import math
+# import os.path
+# from TrinRoofPlayer.Renderer import ceiling, new_random
+# import pygame
+from TrinRoofPlayer.utils import *
+from TrinRoofPlayer.Objects import *
 from TrinRoofPlayer.Constants import *
-import pygame
 from pygame.math import Vector2
 import numpy as np
 
@@ -17,51 +17,6 @@ transparent = 255, 255, 255, 0
 black = 0, 0, 0
 
 
-def hls_to_rgb(hue, lightness, saturation):
-    """
-    :param hue: 0-360
-    :param lightness:  0-100
-    :param saturation:  0-100
-    :return: list(int)
-    """
-    return [int(i * 255) for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
-
-
-def hlsa_to_rgba(hue, lightness, saturation, alpha):
-    """
-    :param hue: 0-360
-    :param lightness:  0-100
-    :param saturation:  0-100
-    :return: list(int)
-    """
-    rgb = colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)
-
-    rgba = [0,0,0,alpha]
-    for n, i in enumerate(rgb):
-        rgba[n] = int(i * 255)
-    return rgba
-
-
-class Sprite(pygame.sprite.Sprite):
-    def __init__(self, x=None, y=None, surface_flags=0):
-        self.log = logging.getLogger(self.__class__.__name__)
-        super().__init__()
-        if x is not None:
-            self.image = pygame.Surface((abs(x), abs(y)), surface_flags)
-            self.image.set_colorkey(white)
-            self.image.fill(white)
-        self.log.debug('##init##')
-        self.ticks = 0
-
-
-class Group(pygame.sprite.Group):
-    def __init__(self):
-        self.log = logging.getLogger(self.__class__.__name__)
-        super().__init__()
-        self.rand = new_random(self.__class__.__name__)
-
-    def end(self):
-        raise StopIteration
 
 class Star(Sprite):
     def __init__(self, lamp, duration, color):
@@ -102,6 +57,8 @@ class StarrySky(Group):
     def update(self):
         self.fade += self.fade_rate
         if self.fade <= 0.0:
+            for obj in self:
+                obj.kill()
             raise StopIteration
         if self.num_stars < self.max_stars:
             self.num_stars +=  self.ramp_rate
@@ -119,68 +76,15 @@ class StarrySky(Group):
         self.fade_rate = -1.0 / (get_fps() * fade_time)
 
 
-class MoveableThing(Group):
-    def __init__(self, pos, size, fade_duration):
-        super().__init__()
-        self.x = float(pos[0])
-        self.y = float(pos[1])
-        self.dx = 0.0
-        self.dy = 0.0
-        self.steps = 0
-        self.size = size
-        self.size_speed = 0
-
-        if fade_duration is not None:
-            self.fade = 0.0
-            self.fade_speed = 1.0 / (get_fps() * fade_duration)
-        else:
-            self.fade = 1.0
-            self.fade_speed = None
-
-    def update(self):
-        if self.steps > 0:
-            self.steps -= 1
-            self.x += self.dx
-            self.y += self.dy
-            self.size += self.size_speed
-        if self.fade_speed is not None:
-            self.fade += self.fade_speed
-            if self.fade_speed > 0.0 and self.fade >= 1.0:
-                self.fade = 1.0;
-                self.fade_speed = None
-            elif self.fade_speed < 0.0 and self.fade <= 0.0:
-                raise StopIteration
-
-    def move(self, newpos, newsize, duration = None):
-        if duration is None:
-            self.steps = 1
-        else:
-            self.steps = max(int(duration * get_fps()), 1)
-        if newpos is None:
-            self.dx = 0.0
-            self.dy = 0.0
-        else:
-            self.dx = (newpos[0] - self.x) / self.steps
-            self.dy = (newpos[1] - self.y) / self.steps
-        if newsize is None:
-            self.size_speed = 0
-        else:
-            self.size_speed = (newsize - self.size) / self.steps
-
-    def end(self, fade_duration = None):
-        if fade_duration is None:
-            raise StopIteration
-        else:
-            self.fade_speed = -1.0 / (get_fps() * fade_duration)
-
 class Sun(MoveableThing):
-    def __init__(self, pos, size, ripple_height, ripple_count, ripple_speed, duration = None):
+    def __init__(self, pos, size, extra_bright, ripple_height, ripple_count, ripple_speed, duration = None):
         super().__init__(pos, size, duration)
         self.s = pygame.Surface(MADRIX_SIZE, flags = pygame.SRCALPHA)
         self.ripple_speed = ripple_speed * math.pi * 2.0 / get_fps()
         self.ripple_distance = ripple_count * math.pi * 2.0
         self.ripple_height = ripple_height / 2.0
         self.ripple = 0.0
+        self.extra_bright = extra_bright
 
     def update(self):
         super().update()
@@ -210,8 +114,11 @@ class Sun(MoveableThing):
                     else:
                         alpha = 255 * (self.size  + 1 - dist)
                     alpha = int(alpha * self.fade)
-                    color = (255, int(255 * height), 0, alpha)
-                    a[x, y] = color
+                    height = int(255 * (height + self.extra_bright))
+                    r = 255
+                    g = min(height, 255)
+                    b = max(height - 255, 0)
+                    a[x, y] = (r, g, b)
         del a
         surface.blit(self.s, (0,0))
 
@@ -337,6 +244,8 @@ class Clouds(Group):
         shade = int(255 - 255 * self.dirtyness)
         if self.phase == self.CLOUD_BLACK:
             if self.time > 1.0:
+                for s in self:
+                    s.kill()
                 raise StopIteration
             fade = 1.0 - self.time
         if self.phase == self.CLOUD_GREY:
@@ -481,6 +390,10 @@ class Thunderstorm(Group):
     def add_fork(self, size, start, end):
         self.add(ForkLighting(size, start, end))
 
+    def end(self):
+        for n in self.named_groups:
+            self.del_group(n)
+
 
 class Lightning(Sprite):
     def __init__(self, rect, random_seed='taaaash'):
@@ -527,7 +440,7 @@ class Lightning(Sprite):
 class SheetLighting(Lightning):
     def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0, random_seed='0'):
         super().__init__(r, random_seed)
-        self.color = (255, 36, 251)
+        self.color = (255, 200, 255)
         self.random_seed = '0'
         self.duration = duration * get_fps()
         self.move = move
@@ -685,21 +598,6 @@ class Bird(Sprite):
 
 
 
-class Aurora(Sprite):
-    def __init__(self, x, y):
-        colors = [hls_to_rgb(120, 21, 100), hls_to_rgb(300, 21, 100)]
-        # Call the parent class (Sprite) constructor
-        self.line = (10, 4, 6, 2, 8, 12, 6)
-        Sprite.__init__(self, x, y);
-
-        self.image = pygame.draw.arc()
-
-
-
-    def update(self):
-        pass
-
-
 class Constellation(Sprite):
     def __init__(self, x, y):
         self.pole = Vector2(16, 16)
@@ -782,9 +680,6 @@ class HSMoon(MoveableThing):
         if alpha > 0:
             self.scaled_overlay.set_alpha(alpha)
             surface.blit(self.scaled_overlay, pos)
-
-def pythagoras(vector):
-    return math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
 
 
 class Wave(Sprite):
@@ -1160,8 +1055,9 @@ class PlasmaBlob(Sprite):
             dist = pythagoras((du, dv))
             if dist > 1.0:
                 continue
-            dist = dist * dist
+            dist = dist
             height = (1.0 - math.cos(dist * math.pi * 2.0)) / 2.0
+            height = math.sqrt(height)
             sd = self.time - dist
             if sd < 0 or sd > 1.0:
                 continue
@@ -1201,8 +1097,8 @@ class Aurora(Group):
         self.rate = n / (get_fps() * self.blob_duration)
 
     def add_blob(self):
-        width = 20
-        height = 3
+        width = 25
+        height = 4
         x = self.x + self.rand.randrange(-width, width)
         y = self.y + self.rand.randrange(-height, height)
         angle = self.rand.randrange(360)

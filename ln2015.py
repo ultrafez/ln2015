@@ -2,11 +2,12 @@
 import sys
 sys.path.append('TrinRoofPlayer')
 
+# import pygame
+# from TrinRoofPlayer.Renderer import Player, clean_images, Trigger, cmd_line_args
+# from TrinRoofPlayer.Objects import *
+# from TrinRoofPlayer.Constants import *
+# import argparse
 from ln_objects import *
-import pygame
-from TrinRoofPlayer.Renderer import Player, clean_images, Trigger
-from TrinRoofPlayer.Constants import *
-import argparse
 import logging
 import platform
 import random
@@ -149,15 +150,15 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, 150, 20, 0.1, 2.0), # max_stars, ramp_time, min_time, max_time
+    "STARS": (0, StarrySky, 600, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
     "MORNINGSKY":(5, Fog, (0, 0, 255), 25), 
     "CLOUDSKY":(7, Fog, (0, 66, 128), 3),  
-    "NIGHTSTARS": (0, StarrySky, 150, 10, 0.1, 2.0), # max_stars, ramp_time, min_time, max_time
+    "NIGHTSTARS": (0, StarrySky, 600, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
 
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
 
-    "SUNRISE": (10, Sun, (-40, 51), 40, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
-    "SUNSET": (29, Sun, (66, 51), 0, 0.3, 3, 2.0), #start, end, size, ripple_height, ripple_count, ripple_speed, duration
+    "SUNRISE": (10, Sun, (-40, 51), 40, 0.5, 0.5, 3, 2.0), # pos, size, extrabright, rippleheight, ripplecount, ripplespeed
+    "SUNSET": (29, Sun, (66, 51), 0, 0.5, 0.5, 3, 2.0),
 
     "FOG": (12, Fog, (100, 100, 100), 10),
 
@@ -187,22 +188,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     pygame.init()
     
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--warp", type=float, default=-1.0)
-    parser.add_argument("--no-mask", action="store_false", dest="mask")
-    parser.add_argument("--image-format", default="png")
-    parser.add_argument("--no-images", action="store_const", dest="image_format", const=None)
-    parser.add_argument("--save-video", action="store_true")
-    parser.add_argument("--quick", action="store_true")
-    parser.add_argument("--avconv", action="store_true")
-    parser.add_argument("--random-seed", type=str, default="LN2015")
-    parser.add_argument("--sparse", type=int, default=2)
-    parser.add_argument("--solid", dest='sparse', action="store_const", const=0)
-    parser.add_argument("--pause", action="store_true")
-    parser.add_argument("--scale", type=int, default=8)
-    parser.add_argument("--export-display", action="store_true")
-    args = parser.parse_args()
-
+    args = cmd_line_args()
     print(args)
 
     clean_images()
@@ -233,6 +219,6 @@ if __name__ == "__main__":
         if LN2015.ticks > TOTAL_TIME * FPS:
             alive = False
     LN2015.export_video(ffmpeg_exe)
-    pygame.quit()
+    LN2015.end()
 
 sys.exit()
