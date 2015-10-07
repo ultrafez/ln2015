@@ -598,21 +598,6 @@ class Bird(Sprite):
 
 
 
-class Aurora(Sprite):
-    def __init__(self, x, y):
-        colors = [hls_to_rgb(120, 21, 100), hls_to_rgb(300, 21, 100)]
-        # Call the parent class (Sprite) constructor
-        self.line = (10, 4, 6, 2, 8, 12, 6)
-        Sprite.__init__(self, x, y);
-
-        self.image = pygame.draw.arc()
-
-
-
-    def update(self):
-        pass
-
-
 class Constellation(Sprite):
     def __init__(self, x, y):
         self.pole = Vector2(16, 16)
@@ -1070,8 +1055,9 @@ class PlasmaBlob(Sprite):
             dist = pythagoras((du, dv))
             if dist > 1.0:
                 continue
-            dist = dist * dist
+            dist = dist
             height = (1.0 - math.cos(dist * math.pi * 2.0)) / 2.0
+            height = math.sqrt(height)
             sd = self.time - dist
             if sd < 0 or sd > 1.0:
                 continue
@@ -1111,8 +1097,8 @@ class Aurora(Group):
         self.rate = n / (get_fps() * self.blob_duration)
 
     def add_blob(self):
-        width = 20
-        height = 3
+        width = 25
+        height = 4
         x = self.x + self.rand.randrange(-width, width)
         y = self.y + self.rand.randrange(-height, height)
         angle = self.rand.randrange(360)
