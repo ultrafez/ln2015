@@ -5,6 +5,7 @@ import math
 import os.path
 import logging
 from TrinRoofPlayer.Renderer import ceiling, get_fps, new_random
+from TrinRoofPlayer.utils import *
 from TrinRoofPlayer.Constants import *
 import pygame
 from pygame.math import Vector2
@@ -16,30 +17,6 @@ white = 255, 255, 255
 transparent = 255, 255, 255, 0
 black = 0, 0, 0
 
-
-def hls_to_rgb(hue, lightness, saturation):
-    """
-    :param hue: 0-360
-    :param lightness:  0-100
-    :param saturation:  0-100
-    :return: list(int)
-    """
-    return [int(i * 255) for i in colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)]
-
-
-def hlsa_to_rgba(hue, lightness, saturation, alpha):
-    """
-    :param hue: 0-360
-    :param lightness:  0-100
-    :param saturation:  0-100
-    :return: list(int)
-    """
-    rgb = colorsys.hls_to_rgb(hue / 360.0, lightness / 100.0, saturation / 100.0)
-
-    rgba = [0,0,0,alpha]
-    for n, i in enumerate(rgb):
-        rgba[n] = int(i * 255)
-    return rgba
 
 
 class Sprite(pygame.sprite.Sprite):
