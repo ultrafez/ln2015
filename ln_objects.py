@@ -114,7 +114,7 @@ class Sun(MoveableThing):
                     else:
                         alpha = 255 * (self.size  + 1 - dist)
                     alpha = int(alpha * self.fade)
-                    height = int(255 * (height + self.extra_bright))
+                    height = int((190 * height + 255 * self.extra_bright))
                     r = 255
                     g = min(height, 255)
                     b = max(height - 255, 0)
