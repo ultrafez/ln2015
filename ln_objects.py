@@ -428,7 +428,7 @@ class Lightning(Sprite):
 class SheetLighting(Lightning):
     def __init__(self, r, move=pygame.math.Vector2(0, 0), duration=0, random_seed='0'):
         super().__init__(r, random_seed)
-        self.color = (255, 36, 251)
+        self.color = (255, 200, 255)
         self.random_seed = '0'
         self.duration = duration * get_fps()
         self.move = move
