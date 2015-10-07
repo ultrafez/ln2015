@@ -2,11 +2,12 @@
 import sys
 sys.path.append('TrinRoofPlayer')
 
+# import pygame
+# from TrinRoofPlayer.Renderer import Player, clean_images, Trigger, cmd_line_args
+# from TrinRoofPlayer.Objects import *
+# from TrinRoofPlayer.Constants import *
+# import argparse
 from ln_objects import *
-import pygame
-from TrinRoofPlayer.Renderer import Player, clean_images, Trigger, cmd_line_args
-from TrinRoofPlayer.Constants import *
-import argparse
 import logging
 import platform
 import random
