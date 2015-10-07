@@ -167,7 +167,7 @@ scene_data = {
 
     "RAINSMALL": (25, Raindrops, 1, 0.33, 75, 30), #drop_size, drop_duration, max_drops, ramp_time
     "RAINMID": (25, Raindrops, 1, 0.33, 30, 15), #drop_size, drop_duration, max_drops, ramp_time
-    "RAINBIG": (25, Raindrops, 3, 0.50, 10, 5),
+    "RAINBIG": (25, Raindrops, 2, 0.50, 10, 5),
     "LIGHTNING_low": (25, Thunderstorm),
     'ripples': (28, Ripples),
 
