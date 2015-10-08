@@ -19,17 +19,28 @@ black = 0, 0, 0
 
 
 class FatBlob(Sprite):
-    def __init__(self, coord):
+    def __init__(self, pos):
         super().__init__()
-        self.coord = coord
-        self.width = 0
+        self.pos = pos
+        self.radius = 0
+        self.thickness = 10
+        self.log = logging.getLogger(self.__class__.__name__)
 
     def update(self):
-        pass
+        self.radius += 1
+        if self.radius > (MADRIX_X*1.5 + self.thickness*2):
+            # it'll definitely be off-screen at this point
+            self.kill()
 
     def draw(self, surface):
-        surface.set_at(self.coord, hls_to_rgb(50, 60, 90))
-        # pygame.draw.circle(surface, color, self.pos, int(self.radius))
+        # surface.set_at(self.pos, hls_to_rgb(50, 60, 90))
+        s = pygame.Surface((self.radius*2, self.radius*2), flags = pygame.SRCALPHA)
+        pygame.draw.circle(s, hls_to_rgb(50, 50, 90), (self.radius, self.radius), int(self.radius))
+        if self.radius > self.thickness:
+            pass
+            pygame.draw.circle(s, transparent, (self.radius, self.radius), int(self.radius - self.thickness))
+
+        surface.blit(s, np.subtract(self.pos, (self.radius, self.radius)))
 
 
 
@@ -40,7 +51,7 @@ class FatBlobs(Group):
         self.add(FatBlob(self.rand.choice(ceiling.lamps)))
         
     def update(self):
-        pass
+        super().update()
 
     def draw(self, surface):
         for blob in self:
