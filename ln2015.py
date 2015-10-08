@@ -106,7 +106,7 @@ EVENT_TIMING = [
     (185, [Trigger("WAVES", "spawn", 13, 180, 2, 3)]),
     (192, [Trigger("WAVES", "beacon", 3)]),  # number buoys
     (190, [Trigger("WAVES", "spawn", 13, 180, 10, 2)]),
-    (208, [Trigger("WAVES", "spawn", 1, 180, 3, 3)]),
+    (208, [Trigger("WAVES", "spawn", 13, 180, 3, 3)]),
     (208, [Trigger("WAVES", "beacon", 1)]),  # number buoys
 
     #(214.5, [Trigger("BIRDS"), Trigger("BIRDS", 'set_action', 'bob'), Trigger('ripples', 'fade_to', None, 90, 80, 200, 6)]),  # Sea Birds SoundsStart
@@ -150,10 +150,10 @@ EVENT_TIMING = [
 
 
 scene_data = {
-    "STARS": (0, StarrySky, 700, 20, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
+    "STARS": (0, StarrySky, 500, 30, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
     "MORNINGSKY":(5, Fog, (0, 0, 255), 25), 
     "CLOUDSKY":(7, Fog, (0, 66, 128), 3),  
-    "NIGHTSTARS": (0, StarrySky, 700, 10, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
+    "NIGHTSTARS": (0, StarrySky, 500, 20, 0.1, 1.0), # max_stars, ramp_time, min_time, max_time
 
     "AURORA": (5, Aurora, (66, 53), 2, 5), # middle, blob_duration, num_blobs
 
