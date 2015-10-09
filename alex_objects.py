@@ -19,12 +19,14 @@ black = 0, 0, 0
 
 
 class FatBlob(Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, color):
         super().__init__()
         self.pos = pos
+        self.color = color
         self.radius = 0
         self.thickness = 10
-        self.log = logging.getLogger(self.__class__.__name__)
+        # self.log = logging.getLogger(self.__class__.__name__)
+        self.s = pygame.Surface(MADRIX_SIZE, flags=pygame.SRCALPHA)
 
     def update(self):
         self.radius += 1
@@ -33,25 +35,35 @@ class FatBlob(Sprite):
             self.kill()
 
     def draw(self, surface):
-        # surface.set_at(self.pos, hls_to_rgb(50, 60, 90))
-        s = pygame.Surface((self.radius*2, self.radius*2), flags = pygame.SRCALPHA)
-        pygame.draw.circle(s, hls_to_rgb(50, 50, 90), (self.radius, self.radius), int(self.radius))
+        self.s.fill(transparent)
+        pygame.draw.circle(self.s, self.color, self.pos, int(self.radius))
         if self.radius > self.thickness:
             pass
-            pygame.draw.circle(s, transparent, (self.radius, self.radius), int(self.radius - self.thickness))
+            pygame.draw.circle(self.s, transparent, self.pos, int(self.radius - self.thickness))
 
-        surface.blit(s, np.subtract(self.pos, (self.radius, self.radius)))
+        surface.blit(self.s, (0, 0))
 
 
 
 class FatBlobs(Group):
     def __init__(self):
         super().__init__()
-        self.rand.choice(ceiling.lamps)
-        self.add(FatBlob(self.rand.choice(ceiling.lamps)))
+        self.rand.seed(1516)
+        self.time = 0
+        self.addBlob()
         
     def update(self):
         super().update()
+
+        if self.time % 15 == 0:
+            self.addBlob()
+
+        self.time += 1
+
+    def addBlob(self):
+        pos = self.rand.choice(ceiling.lamps)
+        col = hls_to_rgb(self.rand.randint(0, 360), 50, 100)
+        self.add(FatBlob(pos, col))
 
     def draw(self, surface):
         for blob in self:
